@@ -12,6 +12,8 @@ namespace MotorcycleRepairShop.Infrastructure
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IAuthService, AuthService>();
+
+            services.AddTransient<IAccountService, AccountService>();
         }
     }
 }
