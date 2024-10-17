@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotorcycleRepairShop.Applic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotorcycleRepairShop.Infrastructure", "MotorcycleRepairShop.Infrastructure\MotorcycleRepairShop.Infrastructure.csproj", "{A294D8D9-0393-47BD-A3B8-EA1BEA12B032}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotorcycleRepairShop.Share", "MotorcycleRepairShop.Share\MotorcycleRepairShop.Share.csproj", "{FA070340-0B6B-47E6-B3B4-776786E99B0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{A294D8D9-0393-47BD-A3B8-EA1BEA12B032}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A294D8D9-0393-47BD-A3B8-EA1BEA12B032}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A294D8D9-0393-47BD-A3B8-EA1BEA12B032}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA070340-0B6B-47E6-B3B4-776786E99B0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA070340-0B6B-47E6-B3B4-776786E99B0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA070340-0B6B-47E6-B3B4-776786E99B0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA070340-0B6B-47E6-B3B4-776786E99B0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
