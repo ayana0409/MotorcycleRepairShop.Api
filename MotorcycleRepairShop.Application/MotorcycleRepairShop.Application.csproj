@@ -10,10 +10,4 @@
     <ProjectReference Include="..\MotorcycleRepairShop.Domain\MotorcycleRepairShop.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Interfaces\Repositories\" />
-    <Folder Include="Interfaces\Services\" />
-    <Folder Include="Model\" />
-  </ItemGroup>
-
 </Project>

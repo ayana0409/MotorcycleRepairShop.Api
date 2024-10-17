@@ -31,7 +31,7 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
             {
                 UserName = "admin@example.com",
                 Email = "admin@example.com",
-                FullName = "Admin User",
+                FullName = "Tiêu Đế Lỏ",
                 MobilePhone = "1234567890",
                 Address = "123 Admin St",
                 IsActive = true
@@ -54,7 +54,7 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
             {
                 if (!roleManager.RoleExistsAsync(role).Result)
                 {
-                    roleManager.CreateAsync(new IdentityRole(role)).Wait();
+                    await roleManager.CreateAsync(new IdentityRole(role));
                 }
             }
         }

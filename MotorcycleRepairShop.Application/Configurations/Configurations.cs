@@ -1,7 +1,9 @@
-﻿namespace MotorcycleRepairShop.Application.Configurations
+﻿using Microsoft.Extensions.DependencyInjection;
+using MotorcycleRepairShop.Application.Interfaces;
+
+namespace MotorcycleRepairShop.Application.Configurations
 {
-    public class Configurations
+    public static class Configurations
     {
-        
     }
 }

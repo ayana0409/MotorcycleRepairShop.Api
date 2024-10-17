@@ -38,8 +38,10 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidAudience = configuration["JWT:ValidAudience"],
+                    ValidateLifetime = true,
                     ValidIssuer = configuration["JWT:ValidIssuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
+                    ClockSkew = TimeSpan.Zero
                 };
             });
         }

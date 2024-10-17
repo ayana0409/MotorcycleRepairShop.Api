@@ -1,3 +1,4 @@
+using MotorcycleRepairShop.Infrastructure;
 using MotorcycleRepairShop.Infrastructure.Persistence;
 using MotorcycleRepairShop.Infrastructure.Persistence.Configuration;
 using MotorcycleRepairShop.Share.Configuration;
@@ -19,6 +20,7 @@ try
         => options.LowercaseQueryStrings = true);
 
     builder.Services.AddConfigureServices(builder.Configuration);
+    builder.Services.AddDependencyInjection();
 
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
