@@ -94,7 +94,8 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 .FirstOrDefaultAsync(s => s.Id.Equals(id))
                 ?? throw new NotFoundException("Service", id);
 
-            _unitOfWork.Table<Service>().Remove(service);
+            service.IsActive = false;
+            _unitOfWork.Table<Service>().Update(service);
             _unitOfWork.SaveChangeAsync().Wait();
 
             _logger.Information($"END - delete service: {id}");

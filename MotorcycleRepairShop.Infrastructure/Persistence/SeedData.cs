@@ -16,10 +16,12 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
 
             var dbContext = serviceProvider
                 .GetRequiredService<ApplicationDbContext>();
-
             dbContext.Database.MigrateAsync().GetAwaiter().GetResult();
+
+            var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
             SeedApplicationUser(serviceProvider);
-            SeedServices(serviceProvider);
+            SeedServices(unitOfWork);
+            SeedBrands(unitOfWork);
         }
 
         public static void SeedApplicationUser(IServiceProvider serviceProvider)
@@ -61,10 +63,8 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
             }
         }
 
-        private static void SeedServices(IServiceProvider serviceProvider)
+        private static void SeedServices(IUnitOfWork unitOfWork)
         {
-            var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
-
             var services = unitOfWork.Table<Service>();
             if (!services.Any())
             {
@@ -76,7 +76,21 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
                 services.AddRangeAsync(serviceAddList).Wait();
                 unitOfWork.SaveChangeAsync().Wait();
             }
-           
+        }
+
+        private static void SeedBrands(IUnitOfWork unitOfWork)
+        {
+            var dataSet = unitOfWork.Table<Brand>();
+            if (!dataSet.Any())
+            {
+                IEnumerable<Brand> addList = [
+                    new(){ Name = "Honda", Country = "Nhật Bản" },
+                    new(){ Name = "Yamaha", Country = "Nhật Bản" },
+                    new(){ Name = "SYM", Country = "Đài Loan" },
+                    ];
+                dataSet.AddRangeAsync(addList).Wait();
+                unitOfWork.SaveChangeAsync().Wait();
+            }
         }
 
     }

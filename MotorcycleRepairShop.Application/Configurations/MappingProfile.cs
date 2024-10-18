@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Account;
 using MotorcycleRepairShop.Application.Model.Service;
 using MotorcycleRepairShop.Domain.Entities;
@@ -17,6 +18,9 @@ namespace MotorcycleRepairShop.Application.Configurations
 
             CreateMap<ServiceDto, Service>().ReverseMap();
             CreateMap<ServiceTableDto, Service>().ReverseMap();
+
+            CreateMap<BrandDto, Brand>().ReverseMap();
+            CreateMap<BrandTableDto, Brand>().ReverseMap();
         }
     }
 }

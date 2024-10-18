@@ -6,6 +6,7 @@ namespace MotorcycleRepairShop.Application.Interfaces
     public interface IUnitOfWork
     {
         IServiceRepository ServiceRepository { get; }
+        IBrandRepository BrandRepository { get; }
 
         Task BeginTransaction();
         Task CommitTransaction();

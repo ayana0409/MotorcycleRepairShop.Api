@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using MotorcycleRepairShop.Share.Exceptions;
+using System.Web.Http.Results;
 
 namespace MotorcycleRepairShop.Application.Configurations
 {
@@ -11,11 +12,6 @@ namespace MotorcycleRepairShop.Application.Configurations
             if(context.Exception is NotFoundException)
             {
                 context.Result = new BadRequestObjectResult(new { context.Exception.Message });
-                context.ExceptionHandled = true;
-            }
-            else
-            {
-                context.Result = new StatusCodeResult(500);
                 context.ExceptionHandled = true;
             }
         }

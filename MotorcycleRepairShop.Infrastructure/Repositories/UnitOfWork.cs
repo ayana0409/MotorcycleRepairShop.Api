@@ -11,6 +11,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         private readonly ApplicationDbContext _applicationDbContext;
         private IDbContextTransaction _dbContextTransaction;
         private IServiceRepository? _serviceRepository;
+        private IBrandRepository? _brandRepository;
         public UnitOfWork(ApplicationDbContext applicationDbContext)
         {
             _applicationDbContext = applicationDbContext;
@@ -19,7 +20,8 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         public DbSet<T> Table<T>() where T : class => _applicationDbContext.Set<T>();
 
         public IServiceRepository ServiceRepository => _serviceRepository ??= new ServiceRepository(_applicationDbContext);
-       
+        public IBrandRepository BrandRepository => _brandRepository ??= new BrandRepository(_applicationDbContext);
+
         #region Transaction
         public async Task BeginTransaction()
         {

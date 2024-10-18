@@ -15,9 +15,11 @@ namespace MotorcycleRepairShop.Infrastructure
             services.AddTransient<IAuthService, AuthService>();
 
             services.AddTransient<IServiceRepository, ServiceRepository>();
+            services.AddTransient<IBrandRepository, BrandRepository>();
 
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IServiceService, ServiceService>();
+            services.AddTransient<IBrandService, BrandService>();
         }
     }
 }
