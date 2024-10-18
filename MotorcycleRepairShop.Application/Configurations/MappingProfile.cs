@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using MotorcycleRepairShop.Application.Model.Account;
+using MotorcycleRepairShop.Application.Model.Service;
 using MotorcycleRepairShop.Domain.Entities;
 
 namespace MotorcycleRepairShop.Application.Configurations
@@ -11,9 +12,11 @@ namespace MotorcycleRepairShop.Application.Configurations
         {
             CreateMap<CreateAccountDto, ApplicationUser>()
             .ForMember(dest => dest.UserRoles, opt => opt.Ignore());
-
             CreateMap<ApplicationUser, CreateAccountDto>()
             .ForMember(dest => dest.UserRoles, opt => opt.MapFrom(src => src.UserRoles.Select(ur => ur.RoleId).ToList()));
+
+            CreateMap<ServiceDto, Service>().ReverseMap();
+            CreateMap<ServiceTableDto, Service>().ReverseMap();
         }
     }
 }

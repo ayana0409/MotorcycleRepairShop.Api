@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MotorcycleRepairShop.Application.Interfaces;
 using MotorcycleRepairShop.Domain.Entities;
 
 namespace MotorcycleRepairShop.Infrastructure.Persistence
@@ -11,13 +12,14 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
         public static void Initialize(this WebApplication webApplication)
         {
             using var scope = webApplication.Services.CreateScope();
-            var dbContext = scope.ServiceProvider
+            var serviceProvider = scope.ServiceProvider;
+
+            var dbContext = serviceProvider
                 .GetRequiredService<ApplicationDbContext>();
 
             dbContext.Database.MigrateAsync().GetAwaiter().GetResult();
-
-            SeedApplicationUser(scope.ServiceProvider);
-
+            SeedApplicationUser(serviceProvider);
+            SeedServices(serviceProvider);
         }
 
         public static void SeedApplicationUser(IServiceProvider serviceProvider)
@@ -57,6 +59,24 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
                     await roleManager.CreateAsync(new IdentityRole(role));
                 }
             }
+        }
+
+        private static void SeedServices(IServiceProvider serviceProvider)
+        {
+            var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
+
+            var services = unitOfWork.Table<Service>();
+            if (!services.Any())
+            {
+                IEnumerable<Service> serviceAddList = [
+                    new(){ Name = "Vá lốp", Price = 5000 },
+                    new(){ Name = "Tăng xích", Price = 7000 },
+                    new(){ Name = "Thay nhớt", Price = 4000 },
+                    ];
+                services.AddRangeAsync(serviceAddList).Wait();
+                unitOfWork.SaveChangeAsync().Wait();
+            }
+           
         }
 
     }

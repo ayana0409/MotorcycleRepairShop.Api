@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using MotorcycleRepairShop.Application.Interfaces;
+using MotorcycleRepairShop.Application.Interfaces.Repositories;
 using MotorcycleRepairShop.Infrastructure.Persistence;
 
 namespace MotorcycleRepairShop.Infrastructure.Repositories
@@ -9,6 +10,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
     {
         private readonly ApplicationDbContext _applicationDbContext;
         private IDbContextTransaction _dbContextTransaction;
+        private IServiceRepository? _serviceRepository;
         public UnitOfWork(ApplicationDbContext applicationDbContext)
         {
             _applicationDbContext = applicationDbContext;
@@ -16,6 +18,8 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
 
         public DbSet<T> Table<T>() where T : class => _applicationDbContext.Set<T>();
 
+        public IServiceRepository ServiceRepository => _serviceRepository ??= new ServiceRepository(_applicationDbContext);
+       
         #region Transaction
         public async Task BeginTransaction()
         {

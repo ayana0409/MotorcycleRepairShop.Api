@@ -1,3 +1,4 @@
+using MotorcycleRepairShop.Application.Configurations;
 using MotorcycleRepairShop.Infrastructure;
 using MotorcycleRepairShop.Infrastructure.Persistence;
 using MotorcycleRepairShop.Infrastructure.Persistence.Configuration;
@@ -23,7 +24,10 @@ try
     builder.Services.AddDependencyInjection();
     builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-    builder.Services.AddControllers();
+    builder.Services.AddControllers(options =>
+    {
+        options.Filters.Add<ExceptionFilter>();
+    });
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
