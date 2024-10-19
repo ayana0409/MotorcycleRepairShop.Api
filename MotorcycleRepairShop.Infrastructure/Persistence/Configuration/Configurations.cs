@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using CloudinaryDotNet;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -43,6 +44,15 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
                     ClockSkew = TimeSpan.Zero
                 };
+            });
+
+            services.AddSingleton(s =>
+            {
+                var cloudName = configuration["Cloudinary:CloudName"];
+                var apiKey = configuration["Cloudinary:ApiKey"];
+                var apiSecret = configuration["Cloudinary:ApiSecret"];
+
+                return new Cloudinary(new Account(cloudName, apiKey, apiSecret));
             });
         }
     }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MotorcycleRepairShop.Infrastructure.Persistence;
 
@@ -10,9 +11,11 @@ using MotorcycleRepairShop.Infrastructure.Persistence;
 namespace MotorcycleRepairShop.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241019024240_AddPartVihecleImage")]
+    partial class AddPartVihecleImage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -274,12 +277,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("VehicleId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("VehicleId");
 
                     b.ToTable("Images");
                 });
@@ -425,15 +423,6 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.Image", b =>
-                {
-                    b.HasOne("MotorcycleRepairShop.Domain.Entities.Vehicle", "Vehicle")
-                        .WithMany("Images")
-                        .HasForeignKey("VehicleId");
-
-                    b.Navigation("Vehicle");
-                });
-
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.Part", b =>
                 {
                     b.HasOne("MotorcycleRepairShop.Domain.Entities.Brand", "Brand")
@@ -459,11 +448,6 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.Vehicle", b =>
-                {
-                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }

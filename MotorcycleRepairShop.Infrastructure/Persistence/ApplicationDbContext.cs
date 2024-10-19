@@ -15,6 +15,10 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<Brand> Brands { get; set; }
+        public DbSet<Image> Images { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
+        public DbSet<Part> Parts { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
