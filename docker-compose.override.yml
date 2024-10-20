@@ -1,0 +1,22 @@
+services:
+  motorcyclerepairapi:
+    image: ${DOCKER_REGISTRY-}motorcycle-repair.api:${PLATFORM:-linux}-${TAG:-latest}
+    container_name: motorcyclerepairapi
+    build:
+      context: .
+      dockerfile: MotorcycleRepairShop.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - "ConnectionStrings:DefaultConnectionString=Server=mysql-db;Database=motorcircledb;Uid=root;Pwd=Passw0rd!;"
+    ports:
+      - "5000:80"
+    networks:
+      - app_network
+    depends_on:
+      - mysql-db
+    volumes:
+      - data_protection_keys:/home/app/.aspnet/DataProtection-Keys
+
+volumes:
+  data_protection_keys:

@@ -41,7 +41,7 @@ try
         app.UseSwaggerUI();
     }
 
-    app.Initialize();
+    app.Initialize().GetAwaiter();
 
     app.UseHttpsRedirection();
 

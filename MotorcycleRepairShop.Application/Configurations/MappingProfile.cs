@@ -40,6 +40,10 @@ namespace MotorcycleRepairShop.Application.Configurations
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Select(i => i.Name).ToList()));
             CreateMap<VehicleDto, Vehicle>()
                 .ForMember(dest => dest.Images, opt => opt.Ignore());
+            CreateMap<UpdateVehicleDto, Vehicle>()
+                .ForMember(dest => dest.Images, opts => opts.Ignore());
+            CreateMap<Vehicle, VehicleTableDto>()
+                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Select(i => i.Name).ToList()));
 
             #endregion
         }

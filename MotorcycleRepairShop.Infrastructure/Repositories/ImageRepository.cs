@@ -14,5 +14,8 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         {
             return await base.GetAllAsync(i => i.VehicleId.Equals(id));
         }
+
+        public void Delete(Image image)
+            => base.Delete(image);
     }
 }

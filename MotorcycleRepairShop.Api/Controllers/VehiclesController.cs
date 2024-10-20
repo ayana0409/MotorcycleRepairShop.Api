@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
+using MotorcycleRepairShop.Application.Model.Service;
+using MotorcycleRepairShop.Domain.Entities;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
@@ -14,6 +16,17 @@ namespace MotorcycleRepairShop.Api.Controllers
         {
             _vehicleService = vehicleService;
         }
+        [HttpGet("pagination")]
+        public async Task<ActionResult<TableResponse<ServiceTableDto>>> GetPagination(
+            [FromQuery] int pageIndex = 0,
+            [FromQuery] int pageSize = 5,
+            [FromQuery] string keyword = "")
+            => Ok(await _vehicleService.GetVehiclePagination(new TableRequest
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Keyword = keyword
+            }));
 
         [HttpGet("{id}")]
         public async Task<ActionResult<VehicleDto>> GetVehicle(int id)
@@ -22,5 +35,16 @@ namespace MotorcycleRepairShop.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<int>> CreateVehicle([FromForm] CreateVehicleDto vehicleDto)
             => Ok(await _vehicleService.CreateVehicle(vehicleDto));
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<VehicleDto>> UpdateVehicle(int id, [FromForm] UpdateVehicleDto vehicleDto)
+            => Ok(await _vehicleService.UpdateVehicle(id, vehicleDto));
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteVehicle(int id)
+        {
+            await _vehicleService.DeleteVehicle(id);
+            return NoContent();
+        }
     }
 }

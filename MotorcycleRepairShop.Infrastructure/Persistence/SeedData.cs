@@ -9,27 +9,27 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
 {
     public static class SeedData
     {
-        public static void Initialize(this WebApplication webApplication)
+        public static async Task Initialize(this WebApplication webApplication)
         {
             using var scope = webApplication.Services.CreateScope();
             var serviceProvider = scope.ServiceProvider;
 
             var dbContext = serviceProvider
                 .GetRequiredService<ApplicationDbContext>();
-            dbContext.Database.MigrateAsync().GetAwaiter().GetResult();
+            await dbContext.Database.MigrateAsync();
 
             var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
-            SeedApplicationUser(serviceProvider);
-            SeedServices(unitOfWork);
-            SeedBrands(unitOfWork);
+            await SeedApplicationUser(serviceProvider);
+            await SeedServices(unitOfWork);
+            await SeedBrands(unitOfWork);
         }
 
-        public static void SeedApplicationUser(IServiceProvider serviceProvider)
+        public static async Task SeedApplicationUser(IServiceProvider serviceProvider)
         {
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            SeedRoles(roleManager).GetAwaiter();
+            await SeedRoles(roleManager);
 
             var adminUser = new ApplicationUser
             {
@@ -41,57 +41,59 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
                 IsActive = true
             };
 
-            if (userManager.FindByEmailAsync(adminUser.Email).Result == null)
+            if (await userManager.FindByEmailAsync(adminUser.Email) == null)
             {
-                var result = userManager.CreateAsync(adminUser, "AdminPassword123!").Result;
+                var result = await userManager.CreateAsync(adminUser, "AdminPassword123!");
                 if (result.Succeeded)
                 {
-                    userManager.AddToRoleAsync(adminUser, "Admin").Wait();
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
                 }
             }
         }
+
         private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
         {
             var roles = new List<string> { "Admin", "Employee", "Customer" };
 
             foreach (var role in roles)
             {
-                if (!roleManager.RoleExistsAsync(role).Result)
+                if (!await roleManager.RoleExistsAsync(role))
                 {
                     await roleManager.CreateAsync(new IdentityRole(role));
                 }
             }
         }
 
-        private static void SeedServices(IUnitOfWork unitOfWork)
+        private static async Task SeedServices(IUnitOfWork unitOfWork)
         {
             var services = unitOfWork.Table<Service>();
             if (!services.Any())
             {
-                IEnumerable<Service> serviceAddList = [
+                IEnumerable<Service> serviceAddList = new List<Service>
+                {
                     new(){ Name = "Vá lốp", Price = 5000 },
                     new(){ Name = "Tăng xích", Price = 7000 },
                     new(){ Name = "Thay nhớt", Price = 4000 },
-                    ];
-                services.AddRangeAsync(serviceAddList).Wait();
-                unitOfWork.SaveChangeAsync().Wait();
+                };
+                await services.AddRangeAsync(serviceAddList);
+                await unitOfWork.SaveChangeAsync();
             }
         }
 
-        private static void SeedBrands(IUnitOfWork unitOfWork)
+        private static async Task SeedBrands(IUnitOfWork unitOfWork)
         {
             var dataSet = unitOfWork.Table<Brand>();
             if (!dataSet.Any())
             {
-                IEnumerable<Brand> addList = [
+                IEnumerable<Brand> addList = new List<Brand>
+                {
                     new(){ Name = "Honda", Country = "Nhật Bản" },
                     new(){ Name = "Yamaha", Country = "Nhật Bản" },
                     new(){ Name = "SYM", Country = "Đài Loan" },
-                    ];
-                dataSet.AddRangeAsync(addList).Wait();
-                unitOfWork.SaveChangeAsync().Wait();
+                };
+                await dataSet.AddRangeAsync(addList);
+                await unitOfWork.SaveChangeAsync();
             }
         }
-
     }
 }

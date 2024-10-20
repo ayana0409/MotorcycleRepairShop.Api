@@ -3,15 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotorcycleRepairShop.Api", "MotorcycleRepairShop.Api\MotorcycleRepairShop.Api.csproj", "{A3752764-2396-4B27-A025-0A60F348BFE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotorcycleRepairShop.Api", "MotorcycleRepairShop.Api\MotorcycleRepairShop.Api.csproj", "{A3752764-2396-4B27-A025-0A60F348BFE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotorcycleRepairShop.Domain", "MotorcycleRepairShop.Domain\MotorcycleRepairShop.Domain.csproj", "{F3426CEB-1967-4B70-B5F1-72C3FD55569F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotorcycleRepairShop.Domain", "MotorcycleRepairShop.Domain\MotorcycleRepairShop.Domain.csproj", "{F3426CEB-1967-4B70-B5F1-72C3FD55569F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotorcycleRepairShop.Application", "MotorcycleRepairShop.Application\MotorcycleRepairShop.Application.csproj", "{29787D1D-B29D-4E43-BCAF-D513502F2BB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotorcycleRepairShop.Application", "MotorcycleRepairShop.Application\MotorcycleRepairShop.Application.csproj", "{29787D1D-B29D-4E43-BCAF-D513502F2BB1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotorcycleRepairShop.Infrastructure", "MotorcycleRepairShop.Infrastructure\MotorcycleRepairShop.Infrastructure.csproj", "{A294D8D9-0393-47BD-A3B8-EA1BEA12B032}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotorcycleRepairShop.Infrastructure", "MotorcycleRepairShop.Infrastructure\MotorcycleRepairShop.Infrastructure.csproj", "{A294D8D9-0393-47BD-A3B8-EA1BEA12B032}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotorcycleRepairShop.Share", "MotorcycleRepairShop.Share\MotorcycleRepairShop.Share.csproj", "{FA070340-0B6B-47E6-B3B4-776786E99B0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotorcycleRepairShop.Share", "MotorcycleRepairShop.Share\MotorcycleRepairShop.Share.csproj", "{FA070340-0B6B-47E6-B3B4-776786E99B0F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{EE487B2C-827E-4E3B-998A-DA901F2C3647}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.override.yml = docker-compose.override.yml
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

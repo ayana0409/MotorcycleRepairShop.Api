@@ -1,0 +1,23 @@
+﻿services:
+  mysql-db:
+    image: mysql:8.0.29
+    container_name: motorcyclerepairdb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "Passw0rd!"
+      MYSQL_DATABASE: "motorcircledb"
+      MYSQL_INNODB_USE_NATIVE_AIO: "0"
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app_network
+
+volumes:
+  mysql_data:
+    external: true
+
+networks:
+  app_network:
+    driver: bridge
