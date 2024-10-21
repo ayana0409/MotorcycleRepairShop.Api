@@ -19,6 +19,7 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<Part> Parts { get; set; }
         public DbSet<Status> Statuses { get; set; }
+        public DbSet<Problem> Problems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

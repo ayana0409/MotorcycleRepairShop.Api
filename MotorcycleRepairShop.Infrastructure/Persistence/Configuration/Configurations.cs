@@ -1,5 +1,6 @@
 ﻿using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -54,6 +55,10 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
 
                 return new Cloudinary(new Account(cloudName, apiKey, apiSecret));
             });
+
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(@"/home/app/.aspnet/DataProtection-Keys/"))
+                .SetApplicationName("MotorcycleRepairShop.Api");
         }
     }
 }

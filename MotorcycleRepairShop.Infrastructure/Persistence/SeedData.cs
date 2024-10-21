@@ -24,6 +24,7 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
             await SeedBrands(unitOfWork);
             await SeedParts(unitOfWork);
             await SeedStatuses(unitOfWork);
+            await SeedProblems(unitOfWork);
         }
 
         public static async Task SeedApplicationUser(IServiceProvider serviceProvider)
@@ -126,6 +127,23 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
                     new(){ Id = 4, StatusName = "Đang xử lý", Description = "Phương tiện của bạn đang được xử lý" },
                     new(){ Id = 5, StatusName = "Hoàn thành", Description = "Phương tiện của bạn đã xử lý xong" },
                     new(){ Id = 6, StatusName = "Hủy", Description = "Yêu cầu của bạn đã được hủy" },
+                ];
+                await dataSet.AddRangeAsync(addList);
+                await unitOfWork.SaveChangeAsync();
+            }
+        }
+
+        private static async Task SeedProblems(IUnitOfWork unitOfWork)
+        {
+            var dataSet = unitOfWork.Table<Problem>();
+            if (!dataSet.Any())
+            {
+                IEnumerable<Problem> addList =
+                [
+                    new(){ Name = "Đề không nổ", Description = "Đề không nổ" },
+                    new(){ Name = "Đề và đạp không nổ", Description = "Đề và đạp không nổ máy" },
+                    new(){ Name = "Kim tốc độ không chạy", Description = "Kim chỉ tốc độ của đồng hồ không chạy" },
+                    new(){ Name = "Sạc không vào", Description = "Sạc không vào pin hoặc rất lâu vào" },
                 ];
                 await dataSet.AddRangeAsync(addList);
                 await unitOfWork.SaveChangeAsync();
