@@ -23,6 +23,7 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
             await SeedServices(unitOfWork);
             await SeedBrands(unitOfWork);
             await SeedParts(unitOfWork);
+            await SeedStatuses(unitOfWork);
         }
 
         public static async Task SeedApplicationUser(IServiceProvider serviceProvider)
@@ -108,6 +109,24 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
                     new(){ Name = "Ốp sườn NVX", WarrantyPeriod = 1, Price = 335000, BrandId = 2 },
                     new(){ Name = "Lọc nhớt Wave Alpha", WarrantyPeriod = 6, Price = 45000, BrandId = 1 },
                 };
+                await dataSet.AddRangeAsync(addList);
+                await unitOfWork.SaveChangeAsync();
+            }
+        }
+        private static async Task SeedStatuses(IUnitOfWork unitOfWork)
+        {
+            var dataSet = unitOfWork.Table<Status>();
+            if (!dataSet.Any())
+            {
+                IEnumerable<Status> addList =
+                [
+                    new(){ Id = 1, StatusName = "Mới", Description = "Yêu cầu của bạn đã được tạo" },
+                    new(){ Id = 2, StatusName = "Đang kiểm tra", Description = "Phương tiện của bạn đang được kiểm tra" },
+                    new(){ Id = 3, StatusName = "Chờ thanh toán", Description = "Đang chờ thanh toán" },
+                    new(){ Id = 4, StatusName = "Đang xử lý", Description = "Phương tiện của bạn đang được xử lý" },
+                    new(){ Id = 5, StatusName = "Hoàn thành", Description = "Phương tiện của bạn đã xử lý xong" },
+                    new(){ Id = 6, StatusName = "Hủy", Description = "Yêu cầu của bạn đã được hủy" },
+                ];
                 await dataSet.AddRangeAsync(addList);
                 await unitOfWork.SaveChangeAsync();
             }

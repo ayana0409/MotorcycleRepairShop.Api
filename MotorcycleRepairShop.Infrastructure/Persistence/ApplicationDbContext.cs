@@ -18,7 +18,7 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
         public DbSet<Image> Images { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<Part> Parts { get; set; }
-
+        public DbSet<Status> Statuses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
