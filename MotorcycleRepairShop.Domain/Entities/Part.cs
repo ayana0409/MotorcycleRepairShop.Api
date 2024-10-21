@@ -9,13 +9,13 @@ namespace MotorcycleRepairShop.Domain.Entities
         [StringLength(250)]
         public string Name { get; set; } = string.Empty;
         [Required]
-        public DateTime CreateDate { get; set; }
+        public DateTime CreateDate { get; set; } = DateTime.UtcNow;
         public DateTime UpdateDate { get; set; }
         [Required]
         public int WarrantyPeriod { get; set; }
         [Required]
         public decimal Price { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         [Required]
         public int BrandId { get; set; }

@@ -21,11 +21,13 @@ namespace MotorcycleRepairShop.Infrastructure
             services.AddTransient<IBrandRepository, BrandRepository>();
             services.AddTransient<IImageRepository, ImageRepository>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
+            services.AddTransient<IPartRepository, PartRepository>();
 
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IServiceService, ServiceService>();
             services.AddTransient<IBrandService, BrandService>();
             services.AddTransient<IVehicleService, VehicleService>();
+            services.AddTransient<IPartService, PartService>();
         }
     }
 }

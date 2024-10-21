@@ -46,6 +46,13 @@ namespace MotorcycleRepairShop.Application.Configurations
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Select(i => i.Name).ToList()));
 
             #endregion
+
+            #region Part
+
+            CreateMap<PartDto, Part>().ReverseMap();
+            CreateMap<PartTableDto, Part>().ReverseMap();
+
+            #endregion
         }
     }
 }

@@ -22,6 +22,7 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
             await SeedApplicationUser(serviceProvider);
             await SeedServices(unitOfWork);
             await SeedBrands(unitOfWork);
+            await SeedParts(unitOfWork);
         }
 
         public static async Task SeedApplicationUser(IServiceProvider serviceProvider)
@@ -90,6 +91,22 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
                     new(){ Name = "Honda", Country = "Nhật Bản" },
                     new(){ Name = "Yamaha", Country = "Nhật Bản" },
                     new(){ Name = "SYM", Country = "Đài Loan" },
+                };
+                await dataSet.AddRangeAsync(addList);
+                await unitOfWork.SaveChangeAsync();
+            }
+        }
+
+        private static async Task SeedParts(IUnitOfWork unitOfWork)
+        {
+            var dataSet = unitOfWork.Table<Part>();
+            if (!dataSet.Any())
+            {
+                IEnumerable<Part> addList = new List<Part>
+                {
+                    new(){ Name = "Lọc gió Wave RSX", WarrantyPeriod = 3, Price = 75000, BrandId = 1 },
+                    new(){ Name = "Ốp sườn NVX", WarrantyPeriod = 1, Price = 335000, BrandId = 2 },
+                    new(){ Name = "Lọc nhớt Wave Alpha", WarrantyPeriod = 6, Price = 45000, BrandId = 1 },
                 };
                 await dataSet.AddRangeAsync(addList);
                 await unitOfWork.SaveChangeAsync();
