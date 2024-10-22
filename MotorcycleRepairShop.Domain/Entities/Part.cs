@@ -21,5 +21,7 @@ namespace MotorcycleRepairShop.Domain.Entities
         public int BrandId { get; set; }
         [ForeignKey(nameof(BrandId))]
         public Brand? Brand { get; set; }
+
+        public ICollection<PartInventory> Inventories { get; set; } = [];
     }
 }
