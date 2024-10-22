@@ -23,6 +23,7 @@ namespace MotorcycleRepairShop.Infrastructure
             services.AddTransient<IVehicleRepository, VehicleRepository>();
             services.AddTransient<IPartRepository, PartRepository>();
             services.AddTransient<IProblemRepository, ProblemRepository>();
+            services.AddTransient<IPartInventoryRepository, PartInventoryRepository>();
 
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IServiceService, ServiceService>();
@@ -30,6 +31,7 @@ namespace MotorcycleRepairShop.Infrastructure
             services.AddTransient<IVehicleService, VehicleService>();
             services.AddTransient<IPartService, PartService>();
             services.AddTransient<IProblemService, ProblemService>();
+            services.AddTransient<IPartInventoryService, PartInventoryService>();
         }
     }
 }

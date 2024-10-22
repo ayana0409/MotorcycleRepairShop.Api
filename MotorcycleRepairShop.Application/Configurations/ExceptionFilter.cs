@@ -11,6 +11,11 @@ namespace MotorcycleRepairShop.Application.Configurations
         {
             if(context.Exception is NotFoundException)
             {
+                context.Result = new NotFoundObjectResult(new { context.Exception.Message });
+                context.ExceptionHandled = true;
+            }
+            else if (context.Exception is ArgumentException)
+            {
                 context.Result = new BadRequestObjectResult(new { context.Exception.Message });
                 context.ExceptionHandled = true;
             }

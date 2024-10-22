@@ -16,6 +16,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         private IVehicleRepository? _vehicleRepository;
         private IPartRepository? _partRepository;
         private IProblemRepository? _problemRepository;
+        private IPartInventoryRepository _partInventoryRepository;
 
         public UnitOfWork(ApplicationDbContext applicationDbContext)
         {
@@ -30,6 +31,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         public IVehicleRepository VehicleRepository => _vehicleRepository ??= new VehicleRepository(_applicationDbContext);
         public IPartRepository PartRepository => _partRepository ??= new PartRepository(_applicationDbContext);
         public IProblemRepository ProblemRepository => _problemRepository ??= new ProblemRepository(_applicationDbContext);
+        public IPartInventoryRepository PartInventoryRepository => _partInventoryRepository ??= new PartInventoryRepository(_applicationDbContext);
 
         #region Transaction
         public async Task BeginTransaction()

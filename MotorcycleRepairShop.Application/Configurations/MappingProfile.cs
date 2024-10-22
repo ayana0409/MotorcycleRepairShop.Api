@@ -60,6 +60,13 @@ namespace MotorcycleRepairShop.Application.Configurations
             CreateMap<ProblemTableDto, Problem>().ReverseMap();
 
             #endregion
+
+            #region Part Inventory
+
+            CreateMap<PartInventory, PartInventoryDto>().ReverseMap();
+            //CreateMap<List<PartInventory>, List<PartInventoryDto>>();
+
+            #endregion
         }
     }
 }
