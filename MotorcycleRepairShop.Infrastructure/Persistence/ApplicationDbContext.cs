@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MotorcycleRepairShop.Domain.Entities;
+using MotorcycleRepairShop.Domain.Enums;
+using System.Reflection.Emit;
 
 namespace MotorcycleRepairShop.Infrastructure.Persistence
 {
@@ -21,6 +23,10 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
         public DbSet<Status> Statuses { get; set; }
         public DbSet<Problem> Problems { get; set; }
         public DbSet<PartInventory> Inventories { get; set; }
+        public DbSet<Video> Videos { get; set; }
+
+        //public DbSet<ServiceRequest> ServiceRequests { get; set; }
+        public DbSet<ServiceRequestProblem> ServiceRequestProblems { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -37,7 +43,26 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
             builder.Entity<ApplicationUser>()
                 .HasIndex(x => x.Email).IsUnique();
 
+            builder.Entity<ServiceRequest>()
+                .Property(e => e.ServiceType)
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (ServiceType)Enum.Parse(typeof(ServiceType), v));
 
+            builder.Entity<ServiceRequestProblem>()
+                .HasKey(srp => new { srp.ServiceRequestId, srp.ProblemId });
+
+            builder.Entity<ServiceRequestProblem>()
+                .HasOne(srp => srp.ServiceRequest)
+                .WithMany(sr => sr.Problems)
+                .HasForeignKey(srp => srp.ServiceRequestId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ServiceRequestProblem>()
+                .HasOne(srp => srp.Problem)
+                .WithMany(p => p.ServiceRequestProblems)
+                .HasForeignKey(srp => srp.ProblemId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

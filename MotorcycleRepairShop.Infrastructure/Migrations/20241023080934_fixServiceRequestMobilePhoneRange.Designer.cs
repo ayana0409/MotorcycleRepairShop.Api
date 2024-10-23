@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MotorcycleRepairShop.Infrastructure.Persistence;
 
@@ -10,9 +11,11 @@ using MotorcycleRepairShop.Infrastructure.Persistence;
 namespace MotorcycleRepairShop.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241023080934_fixServiceRequestMobilePhoneRange")]
+    partial class fixServiceRequestMobilePhoneRange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -647,7 +650,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.ServiceRequestProblem", b =>
                 {
                     b.HasOne("MotorcycleRepairShop.Domain.Entities.Problem", "Problem")
-                        .WithMany("ServiceRequestProblems")
+                        .WithMany()
                         .HasForeignKey("ProblemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -693,11 +696,6 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.Part", b =>
                 {
                     b.Navigation("Inventories");
-                });
-
-            modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.Problem", b =>
-                {
-                    b.Navigation("ServiceRequestProblems");
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.ServiceRequest", b =>

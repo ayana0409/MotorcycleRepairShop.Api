@@ -13,6 +13,7 @@ namespace MotorcycleRepairShop.Infrastructure
         public static void AddDependencyInjection(this IServiceCollection services)
         {
             services.AddScoped<ICloudinaryService<Vehicle>, CloudinaryService<Vehicle>>();
+            services.AddScoped<ICloudinaryService<ServiceRequest>, CloudinaryService<ServiceRequest>>();
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IAuthService, AuthService>();
@@ -24,6 +25,8 @@ namespace MotorcycleRepairShop.Infrastructure
             services.AddTransient<IPartRepository, PartRepository>();
             services.AddTransient<IProblemRepository, ProblemRepository>();
             services.AddTransient<IPartInventoryRepository, PartInventoryRepository>();
+            services.AddTransient<IVideoRepository, VideoRepository>();
+            services.AddTransient<IServiceRequestRepository, ServiceRequestRepository>();
 
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IServiceService, ServiceService>();
@@ -32,6 +35,7 @@ namespace MotorcycleRepairShop.Infrastructure
             services.AddTransient<IPartService, PartService>();
             services.AddTransient<IProblemService, ProblemService>();
             services.AddTransient<IPartInventoryService, PartInventoryService>();
+            services.AddTransient<IServiceRequestService, ServiceRequestService>();
         }
     }
 }

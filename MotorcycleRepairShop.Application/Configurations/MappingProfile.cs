@@ -67,6 +67,32 @@ namespace MotorcycleRepairShop.Application.Configurations
             //CreateMap<List<PartInventory>, List<PartInventoryDto>>();
 
             #endregion
+
+            #region Service Request
+
+            CreateMap<ServiceRequest, ServiceRequestDto>()
+                .ForMember(
+                    dest => dest.Images,
+                    opt => opt.MapFrom(src => src.Images.Select(i => i.Name).ToList()))
+                .ForMember(
+                    dest => dest.Videos,
+                    opt => opt.MapFrom(src => src.Videos.Select(i => i.Name).ToList()))
+                .ForMember(
+                    dest => dest.Problems,
+                    otp => otp.Ignore());
+
+            CreateMap<ServiceRequestDto, ServiceRequest>()
+                .ForMember(
+                    dest => dest.Images,
+                    opt => opt.Ignore())
+                .ForMember(
+                    dest => dest.Videos,
+                    opt => opt.Ignore())
+                .ForMember(
+                    dest => dest.Problems,
+                    opt => opt.Ignore());
+
+            #endregion
         }
     }
 }

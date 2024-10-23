@@ -2,8 +2,8 @@
 
 namespace MotorcycleRepairShop.Application.Interfaces.Repositories
 {
-    public interface IImageRepository : IBaseRepository<Image>
+    public interface IServiceRequestRepository : IBaseRepository<ServiceRequest>
     {
-        Task<IEnumerable<Image>> GetByVehicleIdAsync(int id);
+        //Task<ServiceRequest?> GetById(int id);
     }
 }

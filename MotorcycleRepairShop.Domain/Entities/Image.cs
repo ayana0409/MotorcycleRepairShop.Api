@@ -10,8 +10,8 @@ namespace MotorcycleRepairShop.Domain.Entities
         [ForeignKey(nameof(VehicleId))]
         public Vehicle? Vehicle { get; set; }
 
-        //// Nullable foreign key to ServiceRequest
-        //public int? ServiceRequestId { get; set; }
-        //public ServiceRequest? ServiceRequest { get; set; }
+        public int? ServiceRequestId { get; set; }
+        [ForeignKey(nameof(ServiceRequestId))]
+        public ServiceRequest? ServiceRequest { get; set; }
     }
 }
