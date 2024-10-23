@@ -22,7 +22,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         {
             LogStart(partId);
             var inventories = await _unitOfWork.PartInventoryRepository
-                .GetAllAsync(i => i.PartId == partId && i.QuantityInStock > 0);
+                .GetAllAsync(i => i.PartId.Equals(partId) && i.QuantityInStock > 0);
 
             var sortedInventories = inventories
                 .OrderBy(i => i.EntryDate)
@@ -95,7 +95,5 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             var result = addedInventories.Select(i => i.Id).ToList();
             return result;
         }
-
-
     }
 }

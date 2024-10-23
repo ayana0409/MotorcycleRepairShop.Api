@@ -44,27 +44,76 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             return uploadResult.Url.ToString();
         }
 
+        public string UploadVideo(IFormFile file)
+        {
+            var uploadResult = new VideoUploadResult();
+
+            if (file.Length > 0)
+            {
+                using (var stream = file.OpenReadStream())
+                {
+                    var uploadParams = new VideoUploadParams
+                    {
+                        File = new FileDescription(file.FileName, stream),
+                        Transformation = new Transformation()
+                                            .Width(1280)
+                                            .Height(720) 
+                                            .Crop("limit")
+                                            .BitRate("500k")
+                                            .Quality("auto:low"),
+                        Format = "mp4",
+                        Folder = _folder
+                    };
+
+                    uploadResult = _cloudinary.Upload(uploadParams);
+                }
+            }
+
+            if (uploadResult.Error != null)
+            {
+                throw new Exception(uploadResult.Error.Message);
+            }
+
+            return uploadResult.Url.ToString();
+        }
+
+        public async Task DeleteVideoAsync(string videoUrl)
+        {
+            string publicId = ExtractPublicIdFromUrl(videoUrl);
+            var deletionParams = new DeletionParams(publicId);
+            var result = await _cloudinary.DestroyAsync(deletionParams);
+
+            if (result.Result != "ok")
+            {
+                var errorMessage = result.Error?.Message ?? "Unknown error occurred.";
+                throw new Exception($"Failed to delete video: {errorMessage}");
+            }
+        }
+
         public async Task DeletePhotoAsync(string imageUrl)
         {
-            string pattern = _folder + @"/([^/]+)\.png";
-            Match match = Regex.Match(imageUrl, pattern);
+            string publicId = ExtractPublicIdFromUrl(imageUrl);
+            var deletionParams = new DeletionParams(publicId);
+            var result = await _cloudinary.DestroyAsync(deletionParams);
+
+            if (result.Result != "ok")
+            {
+                var errorMessage = result.Error?.Message ?? "Unknown error occurred.";
+                throw new Exception($"Failed to delete image: {errorMessage}");
+            }
+        }
+
+        private string ExtractPublicIdFromUrl(string videoUrl)
+        {
+            string pattern = _folder + @"/([^/]+)\.mp4";
+            Match match = Regex.Match(videoUrl, pattern);
 
             if (match.Success)
             {
-                string publicId = _folder + "/" + match.Groups[1].Value;
-                var deletionParams = new DeletionParams(publicId);
-                var result = await _cloudinary.DestroyAsync(deletionParams);
-
-                if (result.Result != "ok")
-                {
-                    var errorMessage = result.Error?.Message ?? "Unknown error occurred.";
-                    throw new Exception($"Failed to delete image: {errorMessage}");
-                }
+                return _folder + "/" + match.Groups[1].Value;
             }
-            else
-            {
-                throw new Exception("No match found.");
-            }
+            throw new Exception("Invalid image/video URL format or no match found.");
         }
+
     }
 }
