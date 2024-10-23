@@ -4,6 +4,7 @@ namespace MotorcycleRepairShop.Application.Interfaces.Repositories
 {
     public interface IProblemRepository : IBaseRepository<Problem>
     {
+        Task<IEnumerable<Problem>> GetByServideRequestId(int id);
         Task<(IEnumerable<Problem>, int)> GetPanigationAsync(int pageIndex, int pageSize, string keyword);
     }
 }

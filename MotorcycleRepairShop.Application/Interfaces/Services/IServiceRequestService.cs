@@ -4,7 +4,9 @@ namespace MotorcycleRepairShop.Application.Interfaces.Services
 {
     public interface IServiceRequestService
     {
-        Task<int> CreateDeirecServiceRequest(ServiceRequestDto serviceRequestDto);
+        Task<int> CreateRescueRescueRequest(CreateServiceRequestDto serviceRequestDto);
+        Task<int> CreateDeirecServiceRequest(CreateServiceRequestDto serviceRequestDto);
+        Task<int> CreateRemoteServiceRequest(CreateServiceRequestDto serviceRequestDto);
         Task<ServiceRequestDto> GetServiceRequestById(int id);
     }
 }

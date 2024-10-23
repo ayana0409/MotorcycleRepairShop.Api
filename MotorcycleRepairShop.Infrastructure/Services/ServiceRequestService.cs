@@ -4,8 +4,8 @@ using MotorcycleRepairShop.Application.Interfaces;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Domain.Entities;
+using MotorcycleRepairShop.Domain.Enums;
 using MotorcycleRepairShop.Share.Exceptions;
-using MySqlX.XDevAPI.Common;
 using Serilog;
 
 namespace MotorcycleRepairShop.Infrastructure.Services
@@ -29,22 +29,34 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 .Include(r => r.Images)
                 .Include(r => r.Videos)
                 .Include(r => r.Problems)
+                .Include(r => r.Status)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(r => r.Id.Equals(id))
                 ?? throw new NotFoundException(nameof(ServiceRequest), id);
 
             var result = _mapper.Map<ServiceRequestDto>(service);
+            var problems = await _unitOfWork.ProblemRepository
+                .GetByServideRequestId(id);
+            result.Problems = problems.Select(p => p.Name).ToList();
+
             LogEnd(id);
             return result;
         }
 
-        public async Task<int> CreateDeirecServiceRequest(ServiceRequestDto serviceRequestDto)
-            => await CreateServiceRequest(serviceRequestDto);
+        public async Task<int> CreateDeirecServiceRequest(CreateServiceRequestDto serviceRequestDto)
+            => await CreateServiceRequest(serviceRequestDto, ServiceType.Direct);
 
-        private async Task<int> CreateServiceRequest(ServiceRequestDto serviceRequestDto)
+        public async Task<int> CreateRemoteServiceRequest(CreateServiceRequestDto serviceRequestDto)
+            => await CreateServiceRequest(serviceRequestDto, ServiceType.Remote);
+
+        public async Task<int> CreateRescueRescueRequest(CreateServiceRequestDto serviceRequestDto)
+            => await CreateServiceRequest(serviceRequestDto, ServiceType.Rescue);
+
+        private async Task<int> CreateServiceRequest(CreateServiceRequestDto serviceRequestDto, ServiceType type)
         {
-            LogStart();
+            LogStart($"CreateServiceRequest {Enum.GetName(type)}");
             var service = _mapper.Map<ServiceRequest>(serviceRequestDto);
-
+            service.ServiceType = type;
 
             await _unitOfWork.ServiceRequestRepository.CreateAsync(service);
             await _unitOfWork.SaveChangeAsync();
@@ -57,7 +69,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 .AddRangeAsync(problems);
             await _unitOfWork.SaveChangeAsync();
 
-            if (serviceRequestDto.Images.Any())
+            if (serviceRequestDto.Problems != null && serviceRequestDto.Images.Any())
             {
                 foreach (var image in serviceRequestDto.Images)
                 {
@@ -69,7 +81,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 }
                 await _unitOfWork.SaveChangeAsync();
             }
-            LogEnd();
+            LogEnd(result, $"CreateServiceRequest {Enum.GetName(type)}");
             return result;
         }
 

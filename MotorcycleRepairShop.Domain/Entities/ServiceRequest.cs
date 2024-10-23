@@ -1,5 +1,6 @@
 ﻿using MotorcycleRepairShop.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MotorcycleRepairShop.Domain.Entities
 {
@@ -20,6 +21,9 @@ namespace MotorcycleRepairShop.Domain.Entities
         public decimal TotalPrice { get; set; }
 
         public ServiceType ServiceType { get; set; } = ServiceType.Direct;
+        public int StatusId { get; set; } = Convert.ToInt32(StatusEnum.New);
+        [ForeignKey(nameof(StatusId))]
+        public Status? Status { get; set; }
 
         public virtual ICollection<Video> Videos { get; set; } = [];
         public virtual ICollection<Image> Images { get; set; } = [];

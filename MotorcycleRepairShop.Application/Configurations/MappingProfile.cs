@@ -3,6 +3,8 @@ using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Account;
 using MotorcycleRepairShop.Application.Model.Service;
 using MotorcycleRepairShop.Domain.Entities;
+using MotorcycleRepairShop.Domain.Enums;
+using MotorcycleRepairShop.Share.Extensions;
 
 namespace MotorcycleRepairShop.Application.Configurations
 {
@@ -72,6 +74,12 @@ namespace MotorcycleRepairShop.Application.Configurations
 
             CreateMap<ServiceRequest, ServiceRequestDto>()
                 .ForMember(
+                    dest => dest.ServiceType, 
+                    opt => opt.MapFrom(src => src.ServiceType.GetDisplayName()))
+                .ForMember(
+                    dest => dest.Status,
+                    opt => opt.MapFrom(src => Enum.GetName(typeof(StatusEnum), src.StatusId)))
+                .ForMember(
                     dest => dest.Images,
                     opt => opt.MapFrom(src => src.Images.Select(i => i.Name).ToList()))
                 .ForMember(
@@ -81,7 +89,7 @@ namespace MotorcycleRepairShop.Application.Configurations
                     dest => dest.Problems,
                     otp => otp.Ignore());
 
-            CreateMap<ServiceRequestDto, ServiceRequest>()
+            CreateMap<CreateServiceRequestDto, ServiceRequest>()
                 .ForMember(
                     dest => dest.Images,
                     opt => opt.Ignore())
