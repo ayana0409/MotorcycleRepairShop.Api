@@ -2,7 +2,7 @@
 
 namespace MotorcycleRepairShop.Application.Model
 {
-    public class CreateServiceRequestItemDto
+    public class UpsSertServiceRequestItemDto
     {
         public int Quantity { get; set; }
 

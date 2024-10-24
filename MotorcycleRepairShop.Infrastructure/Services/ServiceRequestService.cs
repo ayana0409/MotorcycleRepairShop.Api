@@ -6,7 +6,6 @@ using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Domain.Enums;
 using MotorcycleRepairShop.Share.Exceptions;
-using MySqlX.XDevAPI.Common;
 using Serilog;
 
 namespace MotorcycleRepairShop.Infrastructure.Services
@@ -105,6 +104,54 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 LogEnd($"CreateServiceRequest Error - {ex.Message}");
                 throw;
             }
+        }
+
+        public async Task<ServiceRequestItemDto> UpSertServiceToServiceRequest(int serviceRequestId, UpsSertServiceRequestItemDto serviceItemRequestDto)
+        {
+            LogStart(serviceRequestId);
+            var serviceid = serviceItemRequestDto.ServiceId;
+            var logData = $"- ServiceRequestId: {serviceRequestId} - ServiceId: {serviceid}";
+
+            bool serviceRequestExists = await _unitOfWork.ServiceRequestRepository
+                .AnyAsync(serviceRequestId);
+            if (!serviceRequestExists)
+            {
+                throw new NotFoundException(nameof(ServiceRequest), serviceRequestId);
+            }
+
+            var existService = await _unitOfWork.ServiceRepository
+                .GetSigleAsync(s => s.Id.Equals(serviceid))
+                ?? throw new NotFoundException(nameof(Service), serviceid);
+
+            ServiceRequestItem? existServiceItem = await _unitOfWork.ServiceRequestItemRepository
+                .GetByServiceRequestIdAndServiceId(serviceRequestId, serviceid);
+
+            if (existServiceItem == null)
+            {
+                LogStart($"Create ServiceRequestItem {logData}");
+                existServiceItem = new()
+                {
+                    ServiceId = serviceid,
+                    ServiceRequestId = serviceRequestId,
+                    Price = existService.Price,
+                    Quantity = serviceItemRequestDto.Quantity,
+                };
+                await _unitOfWork.ServiceRequestItemRepository.CreateAsync(existServiceItem);
+                LogEnd($"Create ServiceRequestItem {logData}");
+            }
+            else
+            {
+                LogStart($"Update ServiceRequestItem {logData}");
+                _mapper.Map(serviceItemRequestDto, existServiceItem);
+                _unitOfWork.ServiceRequestItemRepository
+                    .Update(existServiceItem);
+                LogEnd($"Update ServiceRequestItem {logData}");
+            }
+            await _unitOfWork.SaveChangeAsync();
+
+            var result = _mapper.Map<ServiceRequestItemDto>(existServiceItem);
+            LogEnd(serviceRequestId);
+            return result;
         }
 
         private async Task AddProblemsToServiceRequest(int serviceRequestId, IEnumerable<int> problemIds)

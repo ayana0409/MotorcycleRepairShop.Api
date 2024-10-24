@@ -13,6 +13,7 @@ namespace MotorcycleRepairShop.Application.Interfaces
         IProblemRepository ProblemRepository { get; }
         IPartInventoryRepository PartInventoryRepository { get; }
         IServiceRequestRepository ServiceRequestRepository { get; }
+        IServiceRequestItemRepository ServiceRequestItemRepository { get; }
 
         Task BeginTransaction();
         Task CommitTransaction();

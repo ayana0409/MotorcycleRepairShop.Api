@@ -107,6 +107,13 @@ namespace MotorcycleRepairShop.Application.Configurations
                     opt => opt.Ignore());
 
             #endregion
+
+            #region Service Request Item
+
+            CreateMap<UpsSertServiceRequestItemDto, ServiceRequestItem>();
+            CreateMap<ServiceRequestItem, ServiceRequestItemDto>();
+
+            #endregion
         }
     }
 }

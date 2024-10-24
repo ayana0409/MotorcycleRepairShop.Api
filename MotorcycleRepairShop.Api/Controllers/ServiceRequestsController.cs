@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 
@@ -28,8 +27,12 @@ namespace MotorcycleRepairShop.Api.Controllers
         public async Task<ActionResult<int>> CreateRemoteRequestService(CreateServiceRequestDto serviceRequestDto)
             => Ok(await _serviceRequestService.CreateRemoteServiceRequest(serviceRequestDto));
 
-        [HttpPost("Rescue")]
+        [HttpPost("rescue")]
         public async Task<ActionResult<int>> CreateRescueRequestService(CreateServiceRequestDto serviceRequestDto)
             => Ok(await _serviceRequestService.CreateRescueRescueRequest(serviceRequestDto));
+
+        [HttpPut("service/{id}")]
+        public async Task<ActionResult<ServiceRequestItemDto>> UpSertServiceRequestItem(int id, UpsSertServiceRequestItemDto serviceRequestItemDto)
+            => Ok(await _serviceRequestService.UpSertServiceToServiceRequest(id, serviceRequestItemDto));
     }
 }
