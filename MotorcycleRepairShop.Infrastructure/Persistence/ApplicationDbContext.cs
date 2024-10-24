@@ -27,6 +27,7 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
 
         //public DbSet<ServiceRequest> ServiceRequests { get; set; }
         public DbSet<ServiceRequestProblem> ServiceRequestProblems { get; set; }
+        public DbSet<ServiceRequestItem> ServiceRequestItems { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -63,6 +64,9 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
                 .WithMany(p => p.ServiceRequestProblems)
                 .HasForeignKey(srp => srp.ProblemId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ServiceRequestItem>()
+                .HasKey(sri => new {sri.ServiceId, sri.ServiceRequestId});
         }
     }
 }

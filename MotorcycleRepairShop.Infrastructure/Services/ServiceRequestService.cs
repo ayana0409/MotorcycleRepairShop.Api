@@ -6,6 +6,7 @@ using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Domain.Enums;
 using MotorcycleRepairShop.Share.Exceptions;
+using MySqlX.XDevAPI.Common;
 using Serilog;
 
 namespace MotorcycleRepairShop.Infrastructure.Services
@@ -30,6 +31,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 .Include(r => r.Videos)
                 .Include(r => r.Problems)
                 .Include(r => r.Status)
+                .Include(r => r.Services)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(r => r.Id.Equals(id))
                 ?? throw new NotFoundException(nameof(ServiceRequest), id);
@@ -38,6 +40,10 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             var problems = await _unitOfWork.ProblemRepository
                 .GetByServideRequestId(id);
             result.Problems = problems.Select(p => p.Name).ToList();
+
+            var services = await _unitOfWork.ServiceRepository
+                .GetByServiceRequestId(id);
+            result.Services = services.Select(p => p.Name).ToList();
 
             LogEnd(id);
             return result;
@@ -54,36 +60,80 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         private async Task<int> CreateServiceRequest(CreateServiceRequestDto serviceRequestDto, ServiceType type)
         {
-            LogStart($"CreateServiceRequest {Enum.GetName(type)}");
-            var service = _mapper.Map<ServiceRequest>(serviceRequestDto);
-            service.ServiceType = type;
+            try
+            {
+                LogStart($"CreateServiceRequest {Enum.GetName(type)}");
+                await _unitOfWork.BeginTransaction();
+                var service = _mapper.Map<ServiceRequest>(serviceRequestDto);
+                service.ServiceType = type;
 
-            await _unitOfWork.ServiceRequestRepository.CreateAsync(service);
-            await _unitOfWork.SaveChangeAsync();
-            var result = service.Id;
+                await _unitOfWork.ServiceRequestRepository.CreateAsync(service);
+                await _unitOfWork.SaveChangeAsync();
+                var result = service.Id;
 
+                // Add problems to service request
+                if (serviceRequestDto.Problems.Count != 0)
+                    await AddProblemsToServiceRequest(result, serviceRequestDto.Problems);
+                // Add services to service request
+                if (serviceRequestDto.Services.Count != 0)
+                    await AddServicesToServiceRequest(result, serviceRequestDto.Services);
+
+                if (serviceRequestDto.Images.Any())
+                {
+                    foreach (var image in serviceRequestDto.Images)
+                    {
+                        await _unitOfWork.ImageRepository.CreateAsync(new()
+                        {
+                            ServiceRequestId = result,
+                            Name = _cloudinaryService.UploadPhoto(image)
+                        });
+                    }
+                    await _unitOfWork.SaveChangeAsync();
+                }
+                LogEnd(result, $"CreateServiceRequest {Enum.GetName(type)}");
+                await _unitOfWork.CommitTransaction();
+                return result;
+            }
+            catch (NotFoundException)
+            {
+                await _unitOfWork.RollBackTransaction();
+                throw;
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollBackTransaction();
+                LogEnd($"CreateServiceRequest Error - {ex.Message}");
+                throw;
+            }
+        }
+
+        private async Task AddProblemsToServiceRequest(int serviceRequestId, IEnumerable<int> problemIds)
+        {
             List<ServiceRequestProblem> problems = [];
-            foreach (var problemId in serviceRequestDto.Problems)
-                problems.Add(new() { ServiceRequestId = result, ProblemId = problemId });
+            foreach (var problemId in problemIds)
+                problems.Add(new() { ServiceRequestId = serviceRequestId, ProblemId = problemId });
             await _unitOfWork.Table<ServiceRequestProblem>()
                 .AddRangeAsync(problems);
             await _unitOfWork.SaveChangeAsync();
-
-            if (serviceRequestDto.Problems != null && serviceRequestDto.Images.Any())
-            {
-                foreach (var image in serviceRequestDto.Images)
-                {
-                    await _unitOfWork.ImageRepository.CreateAsync(new()
-                    {
-                        ServiceRequestId = result,
-                        Name = _cloudinaryService.UploadPhoto(image)
-                    });
-                }
-                await _unitOfWork.SaveChangeAsync();
-            }
-            LogEnd(result, $"CreateServiceRequest {Enum.GetName(type)}");
-            return result;
         }
 
+        private async Task AddServicesToServiceRequest(int serviceRequestId, IEnumerable<int> serviceIds)
+        {
+            List<ServiceRequestItem> services = [];
+            var existService = await _unitOfWork.ServiceRepository
+                .GetAllAsync(s => serviceIds.Contains(s.Id));
+            foreach (var serviceid in serviceIds)
+                services.Add(new()
+                {
+                    ServiceId = serviceid,
+                    Quantity = 1,
+                    ServiceRequestId = serviceRequestId,
+                    Price = existService.FirstOrDefault(s => s.Id.Equals(serviceid))?.Price 
+                                ?? throw new NotFoundException(nameof(Service), serviceid)
+                });
+            await _unitOfWork.Table<ServiceRequestItem>()
+                .AddRangeAsync(services);
+            await _unitOfWork.SaveChangeAsync();
+        }
     }
 }

@@ -28,6 +28,7 @@ namespace MotorcycleRepairShop.Domain.Entities
         public virtual ICollection<Video> Videos { get; set; } = [];
         public virtual ICollection<Image> Images { get; set; } = [];
         public virtual ICollection<ServiceRequestProblem> Problems { get; set; } = [];
+        public virtual ICollection<ServiceRequestItem> Services { get; set; } = [];
 
     }
 }

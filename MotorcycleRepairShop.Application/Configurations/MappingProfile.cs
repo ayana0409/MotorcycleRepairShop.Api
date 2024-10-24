@@ -87,7 +87,10 @@ namespace MotorcycleRepairShop.Application.Configurations
                     opt => opt.MapFrom(src => src.Videos.Select(i => i.Name).ToList()))
                 .ForMember(
                     dest => dest.Problems,
-                    otp => otp.Ignore());
+                    otp => otp.Ignore())
+                .ForMember(
+                    dest => dest.Services,
+                    opt => opt.Ignore());
 
             CreateMap<CreateServiceRequestDto, ServiceRequest>()
                 .ForMember(
@@ -98,6 +101,9 @@ namespace MotorcycleRepairShop.Application.Configurations
                     opt => opt.Ignore())
                 .ForMember(
                     dest => dest.Problems,
+                    opt => opt.Ignore())
+                .ForMember(
+                    dest => dest.Services,
                     opt => opt.Ignore());
 
             #endregion

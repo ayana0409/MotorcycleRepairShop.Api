@@ -10,5 +10,7 @@ namespace MotorcycleRepairShop.Domain.Entities
         public decimal Price { get; set; }
         [Required]
         public bool IsActive { get; set; } = true;
+
+        public virtual ICollection<ServiceRequestItem> Requests { get; set; } = [];
     }
 }

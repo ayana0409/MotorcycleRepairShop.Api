@@ -6,5 +6,6 @@
         public IEnumerable<string> Videos { get; set; } = [];
         public IEnumerable<string> Images { get; set; } = [];
         public IEnumerable<string> Problems { get; set; } = [];
+        public IEnumerable<string> Services { get; set; } = [];
     }
 }
