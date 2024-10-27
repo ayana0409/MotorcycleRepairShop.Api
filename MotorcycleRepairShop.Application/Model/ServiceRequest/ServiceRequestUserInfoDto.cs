@@ -4,7 +4,7 @@ using System.Data.SqlTypes;
 
 namespace MotorcycleRepairShop.Application.Model
 {
-    public class ServiceRequestBaseDto
+    public class ServiceRequestUserInfoDto
     {
         [Required]
         [MaxLength(11)]
@@ -17,6 +17,5 @@ namespace MotorcycleRepairShop.Application.Model
         public string Address { get; set; } = string.Empty;
         public string IssueDescripton { get; set; } = string.Empty;
 
-        public string ServiceType { get; set; } = string.Empty;
     }
 }

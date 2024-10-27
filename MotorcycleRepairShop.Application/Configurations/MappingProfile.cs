@@ -72,6 +72,8 @@ namespace MotorcycleRepairShop.Application.Configurations
 
             #region Service Request
 
+            CreateMap<ServiceRequestUserInfoDto, ServiceRequest>();
+
             CreateMap<ServiceRequest, ServiceRequestDto>()
                 .ForMember(
                     dest => dest.ServiceType, 

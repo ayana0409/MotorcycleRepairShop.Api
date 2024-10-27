@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using MotorcycleRepairShop.Application.Interfaces;
 using MotorcycleRepairShop.Application.Interfaces.Services;
@@ -6,6 +7,7 @@ using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Domain.Enums;
 using MotorcycleRepairShop.Share.Exceptions;
+using MySqlX.XDevAPI.Common;
 using Serilog;
 
 namespace MotorcycleRepairShop.Infrastructure.Services
@@ -54,59 +56,24 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         public async Task<int> CreateRemoteServiceRequest(CreateServiceRequestDto serviceRequestDto)
             => await CreateServiceRequest(serviceRequestDto, ServiceType.Remote);
 
-        public async Task<int> CreateRescueRescueRequest(CreateServiceRequestDto serviceRequestDto)
+        public async Task<int> CreateRescueServiceRequest(CreateServiceRequestDto serviceRequestDto)
             => await CreateServiceRequest(serviceRequestDto, ServiceType.Rescue);
 
-        private async Task<int> CreateServiceRequest(CreateServiceRequestDto serviceRequestDto, ServiceType type)
+        public async Task UpdateServiceRequestUserInfoById(int serviceRequestId, ServiceRequestUserInfoDto serviceRequestUserInfoDto)
         {
-            try
-            {
-                LogStart($"CreateServiceRequest {Enum.GetName(type)}");
-                await _unitOfWork.BeginTransaction();
-                var service = _mapper.Map<ServiceRequest>(serviceRequestDto);
-                service.ServiceType = type;
+            LogStart(serviceRequestId);
+            var serviceRequest = await _unitOfWork.ServiceRequestRepository
+                .GetSigleAsync(sr => sr.Id.Equals(serviceRequestId))
+                ?? throw new NotFoundException(nameof(ServiceRequest), serviceRequestId);
 
-                await _unitOfWork.ServiceRequestRepository.CreateAsync(service);
-                await _unitOfWork.SaveChangeAsync();
-                var result = service.Id;
-
-                // Add problems to service request
-                if (serviceRequestDto.Problems.Count != 0)
-                    await AddProblemsToServiceRequest(result, serviceRequestDto.Problems);
-                // Add services to service request
-                if (serviceRequestDto.Services.Count != 0)
-                    await AddServicesToServiceRequest(result, serviceRequestDto.Services);
-
-                if (serviceRequestDto.Images.Any())
-                {
-                    foreach (var image in serviceRequestDto.Images)
-                    {
-                        await _unitOfWork.ImageRepository.CreateAsync(new()
-                        {
-                            ServiceRequestId = result,
-                            Name = _cloudinaryService.UploadPhoto(image)
-                        });
-                    }
-                    await _unitOfWork.SaveChangeAsync();
-                }
-                LogEnd(result, $"CreateServiceRequest {Enum.GetName(type)}");
-                await _unitOfWork.CommitTransaction();
-                return result;
-            }
-            catch (NotFoundException)
-            {
-                await _unitOfWork.RollBackTransaction();
-                throw;
-            }
-            catch (Exception ex)
-            {
-                await _unitOfWork.RollBackTransaction();
-                LogEnd($"CreateServiceRequest Error - {ex.Message}");
-                throw;
-            }
+            var updateServiceRequest = _mapper.Map(serviceRequestUserInfoDto, serviceRequest);
+            _unitOfWork.ServiceRequestRepository.Update(updateServiceRequest);
+            await _unitOfWork.SaveChangeAsync();
+            LogEnd(serviceRequestId);
         }
 
-        public async Task<ServiceRequestItemDto> UpSertServiceToServiceRequest(int serviceRequestId, UpsSertServiceRequestItemDto serviceItemRequestDto)
+        #region ServiceRequestItem: UpSert - Delete
+        public async Task<ServiceRequestItemDto> UpSertServiceItemToServiceRequest(int serviceRequestId, UpsSertServiceRequestItemDto serviceItemRequestDto)
         {
             LogStart(serviceRequestId);
             var serviceid = serviceItemRequestDto.ServiceId;
@@ -152,6 +119,110 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             var result = _mapper.Map<ServiceRequestItemDto>(existServiceItem);
             LogEnd(serviceRequestId);
             return result;
+        }
+        public async Task DeleteServiceItemToerviceRequest(int serviceRequestId, int serviceId)
+        {
+            var logData = $"- ServiceRequestId: {serviceRequestId} - ServiceId: {serviceId}";
+            LogStart($"Delete ServiceRequestItem {logData}");
+
+            var deleteServiceItem = await _unitOfWork.ServiceRequestItemRepository
+                .GetByServiceRequestIdAndServiceId(serviceRequestId, serviceId)
+                ?? throw new NotFoundException($"{nameof(ServiceRequestItem)}: " +
+                $"{nameof(ServiceRequest)} with ID {serviceRequestId} and {nameof(Service)}", serviceId);
+            _unitOfWork.ServiceRequestItemRepository.Delete(deleteServiceItem);
+            await _unitOfWork.SaveChangeAsync();
+
+            LogEnd($"Delete ServiceRequestItem {logData}");
+        }
+        #endregion
+
+        #region Media
+
+        public async Task<IEnumerable<string>> AddImagesToServiceRequest(int serviceRequestId, IEnumerable<IFormFile> images)
+        {
+            bool serviceRequestExists = await _unitOfWork.ServiceRequestRepository
+                .AnyAsync(serviceRequestId);
+            if (!serviceRequestExists)
+            {
+                throw new NotFoundException(nameof(ServiceRequest), serviceRequestId);
+            }
+
+            LogStart(serviceRequestId);
+            List<string> result = [];
+            foreach( var image in images)
+            {
+                _logger.Information("Adding image...");
+                var imageItem = new Image()
+                {
+                    ServiceRequestId = serviceRequestId,
+                    Name = _cloudinaryService.UploadPhoto(image)
+                };
+
+                await _unitOfWork.ImageRepository.CreateAsync(imageItem);
+                result.Add(imageItem.Name);
+            }
+            await _unitOfWork.SaveChangeAsync();
+            LogEnd(serviceRequestId);
+            return result;
+        }
+
+        public async Task DeleteImagesInServiceRequest(int serviceRequestId, IEnumerable<string> imageUrls)
+        {
+            var exitsImages = await _unitOfWork.ImageRepository
+                .GetAllAsync(i => imageUrls.Contains(i.Name) && i.ServiceRequestId.Equals(serviceRequestId));
+            if (exitsImages.Any())
+            {
+                LogStart(serviceRequestId);
+                foreach (var image in exitsImages)
+                {
+                    await _cloudinaryService.DeletePhotoAsync(image.Name);
+                    _unitOfWork.ImageRepository.Delete(image);
+                }
+                await _unitOfWork.SaveChangeAsync();
+                LogEnd(serviceRequestId);
+            }
+        }
+
+        #endregion
+
+        private async Task<int> CreateServiceRequest(CreateServiceRequestDto serviceRequestDto, ServiceType type)
+        {
+            try
+            {
+                LogStart($"CreateServiceRequest {Enum.GetName(type)}");
+                await _unitOfWork.BeginTransaction();
+                var service = _mapper.Map<ServiceRequest>(serviceRequestDto);
+                service.ServiceType = type;
+
+                await _unitOfWork.ServiceRequestRepository.CreateAsync(service);
+                await _unitOfWork.SaveChangeAsync();
+                var result = service.Id;
+
+                // Add problems to service request
+                if (serviceRequestDto.Problems.Count != 0)
+                    await AddProblemsToServiceRequest(result, serviceRequestDto.Problems);
+                // Add services to service request
+                if (serviceRequestDto.Services.Count != 0)
+                    await AddServicesToServiceRequest(result, serviceRequestDto.Services);
+                // Add images
+                if (serviceRequestDto.Images.Any())
+                    await AddImagesToServiceRequest(result, serviceRequestDto.Images);
+
+                LogEnd(result, $"CreateServiceRequest {Enum.GetName(type)}");
+                await _unitOfWork.CommitTransaction();
+                return result;
+            }
+            catch (NotFoundException)
+            {
+                await _unitOfWork.RollBackTransaction();
+                throw;
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollBackTransaction();
+                LogEnd($"CreateServiceRequest Error - {ex.Message}");
+                throw;
+            }
         }
 
         private async Task AddProblemsToServiceRequest(int serviceRequestId, IEnumerable<int> problemIds)

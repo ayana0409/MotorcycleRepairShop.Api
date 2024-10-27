@@ -79,7 +79,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task DeleteVideoAsync(string videoUrl)
         {
-            string publicId = ExtractPublicIdFromUrl(videoUrl);
+            string publicId = ExtractPublicIdFromVideoUrl(videoUrl);
             var deletionParams = new DeletionParams(publicId);
             var result = await _cloudinary.DestroyAsync(deletionParams);
 
@@ -92,7 +92,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task DeletePhotoAsync(string imageUrl)
         {
-            string publicId = ExtractPublicIdFromUrl(imageUrl);
+            string publicId = ExtractPublicIdFromImageUrl(imageUrl);
             var deletionParams = new DeletionParams(publicId);
             var result = await _cloudinary.DestroyAsync(deletionParams);
 
@@ -103,7 +103,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             }
         }
 
-        private string ExtractPublicIdFromUrl(string videoUrl)
+        private string ExtractPublicIdFromVideoUrl(string videoUrl)
         {
             string pattern = _folder + @"/([^/]+)\.mp4";
             Match match = Regex.Match(videoUrl, pattern);
@@ -112,7 +112,19 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             {
                 return _folder + "/" + match.Groups[1].Value;
             }
-            throw new Exception("Invalid image/video URL format or no match found.");
+            throw new Exception("Invalid video URL format or no match found.");
+        }
+
+        private string ExtractPublicIdFromImageUrl(string imageUrl)
+        {
+            string pattern = _folder + @"/([^/]+)\.png";
+            Match match = Regex.Match(imageUrl, pattern);
+
+            if (match.Success)
+            {
+                return _folder + "/" + match.Groups[1].Value;
+            }
+            throw new Exception("Invalid image URL format or no match found.");
         }
 
     }

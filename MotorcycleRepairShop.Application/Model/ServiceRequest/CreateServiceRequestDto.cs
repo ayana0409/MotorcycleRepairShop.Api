@@ -2,7 +2,7 @@
 
 namespace MotorcycleRepairShop.Application.Model
 {
-    public class CreateServiceRequestDto : ServiceRequestBaseDto
+    public class CreateServiceRequestDto : ServiceRequestUserInfoDto
     {
         public IEnumerable<IFormFile> Videos { get; set; } = [];
         public IEnumerable<IFormFile> Images { get; set; } = [];

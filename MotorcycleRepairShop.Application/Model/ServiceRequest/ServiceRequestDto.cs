@@ -1,7 +1,8 @@
 ﻿namespace MotorcycleRepairShop.Application.Model
 {
-    public class ServiceRequestDto : ServiceRequestBaseDto
+    public class ServiceRequestDto : ServiceRequestUserInfoDto
     {
+        public string ServiceType { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public IEnumerable<string> Videos { get; set; } = [];
         public IEnumerable<string> Images { get; set; } = [];

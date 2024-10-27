@@ -4,7 +4,8 @@ namespace MotorcycleRepairShop.Application.Model
 {
     public class UpsSertServiceRequestItemDto
     {
-        public int Quantity { get; set; }
+        [Range(1, int.MaxValue)]
+        public int Quantity { get; set; } = 1;
 
         [Required]
         public int ServiceId { get; set; }

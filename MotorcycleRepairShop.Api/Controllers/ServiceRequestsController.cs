@@ -29,10 +29,41 @@ namespace MotorcycleRepairShop.Api.Controllers
 
         [HttpPost("rescue")]
         public async Task<ActionResult<int>> CreateRescueRequestService(CreateServiceRequestDto serviceRequestDto)
-            => Ok(await _serviceRequestService.CreateRescueRescueRequest(serviceRequestDto));
+            => Ok(await _serviceRequestService.CreateRescueServiceRequest(serviceRequestDto));
 
+        [HttpPatch("{serviceRequestId}")]
+        public async Task<ActionResult> UpdateServiceRequestUserInfo(int serviceRequestId,ServiceRequestUserInfoDto serviceRequestDto)
+        {
+            await _serviceRequestService.UpdateServiceRequestUserInfoById(serviceRequestId, serviceRequestDto);
+            return NoContent();
+        }
+
+        #region Media: Add - Delete
+
+        [HttpPost("image/{id}")]
+        public async Task<ActionResult<IEnumerable<string>>> AddImagesToServiceRequest(int id, IEnumerable<IFormFile> images)
+            => Ok(await _serviceRequestService.AddImagesToServiceRequest(id, images));
+
+        [HttpDelete("image/{id}")]
+        public async Task<ActionResult> DeleteImageInServiceRequest(int id, IEnumerable<string> imageUrls)
+        {
+            await _serviceRequestService.DeleteImagesInServiceRequest(id, imageUrls);
+            return NoContent();
+        }
+
+        #endregion
+
+        #region ServiceItem: UpSert - Delete
         [HttpPut("service/{id}")]
         public async Task<ActionResult<ServiceRequestItemDto>> UpSertServiceRequestItem(int id, UpsSertServiceRequestItemDto serviceRequestItemDto)
-            => Ok(await _serviceRequestService.UpSertServiceToServiceRequest(id, serviceRequestItemDto));
+            => Ok(await _serviceRequestService.UpSertServiceItemToServiceRequest(id, serviceRequestItemDto));
+
+        [HttpDelete("{serviceRequestId}/service/{serviceId}")]
+        public async Task<ActionResult> DeleteServiceIten(int serviceRequestId, int serviceId)
+        {
+            await _serviceRequestService.DeleteServiceItemToerviceRequest(serviceRequestId, serviceId);
+            return NoContent();
+        }
+        #endregion
     }
 }
