@@ -13,6 +13,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         private IServiceRepository? _serviceRepository;
         private IBrandRepository? _brandRepository;
         private IImageRepository? _imageRepository;
+        private IVideoRepository? _videoRepository;
         private IVehicleRepository? _vehicleRepository;
         private IPartRepository? _partRepository;
         private IProblemRepository? _problemRepository;
@@ -30,6 +31,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         public IServiceRepository ServiceRepository => _serviceRepository ??= new ServiceRepository(_applicationDbContext);
         public IBrandRepository BrandRepository => _brandRepository ??= new BrandRepository(_applicationDbContext);
         public IImageRepository ImageRepository => _imageRepository ??= new ImageRepository(_applicationDbContext);
+        public IVideoRepository VideoRepository => _videoRepository ??= new VideoRepository(_applicationDbContext);
         public IVehicleRepository VehicleRepository => _vehicleRepository ??= new VehicleRepository(_applicationDbContext);
         public IPartRepository PartRepository => _partRepository ??= new PartRepository(_applicationDbContext);
         public IProblemRepository ProblemRepository => _problemRepository ??= new ProblemRepository(_applicationDbContext);

@@ -40,14 +40,27 @@ namespace MotorcycleRepairShop.Api.Controllers
 
         #region Media: Add - Delete
 
-        [HttpPost("image/{id}")]
+        [HttpPost("images/{id}")]
         public async Task<ActionResult<IEnumerable<string>>> AddImagesToServiceRequest(int id, IEnumerable<IFormFile> images)
-            => Ok(await _serviceRequestService.AddImagesToServiceRequest(id, images));
+            => CreatedAtAction(nameof(AddImagesToServiceRequest), 
+                await _serviceRequestService.AddMediaToServiceRequest(id, images, Domain.Enums.MediaType.Image));
 
-        [HttpDelete("image/{id}")]
+        [HttpPost("videos/{id}")]
+        public async Task<ActionResult<IEnumerable<string>>> AddVideosToServiceRequest(int id, IEnumerable<IFormFile> videos)
+            => CreatedAtAction(nameof(AddVideosToServiceRequest), 
+                await _serviceRequestService.AddMediaToServiceRequest(id, videos, Domain.Enums.MediaType.Video));
+
+        [HttpDelete("images/{id}")]
         public async Task<ActionResult> DeleteImageInServiceRequest(int id, IEnumerable<string> imageUrls)
         {
-            await _serviceRequestService.DeleteImagesInServiceRequest(id, imageUrls);
+            await _serviceRequestService.DeleteMediaInServiceRequest(id, imageUrls, Domain.Enums.MediaType.Image);
+            return NoContent();
+        }
+
+        [HttpDelete("videos/{id}")]
+        public async Task<ActionResult> DeleteVideosInServiceRequest(int id, IEnumerable<string> videoUrls)
+        {
+            await _serviceRequestService.DeleteMediaInServiceRequest(id, videoUrls, Domain.Enums.MediaType.Video);
             return NoContent();
         }
 

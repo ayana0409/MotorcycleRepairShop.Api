@@ -14,6 +14,7 @@ namespace MotorcycleRepairShop.Application.Interfaces
         IPartInventoryRepository PartInventoryRepository { get; }
         IServiceRequestRepository ServiceRequestRepository { get; }
         IServiceRequestItemRepository ServiceRequestItemRepository { get; }
+        IVideoRepository VideoRepository { get; }
 
         Task BeginTransaction();
         Task CommitTransaction();

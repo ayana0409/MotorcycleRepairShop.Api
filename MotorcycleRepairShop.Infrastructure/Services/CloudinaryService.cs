@@ -81,12 +81,12 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         {
             string publicId = ExtractPublicIdFromVideoUrl(videoUrl);
             var deletionParams = new DeletionParams(publicId);
+            deletionParams.ResourceType = ResourceType.Video;
             var result = await _cloudinary.DestroyAsync(deletionParams);
 
-            if (result.Result != "ok")
+            if (!string.Equals(result.Result, "ok", StringComparison.OrdinalIgnoreCase))
             {
-                var errorMessage = result.Error?.Message ?? "Unknown error occurred.";
-                throw new Exception($"Failed to delete video: {errorMessage}");
+                throw new Exception($"Failed to delete video: {result.StatusCode} - {result.Error?.Message}");
             }
         }
 

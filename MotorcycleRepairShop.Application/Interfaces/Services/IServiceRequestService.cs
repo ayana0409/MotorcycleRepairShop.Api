@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using MotorcycleRepairShop.Application.Model;
+using MotorcycleRepairShop.Domain.Enums;
 
 namespace MotorcycleRepairShop.Application.Interfaces.Services
 {
@@ -12,7 +13,7 @@ namespace MotorcycleRepairShop.Application.Interfaces.Services
         Task<ServiceRequestItemDto> UpSertServiceItemToServiceRequest(int serviceRequestId, UpsSertServiceRequestItemDto serviceRequestDto);
         Task DeleteServiceItemToerviceRequest(int serviceRequestId, int serviceId);
         Task UpdateServiceRequestUserInfoById(int serviceRequestId, ServiceRequestUserInfoDto serviceRequestUserInfoDto);
-        Task<IEnumerable<string>> AddImagesToServiceRequest(int serviceRequestId, IEnumerable<IFormFile> images);
-        Task DeleteImagesInServiceRequest(int serviceRequestId, IEnumerable<string> imageUrls);
+        Task<IEnumerable<string>> AddMediaToServiceRequest(int serviceRequestId, IEnumerable<IFormFile> mediaData, MediaType type);
+        Task DeleteMediaInServiceRequest(int serviceRequestId, IEnumerable<string> mediaUrls, MediaType type);
     }
 }

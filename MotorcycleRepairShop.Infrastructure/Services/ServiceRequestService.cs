@@ -7,8 +7,8 @@ using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Domain.Enums;
 using MotorcycleRepairShop.Share.Exceptions;
-using MySqlX.XDevAPI.Common;
 using Serilog;
+using Image = MotorcycleRepairShop.Domain.Entities.Image;
 
 namespace MotorcycleRepairShop.Infrastructure.Services
 {
@@ -138,7 +138,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         #region Media
 
-        public async Task<IEnumerable<string>> AddImagesToServiceRequest(int serviceRequestId, IEnumerable<IFormFile> images)
+        public async Task<IEnumerable<string>> AddMediaToServiceRequest(int serviceRequestId, IEnumerable<IFormFile> mediaData, MediaType type)
         {
             bool serviceRequestExists = await _unitOfWork.ServiceRequestRepository
                 .AnyAsync(serviceRequestId);
@@ -149,37 +149,74 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
             LogStart(serviceRequestId);
             List<string> result = [];
-            foreach( var image in images)
+            if (type == MediaType.Image)
             {
-                _logger.Information("Adding image...");
-                var imageItem = new Image()
+                foreach (var image in mediaData)
                 {
-                    ServiceRequestId = serviceRequestId,
-                    Name = _cloudinaryService.UploadPhoto(image)
-                };
-
-                await _unitOfWork.ImageRepository.CreateAsync(imageItem);
-                result.Add(imageItem.Name);
+                    _logger.Information("Adding image...");
+                    var mediaItem = new Image()
+                    {
+                        ServiceRequestId = serviceRequestId,
+                        Name = _cloudinaryService.UploadPhoto(image)
+                    };
+                    await _unitOfWork.ImageRepository.CreateAsync(mediaItem);
+                    result.Add(mediaItem.Name);
+                }
             }
+            else
+            {
+                foreach (var video in mediaData)
+                {
+                    _logger.Information("Adding video...");
+                    var mediaItem = new Video()
+                    {
+                        ServiceRequestId = serviceRequestId,
+                        Name = _cloudinaryService.UploadVideo(video)
+                    };
+                    await _unitOfWork.VideoRepository.CreateAsync(mediaItem);
+                    result.Add(mediaItem.Name);
+                }
+            }
+            
             await _unitOfWork.SaveChangeAsync();
             LogEnd(serviceRequestId);
             return result;
         }
 
-        public async Task DeleteImagesInServiceRequest(int serviceRequestId, IEnumerable<string> imageUrls)
+        public async Task DeleteMediaInServiceRequest(int serviceRequestId, IEnumerable<string> mediaUrls, MediaType type)
         {
-            var exitsImages = await _unitOfWork.ImageRepository
-                .GetAllAsync(i => imageUrls.Contains(i.Name) && i.ServiceRequestId.Equals(serviceRequestId));
-            if (exitsImages.Any())
+            
+            if (type == MediaType.Image)
             {
-                LogStart(serviceRequestId);
-                foreach (var image in exitsImages)
+                var exitsImages = await _unitOfWork.ImageRepository
+                .GetAllAsync(i => mediaUrls.Contains(i.Name) && i.ServiceRequestId.Equals(serviceRequestId));
+                if (exitsImages.Any())
                 {
-                    await _cloudinaryService.DeletePhotoAsync(image.Name);
-                    _unitOfWork.ImageRepository.Delete(image);
+                    LogStart(serviceRequestId, "DeleteImagesInServiceRequest");
+                    foreach (var image in exitsImages)
+                    {
+                        await _cloudinaryService.DeletePhotoAsync(image.Name);
+                        _unitOfWork.ImageRepository.Delete(image);
+                    }
+                    await _unitOfWork.SaveChangeAsync();
+                    LogEnd(serviceRequestId, "DeleteImagesInServiceRequest");
                 }
-                await _unitOfWork.SaveChangeAsync();
-                LogEnd(serviceRequestId);
+            }
+            else
+            {
+                var exitsVideos = await _unitOfWork.VideoRepository
+                .GetAllAsync(i => mediaUrls.Contains(i.Name) && i.ServiceRequestId.Equals(serviceRequestId));
+                if (exitsVideos.Any())
+                {
+                    LogStart(serviceRequestId, "DeleteVideosInServiceRequest");
+                    foreach (var video in exitsVideos)
+                    {
+                        await _cloudinaryService.DeleteVideoAsync(video.Name);
+                        _unitOfWork.VideoRepository.Delete(video);
+                    }
+                    await _unitOfWork.SaveChangeAsync();
+                    LogEnd(serviceRequestId, "DeleteVideosInServiceRequest");
+                }
             }
         }
 
@@ -206,7 +243,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                     await AddServicesToServiceRequest(result, serviceRequestDto.Services);
                 // Add images
                 if (serviceRequestDto.Images.Any())
-                    await AddImagesToServiceRequest(result, serviceRequestDto.Images);
+                    await AddMediaToServiceRequest(result, serviceRequestDto.Images, MediaType.Image);
 
                 LogEnd(result, $"CreateServiceRequest {Enum.GetName(type)}");
                 await _unitOfWork.CommitTransaction();
