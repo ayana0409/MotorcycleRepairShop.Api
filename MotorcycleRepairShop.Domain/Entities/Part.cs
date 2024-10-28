@@ -23,5 +23,6 @@ namespace MotorcycleRepairShop.Domain.Entities
         public Brand? Brand { get; set; }
 
         public ICollection<PartInventory> Inventories { get; set; } = [];
+        public ICollection<ServiceRequestPart> ServiceRequests { get; set; } = [];
     }
 }

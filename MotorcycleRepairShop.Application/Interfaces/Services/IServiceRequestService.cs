@@ -10,10 +10,12 @@ namespace MotorcycleRepairShop.Application.Interfaces.Services
         Task<int> CreateDeirecServiceRequest(CreateServiceRequestDto serviceRequestDto);
         Task<int> CreateRemoteServiceRequest(CreateServiceRequestDto serviceRequestDto);
         Task<ServiceRequestDto> GetServiceRequestById(int id);
-        Task<ServiceRequestItemDto> UpSertServiceItemToServiceRequest(int serviceRequestId, UpsSertServiceRequestItemDto serviceRequestDto);
-        Task DeleteServiceItemToerviceRequest(int serviceRequestId, int serviceId);
+        Task<ServiceRequestItemDto> UpSertServiceItemToServiceRequest(int serviceRequestId, UpSertServiceRequestItemDto serviceRequestDto);
+        Task DeleteServiceItemToServiceRequest(int serviceRequestId, int serviceId);
         Task UpdateServiceRequestUserInfoById(int serviceRequestId, ServiceRequestUserInfoDto serviceRequestUserInfoDto);
         Task<IEnumerable<string>> AddMediaToServiceRequest(int serviceRequestId, IEnumerable<IFormFile> mediaData, MediaType type);
         Task DeleteMediaInServiceRequest(int serviceRequestId, IEnumerable<string> mediaUrls, MediaType type);
+        Task<ServiceRequestPartDto> UpSertServicePartToServiceRequest(int serviceRequestId, UpSertServiceRequestPartDto servicePartRequestDto);
+        Task DeleteServicePartInServiceRequest(int serviceRequestId, int partId);
     }
 }

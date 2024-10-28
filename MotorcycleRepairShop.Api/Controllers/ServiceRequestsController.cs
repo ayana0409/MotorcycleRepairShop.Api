@@ -67,14 +67,27 @@ namespace MotorcycleRepairShop.Api.Controllers
         #endregion
 
         #region ServiceItem: UpSert - Delete
-        [HttpPut("service/{id}")]
-        public async Task<ActionResult<ServiceRequestItemDto>> UpSertServiceRequestItem(int id, UpsSertServiceRequestItemDto serviceRequestItemDto)
+        [HttpPut("services/{id}")]
+        public async Task<ActionResult<ServiceRequestItemDto>> UpSertServiceRequestItem(int id, UpSertServiceRequestItemDto serviceRequestItemDto)
             => Ok(await _serviceRequestService.UpSertServiceItemToServiceRequest(id, serviceRequestItemDto));
 
-        [HttpDelete("{serviceRequestId}/service/{serviceId}")]
-        public async Task<ActionResult> DeleteServiceIten(int serviceRequestId, int serviceId)
+        [HttpDelete("{serviceRequestId}/services/{serviceId}")]
+        public async Task<ActionResult> DeleteServiceItem(int serviceRequestId, int serviceId)
         {
-            await _serviceRequestService.DeleteServiceItemToerviceRequest(serviceRequestId, serviceId);
+            await _serviceRequestService.DeleteServiceItemToServiceRequest(serviceRequestId, serviceId);
+            return NoContent();
+        }
+        #endregion
+
+        #region ServicePart: UpSert - Delete
+        [HttpPut("parts/{id}")]
+        public async Task<ActionResult<ServiceRequestPartDto>> UpSertServiceRequestPart(int id, UpSertServiceRequestPartDto serviceRequestPartDto)
+            => Ok(await _serviceRequestService.UpSertServicePartToServiceRequest(id, serviceRequestPartDto));
+
+        [HttpDelete("{serviceRequestId}/parts/{partId}")]
+        public async Task<ActionResult> DeleteServicePart(int serviceRequestId, int partId)
+        {
+            await _serviceRequestService.DeleteServicePartInServiceRequest(serviceRequestId, partId);
             return NoContent();
         }
         #endregion

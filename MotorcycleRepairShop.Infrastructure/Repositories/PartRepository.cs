@@ -1,4 +1,5 @@
-﻿using MotorcycleRepairShop.Application.Interfaces.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using MotorcycleRepairShop.Application.Interfaces.Repositories;
 using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Infrastructure.Persistence;
 
@@ -6,8 +7,11 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
 {
     public class PartRepository : BaseRepository<Part>, IPartRepository
     {
+        private readonly ApplicationDbContext _context;
         public PartRepository(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
-        {}
+        {
+            _context = applicationDbContext;
+        }
 
         public async Task<(IEnumerable<Part>, int)> GetPanigationAsync(int pageIndex, int pageSize, string keyword)
         {
@@ -34,5 +38,11 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
 
             return (data, total);
         }
+
+        public async Task<IEnumerable<Part>> GetByServiceRequestId(int serviceRequestId)
+            => await _context.Parts
+                .Include(x => x.ServiceRequests)
+                .Where(s => s.ServiceRequests.Any(sp => sp.ServiceRequestId.Equals(serviceRequestId)))
+                .ToListAsync();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace MotorcycleRepairShop.Application.Model
 {
-    public class UpsSertServiceRequestItemDto
+    public class UpSertServiceRequestItemDto
     {
         [Range(1, int.MaxValue)]
         public int Quantity { get; set; } = 1;

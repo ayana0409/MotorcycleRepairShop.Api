@@ -28,6 +28,8 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
         //public DbSet<ServiceRequest> ServiceRequests { get; set; }
         public DbSet<ServiceRequestProblem> ServiceRequestProblems { get; set; }
         public DbSet<ServiceRequestItem> ServiceRequestItems { get; set; }
+        public DbSet<ServiceRequestPart> ServiceRequestPart { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -67,6 +69,9 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
 
             builder.Entity<ServiceRequestItem>()
                 .HasKey(sri => new {sri.ServiceId, sri.ServiceRequestId});
+
+            builder.Entity<ServiceRequestPart>()
+                .HasKey(srp => new { srp.PartId, srp.ServiceRequestId });
         }
     }
 }

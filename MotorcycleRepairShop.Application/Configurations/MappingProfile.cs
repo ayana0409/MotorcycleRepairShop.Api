@@ -92,6 +92,9 @@ namespace MotorcycleRepairShop.Application.Configurations
                     otp => otp.Ignore())
                 .ForMember(
                     dest => dest.Services,
+                    opt => opt.Ignore())
+                .ForMember(
+                    dest => dest.Parts,
                     opt => opt.Ignore());
 
             CreateMap<CreateServiceRequestDto, ServiceRequest>()
@@ -112,8 +115,15 @@ namespace MotorcycleRepairShop.Application.Configurations
 
             #region Service Request Item
 
-            CreateMap<UpsSertServiceRequestItemDto, ServiceRequestItem>();
+            CreateMap<UpSertServiceRequestItemDto, ServiceRequestItem>();
             CreateMap<ServiceRequestItem, ServiceRequestItemDto>();
+
+            #endregion
+
+            #region Service Request Part
+
+            CreateMap<UpSertServiceRequestPartDto, ServiceRequestPart>();
+            CreateMap<ServiceRequestPart, ServiceRequestPartDto>();
 
             #endregion
         }

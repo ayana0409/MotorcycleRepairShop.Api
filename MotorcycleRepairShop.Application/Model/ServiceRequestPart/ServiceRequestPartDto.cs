@@ -1,6 +1,6 @@
 ﻿namespace MotorcycleRepairShop.Application.Model
 {
-    public class ServiceRequestItemDto : UpSertServiceRequestItemDto
+    public class ServiceRequestPartDto : UpSertServiceRequestPartDto
     {
         public decimal Price { get; set; }
 

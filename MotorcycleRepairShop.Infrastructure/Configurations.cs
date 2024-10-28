@@ -28,6 +28,7 @@ namespace MotorcycleRepairShop.Infrastructure
             services.AddTransient<IVideoRepository, VideoRepository>();
             services.AddTransient<IServiceRequestRepository, ServiceRequestRepository>();
             services.AddTransient<IServiceRequestItemRepository, ServiceRequestItemRepository>();
+            services.AddTransient<IServiceRequestPartRepository, ServiceRequestPartRepository>();
 
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IServiceService, ServiceService>();

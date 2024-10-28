@@ -20,6 +20,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         private IPartInventoryRepository _partInventoryRepository;
         private IServiceRequestRepository _serviceRequestRepository;
         private IServiceRequestItemRepository _serviceRequestItemRepository;
+        private IServiceRequestPartRepository _serviceRequestPartRepository;
 
         public UnitOfWork(ApplicationDbContext applicationDbContext)
         {
@@ -38,6 +39,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         public IPartInventoryRepository PartInventoryRepository => _partInventoryRepository ??= new PartInventoryRepository(_applicationDbContext);
         public IServiceRequestRepository ServiceRequestRepository => _serviceRequestRepository ??= new ServiceRequestRepository(_applicationDbContext);
         public IServiceRequestItemRepository ServiceRequestItemRepository => _serviceRequestItemRepository ??= new ServiceRequestItemRepository(_applicationDbContext);
+        public IServiceRequestPartRepository ServiceRequestPartRepository => _serviceRequestPartRepository ??= new ServiceRequestPartRepository(_applicationDbContext);
 
         #region Transaction
         public async Task BeginTransaction()

@@ -30,9 +30,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             var service = await _unitOfWork.Table<ServiceRequest>()
                 .Include(r => r.Images)
                 .Include(r => r.Videos)
-                .Include(r => r.Problems)
                 .Include(r => r.Status)
-                .Include(r => r.Services)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(r => r.Id.Equals(id))
                 ?? throw new NotFoundException(nameof(ServiceRequest), id);
@@ -45,6 +43,10 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             var services = await _unitOfWork.ServiceRepository
                 .GetByServiceRequestId(id);
             result.Services = services.Select(p => p.Name).ToList();
+
+            var parts = await _unitOfWork.PartRepository
+                .GetByServiceRequestId(id);
+            result.Parts = parts.Select(p => p.Name).ToList();
 
             LogEnd(id);
             return result;
@@ -73,18 +75,13 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         }
 
         #region ServiceRequestItem: UpSert - Delete
-        public async Task<ServiceRequestItemDto> UpSertServiceItemToServiceRequest(int serviceRequestId, UpsSertServiceRequestItemDto serviceItemRequestDto)
+        public async Task<ServiceRequestItemDto> UpSertServiceItemToServiceRequest(int serviceRequestId, UpSertServiceRequestItemDto serviceItemRequestDto)
         {
             LogStart(serviceRequestId);
             var serviceid = serviceItemRequestDto.ServiceId;
             var logData = $"- ServiceRequestId: {serviceRequestId} - ServiceId: {serviceid}";
 
-            bool serviceRequestExists = await _unitOfWork.ServiceRequestRepository
-                .AnyAsync(serviceRequestId);
-            if (!serviceRequestExists)
-            {
-                throw new NotFoundException(nameof(ServiceRequest), serviceRequestId);
-            }
+            await CheckExitsServiceRequest(serviceRequestId);
 
             var existService = await _unitOfWork.ServiceRepository
                 .GetSigleAsync(s => s.Id.Equals(serviceid))
@@ -120,7 +117,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             LogEnd(serviceRequestId);
             return result;
         }
-        public async Task DeleteServiceItemToerviceRequest(int serviceRequestId, int serviceId)
+        public async Task DeleteServiceItemToServiceRequest(int serviceRequestId, int serviceId)
         {
             var logData = $"- ServiceRequestId: {serviceRequestId} - ServiceId: {serviceId}";
             LogStart($"Delete ServiceRequestItem {logData}");
@@ -133,6 +130,68 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             await _unitOfWork.SaveChangeAsync();
 
             LogEnd($"Delete ServiceRequestItem {logData}");
+        }
+        #endregion
+
+        # region ServiceRequestPart: UpSert - Delete
+
+        public async Task<ServiceRequestPartDto> UpSertServicePartToServiceRequest(int serviceRequestId, UpSertServiceRequestPartDto servicePartRequestDto)
+        {
+            LogStart(serviceRequestId);
+            var partId = servicePartRequestDto.PartId;
+            var logData = $"- ServiceRequestId: {serviceRequestId} - PartId: {partId}";
+
+            await CheckExitsServiceRequest(serviceRequestId);
+
+            var existPart = await _unitOfWork.PartRepository
+                .GetSigleAsync(s => s.Id.Equals(partId))
+                ?? throw new NotFoundException(nameof(Part), partId);
+
+            ServiceRequestPart? existPartItem = await _unitOfWork.ServiceRequestPartRepository
+                .GetByServiceRequestIdAndPartId(serviceRequestId, partId);
+
+            if (existPartItem == null)
+            {
+                LogStart($"Create ServiceRequestPart {logData}");
+                existPartItem = new()
+                {
+                    PartId = partId,
+                    ServiceRequestId = serviceRequestId,
+                    Price = existPart.Price,
+                    Quantity = servicePartRequestDto.Quantity,
+                    WarrantyTo = existPart.WarrantyPeriod != 0 ? DateTime.UtcNow.AddMonths(existPart.WarrantyPeriod) : null,
+                };
+                await _unitOfWork.ServiceRequestPartRepository.CreateAsync(existPartItem);
+                LogEnd($"Create ServiceRequestPart {logData}");
+            }
+            else
+            {
+                LogStart($"Update ServiceRequestPart {logData}");
+                _mapper.Map(servicePartRequestDto, existPartItem);
+                _unitOfWork.ServiceRequestPartRepository
+                    .Update(existPartItem);
+                LogEnd($"Update ServiceRequestPart {logData}");
+            }
+            await _unitOfWork.SaveChangeAsync();
+
+            var result = _mapper.Map<ServiceRequestPartDto>(existPartItem);
+            LogEnd(serviceRequestId);
+            return result;
+        }
+
+        public async Task DeleteServicePartInServiceRequest(int serviceRequestId, int partId)
+        {
+            var logData = $"- ServiceRequestId: {serviceRequestId} - PartId: {partId}";
+            LogStart($"Delete ServiceRequestPart {logData}");
+
+            var deletePartItem = await _unitOfWork.ServiceRequestPartRepository
+                .GetByServiceRequestIdAndPartId(serviceRequestId, partId)
+                ?? throw new NotFoundException($"{nameof(ServiceRequestPart)}: " +
+                $"{nameof(ServiceRequest)} with ID {serviceRequestId} and {nameof(Part)}", partId);
+            _unitOfWork.ServiceRequestPartRepository.Delete(deletePartItem);
+            await _unitOfWork.SaveChangeAsync();
+
+            LogEnd($"Delete ServiceRequestPart {logData}");
         }
         #endregion
 
@@ -289,6 +348,16 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             await _unitOfWork.Table<ServiceRequestItem>()
                 .AddRangeAsync(services);
             await _unitOfWork.SaveChangeAsync();
+        }
+
+        private async Task CheckExitsServiceRequest(int serviceRequestId)
+        {
+            bool serviceRequestExists = await _unitOfWork.ServiceRequestRepository
+                .AnyAsync(serviceRequestId);
+            if (!serviceRequestExists)
+            {
+                throw new NotFoundException(nameof(ServiceRequest), serviceRequestId);
+            }
         }
     }
 }

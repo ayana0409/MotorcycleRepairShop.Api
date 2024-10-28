@@ -8,5 +8,6 @@
         public IEnumerable<string> Images { get; set; } = [];
         public IEnumerable<string> Problems { get; set; } = [];
         public IEnumerable<string> Services { get; set; } = [];
+        public IEnumerable<string> Parts { get; set; } = [];
     }
 }
