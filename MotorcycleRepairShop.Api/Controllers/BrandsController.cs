@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
-using MotorcycleRepairShop.Application.Model.Service;
-using MotorcycleRepairShop.Domain.Entities;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
@@ -17,6 +14,10 @@ namespace MotorcycleRepairShop.Api.Controllers
         {
             _brandService = brandService;
         }
+
+        [HttpGet("dropdown")]
+        public async Task<ActionResult<IEnumerable<BrandTableDto>>> GetForDropDownList()
+            => Ok(await _brandService.GetBrandForDropDownList());
 
         [HttpGet("pagination")]
         public async Task<ActionResult<TableResponse<BrandTableDto>>> GetPagination(

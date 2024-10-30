@@ -18,7 +18,19 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+        public async Task<IEnumerable<BrandTableDto>> GetBrandForDropDownList()
+        {
+            var existList = await _unitOfWork.BrandRepository.GetAllAsync();
 
+            List<BrandTableDto> result = [];
+
+            foreach (var item in existList)
+            {
+                result.Add(_mapper.Map<BrandTableDto>(item));
+            }
+
+            return result;
+        }
         public async Task<TableResponse<BrandTableDto>> GetBrandPagination(TableRequest request)
         {
             LogStart();
