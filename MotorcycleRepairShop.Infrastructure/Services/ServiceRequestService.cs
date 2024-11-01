@@ -7,6 +7,7 @@ using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Domain.Enums;
 using MotorcycleRepairShop.Share.Exceptions;
+using MotorcycleRepairShop.Share.Extensions;
 using Serilog;
 using Image = MotorcycleRepairShop.Domain.Entities.Image;
 
@@ -72,6 +73,19 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             _unitOfWork.ServiceRequestRepository.Update(updateServiceRequest);
             await _unitOfWork.SaveChangeAsync();
             LogEnd(serviceRequestId);
+        }
+
+        public async Task UpdateServiceRequestStatus(int serviceRequestId, StatusEnum status)
+        {
+            var serviceRequest = await _unitOfWork.ServiceRequestRepository
+                .GetSigleAsync(sr => sr.Id.Equals(serviceRequestId))
+                ?? throw new NotFoundException(nameof(ServiceRequest), serviceRequestId);
+
+            serviceRequest.StatusId = (int)status;
+            _unitOfWork.ServiceRequestRepository
+                .Update(serviceRequest);
+            await _unitOfWork.SaveChangeAsync();
+            _logger.Information($"UpdateServiceRequestStatus - Id: {serviceRequestId} - Status: {Enum.GetName(status)}");
         }
 
         #region ServiceRequestItem: UpSert - Delete
