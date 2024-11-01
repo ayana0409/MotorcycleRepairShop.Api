@@ -80,7 +80,7 @@ namespace MotorcycleRepairShop.Application.Configurations
                     opt => opt.MapFrom(src => src.ServiceType.GetDisplayName()))
                 .ForMember(
                     dest => dest.Status,
-                    opt => opt.MapFrom(src => Enum.GetName(typeof(StatusEnum), src.StatusId)))
+                    opt => opt.MapFrom(src => ((StatusEnum)src.StatusId).GetDisplayName()))
                 .ForMember(
                     dest => dest.Images,
                     opt => opt.MapFrom(src => src.Images.Select(i => i.Name).ToList()))

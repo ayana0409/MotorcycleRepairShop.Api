@@ -85,7 +85,7 @@ namespace MotorcycleRepairShop.Api.Controllers
         /// - 5 = Hoàn thành
         /// - 6 = Hủy
         /// </remarks>
-        [HttpPut("status/{id}")]
+        [HttpPatch("status/{id}")]
         public async Task<ActionResult> UpdateServiceRequestStatus(int id, StatusEnum status)
         {
             await _serviceRequestService.UpdateServiceRequestStatus(id, status);
