@@ -21,6 +21,10 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         public async Task<IEnumerable<PartInventoryDto>> GetAvailableInventoriesByPartId(int partId)
         {
             LogStart(partId);
+            var part = await _unitOfWork.PartInventoryRepository
+                .GetSigleAsync(p => p.PartId.Equals(partId))
+                ?? throw new NotFoundException(nameof(Part), partId);
+
             var inventories = await _unitOfWork.PartInventoryRepository
                 .GetAllAsync(i => i.PartId.Equals(partId) && i.QuantityInStock > 0);
 

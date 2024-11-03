@@ -14,7 +14,9 @@ namespace MotorcycleRepairShop.Application.Configurations
                 context.Result = new NotFoundObjectResult(new { context.Exception.Message });
                 context.ExceptionHandled = true;
             }
-            else if (context.Exception is ArgumentException)
+            else if (context.Exception is ArgumentException 
+                || context.Exception is InvalidSignatureException
+                || context.Exception is PaymentFailedException)
             {
                 context.Result = new BadRequestObjectResult(new { context.Exception.Message });
                 context.ExceptionHandled = true;

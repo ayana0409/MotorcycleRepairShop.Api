@@ -24,6 +24,8 @@ try
     builder.Services.AddDependencyInjection();
     builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+    builder.Services.AddVNPayConfiguration(builder.Configuration);
+
     builder.Services.AddControllers(options =>
     {
         options.Filters.Add<ExceptionFilter>();

@@ -19,10 +19,20 @@ namespace MotorcycleRepairShop.Api.Controllers
         public async Task<ActionResult<List<PartInventoryDto>>> GetAvailableInventories(int partId)
             => Ok(await _partInventoryService.GetAvailableInventoriesByPartId(partId));
 
+        /// <summary>
+        /// Nhập hàng cho 1 linh kiện
+        /// </summary>
+        /// <param name="partInventoryDto">Thông tin nhập hàng</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<int>> CreatePartInventory(PartInventoryDto partInventoryDto)
             => Ok(await _partInventoryService.CreatePartInventory(partInventoryDto));
 
+        /// <summary>
+        /// Nhập hàng cho nhiều linh kiện cùng lúc
+        /// </summary>
+        /// <param name="partInventoryDtos">Danh sách các thông tin nhập hàng</param>
+        /// <returns></returns>
         [HttpPost("multiple")]
         public async Task<ActionResult<List<int>>> CreateMultipleInventories(List<PartInventoryDto> partInventoryDtos)
             => Ok(await _partInventoryService.CreatePartInventories(partInventoryDtos));

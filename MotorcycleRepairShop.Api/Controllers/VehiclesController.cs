@@ -17,7 +17,7 @@ namespace MotorcycleRepairShop.Api.Controllers
             _vehicleService = vehicleService;
         }
         [HttpGet("pagination")]
-        public async Task<ActionResult<TableResponse<ServiceTableDto>>> GetPagination(
+        public async Task<ActionResult<TableResponse<VehicleTableDto>>> GetPagination(
             [FromQuery] int pageIndex = 0,
             [FromQuery] int pageSize = 5,
             [FromQuery] string keyword = "")
