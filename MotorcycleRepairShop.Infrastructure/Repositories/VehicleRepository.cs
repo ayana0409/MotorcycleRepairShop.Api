@@ -17,6 +17,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         {
             var query = await _applicationDbContext.Set<Vehicle>()
                 .Include(v => v.Images)
+                .Include(v => v.Brand)
                 .ToListAsync();
 
             if (!string.IsNullOrEmpty(keyword))
