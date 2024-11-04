@@ -30,6 +30,7 @@ namespace MotorcycleRepairShop.Domain.Entities
         public virtual ICollection<ServiceRequestProblem> Problems { get; set; } = [];
         public virtual ICollection<ServiceRequestItem> Services { get; set; } = [];
         public virtual ICollection<ServiceRequestPart> Parts { get; set; } = [];
+        public virtual ICollection<Payment> Payments { get; set; } = [];
 
     }
 }

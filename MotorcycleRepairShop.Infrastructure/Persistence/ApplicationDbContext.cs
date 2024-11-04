@@ -24,6 +24,7 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
         public DbSet<Problem> Problems { get; set; }
         public DbSet<PartInventory> Inventories { get; set; }
         public DbSet<Video> Videos { get; set; }
+        public DbSet<Payment> Payment { get; set; }
 
         //public DbSet<ServiceRequest> ServiceRequests { get; set; }
         public DbSet<ServiceRequestProblem> ServiceRequestProblems { get; set; }
@@ -72,6 +73,10 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
 
             builder.Entity<ServiceRequestPart>()
                 .HasKey(srp => new { srp.PartId, srp.ServiceRequestId });
+
+            builder.Entity<Payment>()
+                .Property(p => p.PaymentMethod)
+                .HasConversion<string>();
         }
     }
 }
