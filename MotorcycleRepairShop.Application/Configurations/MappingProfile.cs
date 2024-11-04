@@ -16,7 +16,7 @@ namespace MotorcycleRepairShop.Application.Configurations
                 .ForMember(dest => dest.UserRoles, opt => opt.Ignore());
             CreateMap<ApplicationUser, CreateAccountDto>()
                 .ForMember(
-                    dest => dest.UserRoles, 
+                    dest => dest.UserRoles,
                     opt => opt.MapFrom(src => src.UserRoles.Select(ur => ur.RoleId).ToList()));
 
             #region Service
@@ -46,7 +46,7 @@ namespace MotorcycleRepairShop.Application.Configurations
                 .ForMember(dest => dest.Images, opts => opts.Ignore());
             CreateMap<Vehicle, VehicleTableDto>()
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Select(i => i.Name).ToList()))
-                .ForMember(dest => dest.BrandName, opt => opt.MapFrom(src => src.Brand.Name ));
+                .ForMember(dest => dest.BrandName, opt => opt.MapFrom(src => src.Brand.Name));
 
             #endregion
 
@@ -77,7 +77,7 @@ namespace MotorcycleRepairShop.Application.Configurations
 
             CreateMap<ServiceRequest, ServiceRequestDto>()
                 .ForMember(
-                    dest => dest.ServiceType, 
+                    dest => dest.ServiceType,
                     opt => opt.MapFrom(src => src.ServiceType.GetDisplayName()))
                 .ForMember(
                     dest => dest.Status,
@@ -125,6 +125,13 @@ namespace MotorcycleRepairShop.Application.Configurations
 
             CreateMap<UpSertServiceRequestPartDto, ServiceRequestPart>();
             CreateMap<ServiceRequestPart, ServiceRequestPartDto>();
+
+            #endregion
+
+            #region Payment
+
+            CreateMap<CreatePaymentDto, Payment>();
+            CreateMap<Payment, PaymentDto>();
 
             #endregion
         }

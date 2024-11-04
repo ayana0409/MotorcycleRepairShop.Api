@@ -4,7 +4,8 @@ namespace MotorcycleRepairShop.Application.Interfaces.Services
 {
     public interface IPaymentService
     {
-        string CreateVNPayPayment(PaymentRequestDto request);
+        Task<PaymentDto> CreateCrashPayment(CreatePaymentDto paymentDto);
+        string CreateVNPayPayment(CreatePaymentDto request);
         Task ProcessVNPayReturn(VNPayReturnDto vnpayReturnDto);
     }
 }

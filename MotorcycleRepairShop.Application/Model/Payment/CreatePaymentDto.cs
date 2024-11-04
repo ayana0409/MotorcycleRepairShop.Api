@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MotorcycleRepairShop.Application.Model
 {
-    public class PaymentRequestDto
+    public class CreatePaymentDto
     {
         [Required]
-        public int OrderId { get; set; }
+        public int ServiceRequestId { get; set; }
         [Required]
         [GreaterThanZero]
         public decimal Amount { get; set; }

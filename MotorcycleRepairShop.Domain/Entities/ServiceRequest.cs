@@ -32,5 +32,18 @@ namespace MotorcycleRepairShop.Domain.Entities
         public virtual ICollection<ServiceRequestPart> Parts { get; set; } = [];
         public virtual ICollection<Payment> Payments { get; set; } = [];
 
+        public decimal GetTotalPrice()
+        {
+            decimal totalPrice = 0;
+
+            if (Services.Count > 0)
+                totalPrice += Services.Sum(x => x.Price * x.Quantity);
+
+            if (Parts.Count > 0)
+                totalPrice += Parts.Sum(p => p.Quantity * p.Price);
+            TotalPrice = totalPrice;
+            return totalPrice;
+        }
+
     }
 }

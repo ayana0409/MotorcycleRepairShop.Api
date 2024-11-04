@@ -1,25 +1,29 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
-using MotorcycleRepairShop.Share.Exceptions;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PaymentController : ControllerBase
+    public class PaymentsController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
 
-        public PaymentController(IPaymentService paymentService)
+        public PaymentsController(IPaymentService paymentService)
         {
             _paymentService = paymentService;
         }
 
-        #region Direct
-
-
+        #region Crash
+        /// <summary>
+        /// Tạo thanh toán bằng tiền mặt
+        /// </summary>
+        /// <param name="paymentDto">Thông tin cần thanh toán</param>
+        /// <returns></returns>
+        [HttpPost("crash")]
+        public async Task<ActionResult<PaymentDto>> CreateCrashPayment(CreatePaymentDto paymentDto)
+            => CreatedAtAction(nameof(CreateCrashPayment), await _paymentService.CreateCrashPayment(paymentDto));
 
         #endregion
 
