@@ -40,7 +40,7 @@ try
         options.AddPolicy("AllowSpecificOrigin",
             builder =>
             {
-                builder.WithOrigins("http://localhost:5173")
+                builder.WithOrigins("http://localhost:5173", "http://26.139.159.129:5000/")
                        .AllowAnyMethod()
                        .AllowAnyHeader()
                        .AllowCredentials();

@@ -27,6 +27,24 @@ namespace MotorcycleRepairShop.Api.Controllers
 
         #endregion
 
+        #region PayPal
+
+        [HttpPost("PayPal/create")]
+        public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentDto paymentDto)
+            => Ok(new { Url = await _paymentService.CreatePayPalOrder(paymentDto) });
+
+        [HttpGet("PayPal/execute-payment")]
+        public async Task<ActionResult> ExecutePayment(string token, int serviceRequestId)
+            => await _paymentService.CapturePayPalOrder(token, serviceRequestId) 
+            ? Ok("Payment completed successfully.") 
+            : BadRequest("Payment could not be completed.");
+
+        [HttpGet("PayPal/cancel-payment")]
+        public IActionResult CancelPayment()
+            => BadRequest("Payment was canceled by the user.");
+
+        #endregion
+
         #region VNPay - Not Working
 
         //[HttpPost("VNPay/create")]

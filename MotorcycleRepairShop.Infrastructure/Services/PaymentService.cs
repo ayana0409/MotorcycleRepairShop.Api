@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MotorcycleRepairShop.Application.Configurations.Models;
 using MotorcycleRepairShop.Application.Interfaces;
@@ -9,7 +10,14 @@ using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Domain.Enums;
 using MotorcycleRepairShop.Share.Exceptions;
 using MotorcycleRepairShop.Share.Extensions;
+using PayPalCheckoutSdk.Core;
+using PayPalCheckoutSdk.Orders;
 using Serilog;
+using System.Net;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Order = PayPalCheckoutSdk.Orders.Order;
 
 namespace MotorcycleRepairShop.Infrastructure.Services
 {
@@ -19,21 +27,89 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly PayPalHttpClient _client;
+        private readonly string paypalReturnUrl;
+        private readonly string paypalCancelUrl;
 
-        public PaymentService(IOptions<VNPayConfig> vnpayConfig, IHttpContextAccessor httpContextAccessor, ILogger logger, IUnitOfWork unitOfWork, IMapper mapper) : base(logger)
+        public PaymentService(IOptions<VNPayConfig> vnpayConfig,
+                              IHttpContextAccessor httpContextAccessor,
+                              ILogger logger,
+                              IUnitOfWork unitOfWork,
+                              IMapper mapper,
+                              IConfiguration configuration) : base(logger)
         {
             _vnpayConfig = vnpayConfig.Value;
             _httpContextAccessor = httpContextAccessor;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+
+            var environment = new SandboxEnvironment(configuration["PayPal:ClientId"], configuration["PayPal:ClientSecret"]);
+            _client = new PayPalHttpClient(environment);
+            paypalReturnUrl = configuration["PayPal:ReturnUrl"] ?? throw new ApplicationException("paypalReturnUrl is not configured");
+            paypalCancelUrl = configuration["PayPal:CancelUrl"] ?? throw new ApplicationException("PaypalCancelUrl is not configured");
         }
+
+        #region PayPal
+
+        public async Task<string> CreatePayPalOrder(CreatePaymentDto paymentDto)
+        {
+            var orderRequest = new OrdersCreateRequest();
+            orderRequest.Prefer("return=representation");
+            orderRequest.RequestBody(new OrderRequest
+            {
+                CheckoutPaymentIntent = "CAPTURE",
+                PurchaseUnits = [
+                    new() {
+                        AmountWithBreakdown = new AmountWithBreakdown
+                        {
+                            CurrencyCode = "USD",
+                            Value = (await CurrencyConverter.ConvertVndToUsd(paymentDto.Amount)).ToString("F2")
+                        }}
+                ],
+                ApplicationContext = new ApplicationContext
+                {
+                    ReturnUrl = $"{paypalReturnUrl}?serviceRequestId={paymentDto.ServiceRequestId}",
+                    CancelUrl = paypalCancelUrl
+                }
+            });
+
+            var response = await _client.Execute(orderRequest);
+            var result = response.Result<Order>();
+
+            var approvalLink = result.Links.First(link => link.Rel == "approve").Href;
+            return approvalLink;
+        }
+        public async Task<bool> CapturePayPalOrder(string orderId, int serviceRequestId)
+        {
+            var request = new OrdersCaptureRequest(orderId);
+            request.Prefer("return=representation");
+            var content = new StringContent("", Encoding.UTF8, "application/json");
+            request.Content = content;
+
+            var response = await _client.Execute(request);
+
+            if (response.Result<Order>().Status == "COMPLETED")
+            {
+                var payment = new CreatePaymentDto
+                {
+                    ServiceRequestId = serviceRequestId,
+                    Amount = Convert.ToDecimal(response.Result<Order>().PurchaseUnits[0].AmountWithBreakdown.Value)
+                };
+
+                await CreatePayment(payment, PaymentMethodEnum.PayPal, orderId);
+                return true;
+            }
+
+            return false;
+        }
+        #endregion
 
         #region Crash
 
         public async Task<PaymentDto> CreateCrashPayment(CreatePaymentDto paymentDto)
             => await CreatePayment(paymentDto, PaymentMethodEnum.Cash);
 
-        private async Task<PaymentDto> CreatePayment(CreatePaymentDto paymentDto, PaymentMethodEnum paymentMethod)
+        private async Task<PaymentDto> CreatePayment(CreatePaymentDto paymentDto, PaymentMethodEnum paymentMethod, string? transactionId = null)
         {
             var serviceRequestId = paymentDto.ServiceRequestId;
             var existServiceRequest = await _unitOfWork.ServiceRequestRepository
@@ -42,6 +118,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
             var payment = _mapper.Map<Payment>(paymentDto);
             payment.PaymentMethod = paymentMethod;
+            payment.TransactionId = transactionId;
             await _unitOfWork.PaymentRepository.CreateAsync(payment);
 
             existServiceRequest.StatusId = (int)StatusEnum.Processing;
