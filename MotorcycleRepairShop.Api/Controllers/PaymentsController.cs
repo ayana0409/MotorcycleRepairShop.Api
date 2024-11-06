@@ -15,6 +15,10 @@ namespace MotorcycleRepairShop.Api.Controllers
             _paymentService = paymentService;
         }
 
+        [HttpGet("ServiceRequest/{id}")]
+        public async Task<ActionResult<IEnumerable<PaymentDto>>> GetByServiceRequestId(int id)
+            => Ok(await _paymentService.GetByServiceRequestId(id));
+
         #region Crash
         /// <summary>
         /// Tạo thanh toán bằng tiền mặt

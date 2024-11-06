@@ -10,6 +10,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         {
         }
 
-        
+        public async Task<IEnumerable<Payment>> GetByServiceRequestId(int serviceRequestId)
+            => await this.GetAllAsync(x => x.ServiceRequestId.Equals(serviceRequestId));
     }
 }

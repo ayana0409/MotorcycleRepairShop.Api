@@ -13,10 +13,7 @@ using MotorcycleRepairShop.Share.Extensions;
 using PayPalCheckoutSdk.Core;
 using PayPalCheckoutSdk.Orders;
 using Serilog;
-using System.Net;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Order = PayPalCheckoutSdk.Orders.Order;
 
 namespace MotorcycleRepairShop.Infrastructure.Services
@@ -48,6 +45,16 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             paypalReturnUrl = configuration["PayPal:ReturnUrl"] ?? throw new ApplicationException("paypalReturnUrl is not configured");
             paypalCancelUrl = configuration["PayPal:CancelUrl"] ?? throw new ApplicationException("PaypalCancelUrl is not configured");
         }
+
+        public async Task<IEnumerable<PaymentDto>> GetByServiceRequestId(int serviceRequestId)
+        {
+            var payment = await _unitOfWork.PaymentRepository
+                .GetByServiceRequestId(serviceRequestId);
+
+            var result = _mapper.Map<IEnumerable<PaymentDto>>(payment);
+            return result;
+        }
+
 
         #region PayPal
 
@@ -95,7 +102,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                     ServiceRequestId = serviceRequestId,
                     Amount = Convert.ToDecimal(response.Result<Order>().PurchaseUnits[0].AmountWithBreakdown.Value)
                 };
-
+                payment.Amount = await CurrencyConverter.ConvertUsdToVnd(payment.Amount);
                 await CreatePayment(payment, PaymentMethodEnum.PayPal, orderId);
                 return true;
             }

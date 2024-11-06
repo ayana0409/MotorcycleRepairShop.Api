@@ -15,10 +15,22 @@ namespace MotorcycleRepairShop.Share.Extensions
             var content = await response.Content.ReadAsStringAsync();
             var json = JObject.Parse(content);
 
-            // Lấy tỷ giá USD từ JSON
             var rate = json["usd"]["rate"].Value<decimal>();
 
             return amountInVnd * rate;
+        }
+
+        public static async Task<decimal> ConvertUsdToVnd(decimal amountInUsd)
+        {
+            var response = await _httpClient.GetAsync(_apiUrl);
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            var json = JObject.Parse(content);
+
+            var rate = json["usd"]["rate"].Value<decimal>();
+
+            return amountInUsd / rate;
         }
     }
 }

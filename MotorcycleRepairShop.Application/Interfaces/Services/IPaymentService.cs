@@ -8,6 +8,7 @@ namespace MotorcycleRepairShop.Application.Interfaces.Services
         Task<PaymentDto> CreateCrashPayment(CreatePaymentDto paymentDto);
         Task<string> CreatePayPalOrder(CreatePaymentDto paymentDto);
         string CreateVNPayPayment(CreatePaymentDto request);
+        Task<IEnumerable<PaymentDto>> GetByServiceRequestId(int serviceRequestId);
         Task ProcessVNPayReturn(VNPayReturnDto vnpayReturnDto);
     }
 }
