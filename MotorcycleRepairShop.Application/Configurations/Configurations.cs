@@ -46,7 +46,7 @@ namespace MotorcycleRepairShop.Application.Configurations
                 });
 
                 var xmlFile = "MotorcycleRepairShop.Api.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\MotorcycleRepairShop.Api\bin\Debug\net8.0", xmlFile);
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
         }

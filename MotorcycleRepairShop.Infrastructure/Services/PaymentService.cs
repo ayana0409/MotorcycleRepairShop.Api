@@ -55,7 +55,6 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             return result;
         }
 
-
         #region PayPal
 
         public async Task<string> CreatePayPalOrder(CreatePaymentDto paymentDto)

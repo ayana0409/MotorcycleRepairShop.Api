@@ -6,6 +6,6 @@ namespace MotorcycleRepairShop.Application.Model
     {
         public DateTime PaymentDate { get; set; }
         public string? TransactionId { get; set; }
-        public string PaymentMethod { get; set; }
+        public string PaymentMethod { get; set; } = string.Empty;
     }
 }
