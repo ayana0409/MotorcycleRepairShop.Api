@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model.Account;
 
@@ -16,6 +15,10 @@ namespace MotorcycleRepairShop.Api.Controllers
             _accountService = accountService;
         }
 
+        [HttpGet("{username}")]
+        public async Task<ActionResult<AccountInfoDto>> GetAccountInfoByUsername(string username)
+            => Ok(await _accountService.GetAccountByUsername(username));
+
         [HttpPost]
         public async Task<ActionResult<CreateAccountDto>> CreateAccount(CreateAccountDto account)
         {
@@ -29,5 +32,19 @@ namespace MotorcycleRepairShop.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut("infos/{username}")]
+        public async Task<ActionResult<AccountInfoDto>> UpdateAccountInfo(string username, AccountInfoDto accountInfo)
+            => Ok(await _accountService.UpdateAccountInfo(username, accountInfo));
+
+        [HttpPatch("roles/{username}")]
+        public async Task<ActionResult> UpdateAccountRole(string username, IEnumerable<string> roles)
+            => await _accountService.UpdateAccountRole(username, roles) 
+            ? Ok($"Update {username} roles successfuly") 
+            : BadRequest($"Update {username} roles failed");
+
+        [HttpPatch("password/{username}")]
+        public async Task<ActionResult> UpdateAccountPassword(string username, string password)
+            => Ok();
     }
 }

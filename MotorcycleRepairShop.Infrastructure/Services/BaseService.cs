@@ -31,5 +31,15 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         {
             _logger.Information($"END - {methodName}: {id}");
         }
+
+        protected void LogSuccess(int id, [CallerMemberName] string methodName = "")
+        {
+            _logger.Information($"{methodName} successfully: {id}");
+        }
+
+        protected void LogSuccess(string data, [CallerMemberName] string methodName = "")
+        {
+            _logger.Information($"{methodName} successfully: {data}");
+        }
     }
 }

@@ -19,6 +19,12 @@ namespace MotorcycleRepairShop.Application.Configurations
                     dest => dest.UserRoles,
                     opt => opt.MapFrom(src => src.UserRoles.Select(ur => ur.RoleId).ToList()));
 
+            CreateMap<AccountInfoDto, ApplicationUser>()
+                .ForMember(dest => dest.UserRoles, opt => opt.Ignore())
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
+
+            CreateMap<ApplicationUser, AccountInfoDto>();
+
             #region Service
 
             CreateMap<ServiceDto, Service>().ReverseMap();
