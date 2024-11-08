@@ -1,9 +1,8 @@
-﻿
+﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using MotorcycleRepairShop.Application.Configurations.Models;
-using MotorcycleRepairShop.Domain.Entities;
 
 namespace MotorcycleRepairShop.Application.Configurations
 {
@@ -49,11 +48,16 @@ namespace MotorcycleRepairShop.Application.Configurations
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+
+            services.AddDataProtection()
+            .PersistKeysToFileSystem(new DirectoryInfo("/tmp/keys/"))
+            .SetApplicationName("MotorcycleRepairShop.Api");
         }
 
         public static void AddVNPayConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<VNPayConfig>(configuration.GetSection("VNPay"));
         }
+
     }
 }

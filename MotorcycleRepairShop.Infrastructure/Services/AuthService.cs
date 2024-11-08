@@ -5,9 +5,10 @@ using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Domain.Entities;
 using Serilog;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
 
 namespace MotorcycleRepairShop.Infrastructure.Services
 {
@@ -99,12 +100,13 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
             {
-                new(JwtRegisteredClaimNames.Sub, user.UserName),
+                new(ClaimTypes.Name, user.UserName),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(ClaimTypes.NameIdentifier, user.Id)
             };
@@ -116,11 +118,10 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             }
 
             var token = new JwtSecurityToken(
-                _configuration["Jwt:ValidIssuer"],
-                _configuration["Jwt:ValidAudience"],
-
-                claims,
-                expires: DateTime.UtcNow.AddDays(int.Parse(_configuration["Jwt:TokenLifetime"])),
+                issuer: _configuration["JWT:ValidIssuer"],
+                audience: _configuration["JWT:ValidAudience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddDays(int.Parse(_configuration["JWT:TokenLifetime"])),
                 signingCredentials: credentials
             );
 

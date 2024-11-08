@@ -147,7 +147,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             await Task.WhenAll(deleteImages);
 
             _unitOfWork.Table<Image>().RemoveRange(images);
-            _unitOfWork.SaveChangeAsync().GetAwaiter();
+            await _unitOfWork.SaveChangeAsync();
             LogEnd(vehicleId);
         }
     }
