@@ -27,17 +27,7 @@ namespace MotorcycleRepairShop.Api.Controllers
 
         [HttpPost]
         public async Task<ActionResult<CreateAccountDto>> CreateAccount(CreateAccountDto account)
-        {
-            try
-            {
-                var result = await _accountService.CreateAccount(account);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+            => Ok(await _accountService.CreateAccount(account));
 
         /// <summary>
         /// Cập nhật thông tin cá nhân cho tài khoản
