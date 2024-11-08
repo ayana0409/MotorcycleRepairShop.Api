@@ -18,6 +18,9 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
             var connectionString = configuration.GetConnectionString("DefaultConnectionString")
                     ?? throw new ArgumentNullException("Connection string is not configure.");
 
+            var validIssuers = configuration.GetSection("JWT:ValidIssuers").Get<string[]>();
+            var validAudiences = configuration.GetSection("JWT:ValidAudiences").Get<string[]>();
+
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseMySQL(connectionString));
 
@@ -35,13 +38,13 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
             {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters()
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidAudience = configuration["JWT:ValidAudience"],
                     ValidateLifetime = true,
-                    ValidIssuer = configuration["JWT:ValidIssuer"],
+                    ValidIssuers = validIssuers,
+                    ValidAudiences = validAudiences,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
                     ClockSkew = TimeSpan.Zero
                 };
