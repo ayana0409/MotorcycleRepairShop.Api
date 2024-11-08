@@ -261,7 +261,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands");
+                    b.ToTable("Brands", (string)null);
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.Image", b =>
@@ -286,7 +286,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.Part", b =>
@@ -322,7 +322,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasIndex("BrandId");
 
-                    b.ToTable("Parts");
+                    b.ToTable("Parts", (string)null);
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.PartInventory", b =>
@@ -369,7 +369,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasIndex("PartId");
 
-                    b.ToTable("Inventories");
+                    b.ToTable("Inventories", (string)null);
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.Payment", b =>
@@ -404,7 +404,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasIndex("ServiceRequestId");
 
-                    b.ToTable("Payment");
+                    b.ToTable("Payment", (string)null);
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.Problem", b =>
@@ -428,7 +428,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Problems");
+                    b.ToTable("Problems", (string)null);
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.Service", b =>
@@ -449,7 +449,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Services");
+                    b.ToTable("Services", (string)null);
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.ServiceRequest", b =>
@@ -497,7 +497,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("ServiceRequest");
+                    b.ToTable("ServiceRequest", (string)null);
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.ServiceRequestItem", b =>
@@ -518,7 +518,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasIndex("ServiceRequestId");
 
-                    b.ToTable("ServiceRequestItems");
+                    b.ToTable("ServiceRequestItems", (string)null);
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.ServiceRequestPart", b =>
@@ -542,7 +542,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasIndex("ServiceRequestId");
 
-                    b.ToTable("ServiceRequestPart");
+                    b.ToTable("ServiceRequestPart", (string)null);
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.ServiceRequestProblem", b =>
@@ -560,7 +560,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasIndex("ProblemId");
 
-                    b.ToTable("ServiceRequestProblems");
+                    b.ToTable("ServiceRequestProblems", (string)null);
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.Status", b =>
@@ -581,7 +581,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Statuses");
+                    b.ToTable("Statuses", (string)null);
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.Vehicle", b =>
@@ -610,7 +610,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasIndex("BrandId");
 
-                    b.ToTable("Vehicles");
+                    b.ToTable("Vehicles", (string)null);
                 });
 
             modelBuilder.Entity("MotorcycleRepairShop.Domain.Entities.Video", b =>
@@ -634,7 +634,7 @@ namespace MotorcycleRepairShop.Infrastructure.Migrations
 
                     b.HasIndex("ServiceRequestId");
 
-                    b.ToTable("Videos");
+                    b.ToTable("Videos", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

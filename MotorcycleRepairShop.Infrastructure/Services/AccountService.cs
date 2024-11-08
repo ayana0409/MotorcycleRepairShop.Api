@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MotorcycleRepairShop.Application.Interfaces;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model.Account;
 using MotorcycleRepairShop.Domain.Entities;
@@ -13,13 +14,15 @@ namespace MotorcycleRepairShop.Infrastructure.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public AccountService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, ILogger logger) : base(logger)
+        public AccountService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, ILogger logger, IUnitOfWork unitOfWork) : base(logger)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<AccountInfoDto> GetAccountByUsername(string username)
@@ -29,26 +32,33 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             return result;
         }
 
-        public async Task<CreateAccountDto> CreateAccount(CreateAccountDto account)
+        public async Task<CreateAccountDto> CreateAccount(CreateAccountDto account) 
         {
-            var user = _mapper.Map<ApplicationUser>(account);
-
-            user.UserName = user.Email;
-            var addedAccount = await _userManager.CreateAsync(user, account.Password);
-
-            if (addedAccount.Succeeded)
+            try
             {
-                await _userManager.AddToRolesAsync(user, account.UserRoles);
-                var result = _mapper.Map<CreateAccountDto>(account);
-                _logger.Information($"CreateAccount successfuly: {user.UserName}");
-                return result;
+                var user = _mapper.Map<ApplicationUser>(account);
+                user.UserName = user.Email;
+                var addedAccount = await _userManager.CreateAsync(user, account.Password);
+
+                if (addedAccount.Succeeded)
+                {
+                    await _userManager.AddToRolesAsync(user, account.UserRoles);
+                    var result = _mapper.Map<CreateAccountDto>(account);
+                    _logger.Information($"CreateAccount successfuly: {user.UserName}");
+                    return result;
+                }
+                else
+                {
+                    var errorMessage = string.Join(", ", addedAccount.Errors.Select(e => e.Description));
+                    _logger.Information($"CreateAccount failed: {user.UserName}");
+                    throw new ApplicationException($"Error while creating account: {errorMessage}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                var errorMessage = string.Join(", ", addedAccount.Errors.Select(e => e.Description)); 
-                _logger.Information($"CreateAccount failed: {user.UserName}");
-                throw new ApplicationException($"Error while creating account: {errorMessage}");
+                throw new ArgumentException($"Error while create account: {ex.InnerException?.Message}");
             }
+            
         }
 
         public async Task<AccountInfoDto> UpdateAccountInfo(string username, AccountInfoDto accountInfo)
@@ -86,6 +96,21 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             }
             LogSuccess(username);
             return true;
+        }
+
+        public async Task UpdateAccountPassword(string username, string password)
+        {
+            var account = await FindAccountByUsername(username);
+            var passwordValidator = await _userManager.PasswordValidators.First().ValidateAsync(_userManager, account, password);
+            if (passwordValidator != null && !passwordValidator.Succeeded)
+            {
+                var errors = string.Join(", ", passwordValidator.Errors.Select(e => e.Description));
+                throw new ArgumentException($"Invalid password: {errors}");
+            }
+
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(account);
+            await _userManager.ResetPasswordAsync(account, resetToken, password);
+            LogSuccess(username);
         }
 
         private async Task<ApplicationUser> FindAccountByUsername(string username)
