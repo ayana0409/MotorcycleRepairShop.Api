@@ -59,7 +59,10 @@ namespace MotorcycleRepairShop.Application.Configurations
             #region Part
 
             CreateMap<PartDto, Part>().ReverseMap();
-            CreateMap<PartTableDto, Part>().ReverseMap();
+            CreateMap<PartTableDto, Part>();
+            CreateMap<Part, PartTableDto>()
+                .ForMember(dest => dest.BrandName, 
+                opt => opt.MapFrom(src => src.Brand == null ? string.Empty : src.Brand.Name));
 
             #endregion
 

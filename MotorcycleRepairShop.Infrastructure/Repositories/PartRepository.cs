@@ -15,7 +15,10 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
 
         public async Task<(IEnumerable<Part>, int)> GetPanigationAsync(int pageIndex, int pageSize, string keyword)
         {
-            var query = await base.GetAllAsync();
+            var query = _context
+                .Set<Part>()
+                .Include(p => p.Brand)
+                .Where(p => p.IsActive == true);
 
             if (!string.IsNullOrEmpty(keyword))
             {
