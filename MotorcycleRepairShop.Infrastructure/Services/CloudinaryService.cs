@@ -117,14 +117,14 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         private string ExtractPublicIdFromImageUrl(string imageUrl)
         {
-            string pattern = _folder + @"/([^/]+)\.png";
+            string pattern = _folder + @"/([^/]+)\.(png|jpg)";
             Match match = Regex.Match(imageUrl, pattern);
 
             if (match.Success)
             {
                 return _folder + "/" + match.Groups[1].Value;
             }
-            throw new Exception("Invalid image URL format or no match found.");
+            throw new Exception($"Invalid image URL format or no match found. {imageUrl}");
         }
 
     }

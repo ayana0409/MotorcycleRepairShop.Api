@@ -6,6 +6,7 @@ using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Share.Exceptions;
+using PayPalCheckoutSdk.Orders;
 using Serilog;
 
 namespace MotorcycleRepairShop.Infrastructure.Services
@@ -85,7 +86,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             var existImages = await _unitOfWork.ImageRepository
                 .GetByVehicleIdAsync(vehicleId);
 
-            var validImageUrls = vehicleDto.ImageUrls.Where(i =>    i.Contains("http://res.cloudinary.com/")).ToList();
+            var validImageUrls = vehicleDto.ImageUrls.Where(i => i.Contains("http://res.cloudinary.com/")).ToList();
 
             var deleteTasks = existImages
                                 .Where(image => image.Name != null && !validImageUrls.Contains(image.Name))
@@ -139,12 +140,8 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             var images = await _unitOfWork.ImageRepository
                 .GetByVehicleIdAsync(vehicleId);
 
-            List<Task> deleteImages = [];
             foreach (var image in images)
-            {
-                deleteImages.Add(_cloudinaryService.DeletePhotoAsync(image.Name));
-            }
-            await Task.WhenAll(deleteImages);
+                await _cloudinaryService.DeletePhotoAsync(image.Name);
 
             _unitOfWork.Table<Image>().RemoveRange(images);
             await _unitOfWork.SaveChangeAsync();

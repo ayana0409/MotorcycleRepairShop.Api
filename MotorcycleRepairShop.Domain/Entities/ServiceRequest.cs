@@ -25,6 +25,10 @@ namespace MotorcycleRepairShop.Domain.Entities
         [ForeignKey(nameof(StatusId))]
         public Status? Status { get; set; }
 
+        public string? CustomerId { get; set; }
+        [ForeignKey(nameof(CustomerId))]
+        public ApplicationUser? Customer { get; set; }
+
         public virtual ICollection<Video> Videos { get; set; } = [];
         public virtual ICollection<Image> Images { get; set; } = [];
         public virtual ICollection<ServiceRequestProblem> Problems { get; set; } = [];

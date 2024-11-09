@@ -19,5 +19,6 @@ namespace MotorcycleRepairShop.Domain.Entities
         public bool IsActive { get; set; } = true;
 
         public virtual ICollection<IdentityUserRole<string>> UserRoles { get; set; } = [];
+        public virtual ICollection<ServiceRequest> ServiceRequests { get; set; } = [];
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MotorcycleRepairShop.Application.Interfaces;
 using MotorcycleRepairShop.Application.Interfaces.Services;
@@ -23,6 +24,11 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _cloudinaryService = cloudinaryService;
+        }
+
+        public async Task GetServiceRequestByUsername(string username)
+        {
+            
         }
 
         public async Task<ServiceRequestDto> GetServiceRequestById(int id)
@@ -303,6 +309,11 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 await _unitOfWork.BeginTransaction();
                 var service = _mapper.Map<ServiceRequest>(serviceRequestDto);
                 service.ServiceType = type;
+
+                var user = await _unitOfWork.Table<ApplicationUser>()
+                        .FirstOrDefaultAsync(u => u.MobilePhone.Equals(serviceRequestDto.MobilePhone));
+                if (user != null)
+                    service.CustomerId = user.Id;
 
                 await _unitOfWork.ServiceRequestRepository.CreateAsync(service);
                 await _unitOfWork.SaveChangeAsync();

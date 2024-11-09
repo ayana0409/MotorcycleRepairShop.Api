@@ -38,10 +38,20 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             {
                 var user = _mapper.Map<ApplicationUser>(account);
                 user.UserName = user.Email;
+                
                 var addedAccount = await _userManager.CreateAsync(user, account.Password);
 
                 if (addedAccount.Succeeded)
                 {
+                    var serviceRequests = await _unitOfWork.ServiceRequestRepository
+                    .GetAllAsync(s => s.MobilePhone.Equals(user.MobilePhone));
+                    if (serviceRequests.Any())
+                    {
+                        foreach (var serviceRequest in serviceRequests)
+                            serviceRequest.CustomerId = user.Id;
+                        await _unitOfWork.SaveChangeAsync();
+                    }
+
                     await _userManager.AddToRolesAsync(user, account.UserRoles);
                     var result = _mapper.Map<CreateAccountDto>(account);
                     _logger.Information($"CreateAccount successfuly: {user.UserName}");
@@ -58,7 +68,6 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             {
                 throw new ArgumentException($"Error while create account: {ex.InnerException?.Message}");
             }
-            
         }
 
         public async Task<AccountInfoDto> UpdateAccountInfo(string username, AccountInfoDto accountInfo)
