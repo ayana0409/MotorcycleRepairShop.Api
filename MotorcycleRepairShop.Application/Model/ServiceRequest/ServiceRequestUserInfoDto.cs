@@ -1,6 +1,4 @@
-﻿using MotorcycleRepairShop.Domain.Enums;
-using System.ComponentModel.DataAnnotations;
-using System.Data.SqlTypes;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace MotorcycleRepairShop.Application.Model
 {

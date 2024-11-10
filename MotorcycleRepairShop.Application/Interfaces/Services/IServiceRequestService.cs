@@ -18,5 +18,6 @@ namespace MotorcycleRepairShop.Application.Interfaces.Services
         Task<ServiceRequestPartDto> UpSertServicePartToServiceRequest(int serviceRequestId, UpSertServiceRequestPartDto servicePartRequestDto);
         Task DeleteServicePartInServiceRequest(int serviceRequestId, int partId);
         Task UpdateServiceRequestStatus(int serviceRequestId, StatusEnum status);
+        Task<TableResponse<ServiceRequestTable>> GetServiceRequestPagination(TableRequest request);
     }
 }

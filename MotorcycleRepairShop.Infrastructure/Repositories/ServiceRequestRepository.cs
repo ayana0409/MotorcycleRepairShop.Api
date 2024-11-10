@@ -12,7 +12,30 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         {
             _context = applicationDbContext;
         }
+        public async Task<(IEnumerable<ServiceRequest>, int)> GetPanigationAsync(int pageIndex, int pageSize, string keyword)
+        {
+            var query = _context.Set<ServiceRequest>()
+                .Include(sr => sr.Services)
+                .Include(sr => sr.Parts)
+                .AsQueryable();
 
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                query = query.Where(c => c.MobilePhone.Contains(keyword, StringComparison.CurrentCultureIgnoreCase)
+                                         || c.FullName.Contains(keyword, StringComparison.CurrentCultureIgnoreCase)
+                                         || c.Address.Contains(keyword, StringComparison.CurrentCultureIgnoreCase)
+                                         || c.Id.ToString().Contains(keyword));
+            }
+
+            int total = await query.CountAsync();
+
+            var data = await query
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (data, total);
+        }
         public async Task<IEnumerable<ServiceRequest>> GetByUsername(string username)
             => await _context.Set<ServiceRequest>()
                 .Include(s => s.Customer)

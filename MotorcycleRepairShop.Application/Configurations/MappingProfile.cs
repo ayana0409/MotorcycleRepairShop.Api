@@ -121,6 +121,11 @@ namespace MotorcycleRepairShop.Application.Configurations
                     dest => dest.Services,
                     opt => opt.Ignore());
 
+            CreateMap<ServiceRequest, ServiceRequestTable>()
+                .ForMember(
+                    dest => dest.TotalPrice,
+                    opt => opt.MapFrom(src => src.GetTotalPrice()));
+
             #endregion
 
             #region Service Request Item

@@ -2,6 +2,7 @@
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Domain.Enums;
+using MotorcycleRepairShop.Infrastructure.Services;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
@@ -15,6 +16,18 @@ namespace MotorcycleRepairShop.Api.Controllers
         {
             _serviceRequestService = serviceRequestService;
         }
+
+        [HttpGet("pagination")]
+        public async Task<ActionResult<TableResponse<ServiceRequestTable>>> GetPagination(
+            [FromQuery] int pageIndex = 0,
+            [FromQuery] int pageSize = 5,
+            [FromQuery] string keyword = "")
+            => Ok(await _serviceRequestService.GetServiceRequestPagination(new TableRequest
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Keyword = keyword
+            }));
 
         [HttpGet("{id}")]
         public async Task<ActionResult<CreateServiceRequestDto>> GetById(int id)

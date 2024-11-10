@@ -26,9 +26,24 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             _cloudinaryService = cloudinaryService;
         }
 
+        public async Task<TableResponse<ServiceRequestTable>> GetServiceRequestPagination(TableRequest request)
+        {
+            var (result, total) = await _unitOfWork.ServiceRequestRepository
+                .GetPanigationAsync(request.PageIndex, request.PageSize, request.Keyword ?? "");
+
+            var datas = _mapper.Map<IEnumerable<ServiceRequestTable>>(result);
+
+            return new TableResponse<ServiceRequestTable>
+            {
+                PageSize = request.PageSize,
+                Datas = datas,
+                Total = total
+            };
+        }
+
         public async Task GetServiceRequestByUsername(string username)
             => await _unitOfWork.ServiceRequestRepository
-            .GetByUsername (username);
+            .GetByUsername(username);
 
         public async Task<ServiceRequestDto> GetServiceRequestById(int id)
         {
