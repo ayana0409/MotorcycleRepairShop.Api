@@ -13,6 +13,14 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
             _context = applicationDbContext;
         }
 
+        public async Task<IEnumerable<Part>> GetAllIncludeBrand()
+        {
+            var query = _context.Set<Part>()
+                .Include(p => p.Brand)
+                .Where(p => p.IsActive == true);
+            return await query.ToListAsync();
+        }
+
         public async Task<(IEnumerable<Part>, int)> GetPanigationAsync(int pageIndex, int pageSize, string keyword)
         {
             var query = _context

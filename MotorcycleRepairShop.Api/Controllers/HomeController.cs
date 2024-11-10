@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MotorcycleRepairShop.Application.Interfaces.Services;
+using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Service;
 
 namespace MotorcycleRepairShop.Api.Controllers
@@ -16,8 +17,12 @@ namespace MotorcycleRepairShop.Api.Controllers
             _homeService = homeService;
         }
 
-        [HttpGet("services-list")]
-        public async Task<ActionResult<IEnumerable<ServiceDto>>> GetServicelist()
+        [HttpGet("service-list")]
+        public async Task<ActionResult<IEnumerable<ServiceHomeDto>>> GetServicelist()
             => Ok(await _homeService.GetServiceList());
+
+        [HttpGet("part-list")]
+        public async Task<ActionResult<IEnumerable<PartHomeDto>>> GetPartList()
+            => Ok(await _homeService.GetPartList());
     }
 }
