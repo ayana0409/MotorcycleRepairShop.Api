@@ -40,6 +40,7 @@ namespace MotorcycleRepairShop.Infrastructure
             services.AddTransient<IPartInventoryService, PartInventoryService>();
             services.AddTransient<IServiceRequestService, ServiceRequestService>();
             services.AddTransient<IPaymentService, PaymentService>();
+            services.AddTransient<IHomeService, HomeService>();
         }
     }
 }

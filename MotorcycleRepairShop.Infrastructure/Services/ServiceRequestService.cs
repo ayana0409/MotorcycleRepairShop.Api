@@ -27,9 +27,8 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         }
 
         public async Task GetServiceRequestByUsername(string username)
-        {
-            
-        }
+            => await _unitOfWork.ServiceRequestRepository
+            .GetByUsername (username);
 
         public async Task<ServiceRequestDto> GetServiceRequestById(int id)
         {

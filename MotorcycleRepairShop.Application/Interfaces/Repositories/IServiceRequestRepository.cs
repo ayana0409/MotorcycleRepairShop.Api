@@ -6,5 +6,6 @@ namespace MotorcycleRepairShop.Application.Interfaces.Repositories
     {
         //Task<ServiceRequest?> GetById(int id);
         Task<bool> AnyAsync(int serviceRequestId);
+        Task<IEnumerable<ServiceRequest>> GetByUsername(string username);
     }
 }
