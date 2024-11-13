@@ -20,13 +20,25 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
 
             var validIssuers = configuration.GetSection("JWT:ValidIssuers").Get<string[]>();
             var validAudiences = configuration.GetSection("JWT:ValidAudiences").Get<string[]>();
+            if (validAudiences == null || validAudiences.Length == 0)
+            {
+                throw new Exception("Valid audiences configuration is empty");
+            }
 
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseMySQL(connectionString));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
-                    .AddEntityFrameworkStores<ApplicationDbContext>()
-                    .AddDefaultTokenProviders();
+                   .AddEntityFrameworkStores<ApplicationDbContext>()
+                   .AddSignInManager<SignInManager<ApplicationUser>>()
+                   .AddDefaultTokenProviders();
+
+            services.Configure<IdentityOptions>(option =>
+            {
+                option.Lockout.AllowedForNewUsers = true;
+                option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
+                option.Lockout.MaxFailedAccessAttempts = 3;
+            });
 
             services.AddAuthentication(options =>
             {
@@ -36,16 +48,17 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
             })
             .AddJwtBearer(options =>
             {
+                options.UseSecurityTokenValidators = true;
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidIssuers = validIssuers,
                     ValidAudiences = validAudiences,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("JWT:Secret").Value)),
                     ClockSkew = TimeSpan.Zero
                 };
             });
@@ -58,6 +71,8 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
 
                 return new Cloudinary(new Account(cloudName, apiKey, apiSecret));
             });
+
+            services.AddAuthorization();
 
             services.AddDataProtection()
                 .PersistKeysToFileSystem(new DirectoryInfo(@"/home/app/.aspnet/DataProtection-Keys/"))
