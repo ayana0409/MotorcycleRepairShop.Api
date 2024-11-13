@@ -36,6 +36,13 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
 
             return (data, total);
         }
+
+        public async Task<ServiceRequest?> GetById(int id)
+            => await _context.Set<ServiceRequest>()
+                .Include(sr => sr.Services)
+                .Include(sr => sr.Parts)
+                .FirstOrDefaultAsync(sr => sr.Id.Equals(id));
+
         public async Task<IEnumerable<ServiceRequest>> GetByUsername(string username)
             => await _context.Set<ServiceRequest>()
                 .Include(s => s.Customer)

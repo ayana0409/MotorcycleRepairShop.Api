@@ -101,11 +101,60 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 .GetSigleAsync(sr => sr.Id.Equals(serviceRequestId))
                 ?? throw new NotFoundException(nameof(ServiceRequest), serviceRequestId);
 
-            serviceRequest.StatusId = (int)status;
-            _unitOfWork.ServiceRequestRepository
-                .Update(serviceRequest);
-            await _unitOfWork.SaveChangeAsync();
-            _logger.Information($"UpdateServiceRequestStatus - Id: {serviceRequestId} - Status: {Enum.GetName(status)}");
+            if (serviceRequest.StatusId == (int)StatusEnum.Completed 
+                || serviceRequest.StatusId == (int)StatusEnum.Canceled)
+            {
+                throw new UpdateStatusFailedException(
+                    Enum.GetName(typeof(StatusEnum), serviceRequest.StatusId) ?? "Status", 
+                    status.GetDisplayName());
+            }
+            try
+            {
+                await _unitOfWork.BeginTransaction();
+                if (status == StatusEnum.Completed)
+                {
+                    var usedParts = await _unitOfWork.PartRepository
+                        .GetByServiceRequestId(serviceRequestId);
+                    foreach (var part in usedParts)
+                    {
+                        var item = await _unitOfWork.ServiceRequestPartRepository
+                            .GetByServiceRequestIdAndPartId(serviceRequestId, part.Id);
+                        var usedQuantity = item?.Quantity ?? 0;
+                        var inventories = await _unitOfWork.PartInventoryRepository
+                            .GetAllAsync(i => i.PartId.Equals(part.Id) && i.QuantityInStock > 0);
+                        inventories = inventories.OrderBy(i => i.EntryDate).ToList();
+                        if (!inventories.Any() || inventories.Sum(i => i.QuantityInStock) < usedQuantity)
+                            throw new ArgumentNullException("Out of Stock");
+                        while (usedQuantity > 0)
+                        {
+                            var inventory = inventories.First(i => i.QuantityInStock > 0);
+                            if (inventory.QuantityInStock >= usedQuantity)
+                            {
+                                inventory.QuantityInStock -= usedQuantity;
+                                usedQuantity = 0;
+                            }
+                            else
+                            {
+                                usedQuantity -= inventory.QuantityInStock;
+                                inventory.QuantityInStock = 0;
+                            }
+                            _unitOfWork.PartInventoryRepository.Update(inventory);
+                            await _unitOfWork.SaveChangeAsync();
+                        }
+                    }
+                }
+                serviceRequest.StatusId = (int)status;
+                _unitOfWork.ServiceRequestRepository
+                    .Update(serviceRequest);
+                await _unitOfWork.SaveChangeAsync();
+                _logger.Information($"UpdateServiceRequestStatus - Id: {serviceRequestId} - Status: {Enum.GetName(status)}");
+                await _unitOfWork.CommitTransaction();
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollBackTransaction();
+                throw new ArgumentException("Error while update service request status",ex.Message);
+            }
         }
 
         #region ServiceRequestItem: UpSert - Delete

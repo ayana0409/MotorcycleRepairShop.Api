@@ -16,7 +16,8 @@ namespace MotorcycleRepairShop.Application.Configurations
             }
             else if (context.Exception is ArgumentException 
                 || context.Exception is InvalidSignatureException
-                || context.Exception is PaymentFailedException)
+                || context.Exception is PaymentFailedException
+                || context.Exception is UpdateStatusFailedException)
             {
                 context.Result = new BadRequestObjectResult(new { context.Exception.Message });
                 context.ExceptionHandled = true;
