@@ -55,6 +55,9 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task<int> CreatePart(PartDto partDto)
         {
+            if (_unitOfWork.BrandRepository.AnyAsync(partDto.BrandId) == null)
+                throw new NotFoundException(nameof(Brand), partDto.BrandId);
+
             LogStart();
             var createPart = _mapper.Map<Part>(partDto);
             await _unitOfWork.Table<Part>().AddAsync(createPart);
@@ -67,16 +70,17 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task<PartDto> UpdatePart(int id, PartDto partDto)
         {
+            if (_unitOfWork.BrandRepository.AnyAsync(partDto.BrandId) == null)
+                throw new NotFoundException(nameof(Brand), partDto.BrandId);
+            
             LogStart(id);
-            var partTable = _unitOfWork.Table<Part>();
-
-            var part = await partTable
-                .FirstOrDefaultAsync(p => p.Id.Equals(id))
+            var part = await _unitOfWork.PartRepository
+                .GetSigleAsync(p => p.Id.Equals(id))
                 ?? throw new NotFoundException(nameof(Part), id);
 
             var updatePart = _mapper.Map(partDto, part);
             updatePart.UpdateDate = DateTime.UtcNow;
-            partTable.Update(updatePart);
+            _unitOfWork.PartRepository.Update(updatePart);
             await _unitOfWork.SaveChangeAsync();
 
             var result = _mapper.Map<PartDto>(updatePart);
@@ -86,11 +90,11 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task DeletePart(int id)
         {
-            LogStart(id);
             var deletePart = await _unitOfWork.Table<Part>()
                 .FirstOrDefaultAsync(p => p.Id.Equals(id))
                 ?? throw new NotFoundException(nameof(Part), id);
 
+            LogStart(id);
             deletePart.UpdateDate = DateTime.UtcNow;
             deletePart.IsActive = false;
             _unitOfWork.Table<Part>().Update(deletePart);
