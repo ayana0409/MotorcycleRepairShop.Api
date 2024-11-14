@@ -17,6 +17,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
             var query = _context.Set<ServiceRequest>()
                 .Include(sr => sr.Services)
                 .Include(sr => sr.Parts)
+                .AsSplitQuery()
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(keyword))
@@ -30,6 +31,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
             int total = await query.CountAsync();
 
             var data = await query
+                .OrderBy(c => c.Id)
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
