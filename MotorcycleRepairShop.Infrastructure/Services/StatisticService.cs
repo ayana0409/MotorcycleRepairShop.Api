@@ -21,6 +21,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             var statistics = await _unitOfWork.StatisticRepository
                 .GetServiceRequestStatisticByDayAsync(startDate, endDate ?? DateTime.UtcNow);
 
+            _logger.Information($"GetServiceRequestStatistics from {startDate:dd/MM/yyyy} to {endDate:dd/MM/yyyy}");
             return statistics;
         }
     }
