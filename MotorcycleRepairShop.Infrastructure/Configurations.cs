@@ -30,6 +30,7 @@ namespace MotorcycleRepairShop.Infrastructure
             services.AddTransient<IServiceRequestRepository, ServiceRequestRepository>();
             services.AddTransient<IServiceRequestItemRepository, ServiceRequestItemRepository>();
             services.AddTransient<IServiceRequestPartRepository, ServiceRequestPartRepository>();
+            services.AddTransient<IStatisticRepository, StatisticRepository>();
 
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IServiceService, ServiceService>();
@@ -41,6 +42,7 @@ namespace MotorcycleRepairShop.Infrastructure
             services.AddTransient<IServiceRequestService, ServiceRequestService>();
             services.AddTransient<IPaymentService, PaymentService>();
             services.AddTransient<IHomeService, HomeService>();
+            services.AddTransient<IStatisticService, StatisticService>();
         }
     }
 }
