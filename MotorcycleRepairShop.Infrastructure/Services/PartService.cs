@@ -55,7 +55,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task<int> CreatePart(PartDto partDto)
         {
-            if (_unitOfWork.BrandRepository.AnyAsync(partDto.BrandId) == null)
+            if (!await _unitOfWork.BrandRepository.AnyAsync(partDto.BrandId))
                 throw new NotFoundException(nameof(Brand), partDto.BrandId);
 
             LogStart();
@@ -70,7 +70,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task<PartDto> UpdatePart(int id, PartDto partDto)
         {
-            if (_unitOfWork.BrandRepository.AnyAsync(partDto.BrandId) == null)
+            if (!await _unitOfWork.BrandRepository.AnyAsync(partDto.BrandId))
                 throw new NotFoundException(nameof(Brand), partDto.BrandId);
             
             LogStart(id);

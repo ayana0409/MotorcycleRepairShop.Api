@@ -36,6 +36,6 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
             return (data, total);
         }
         public async Task<bool> AnyAsync(int partId)
-            => await base.GetSigleAsync(r => r.Id.Equals(partId)) != null;
+            => await base.GetSigleAsync(r => r.Id.Equals(partId)).ConfigureAwait(false) != null;
     }
 }
