@@ -32,7 +32,7 @@ namespace MotorcycleRepairShop.Api.Controllers
 
         [HttpPost]
         public async Task<ActionResult<int>> CreateService(ServiceDto serviceDto)
-            => Ok(await _service.CreateService(serviceDto));
+            => CreatedAtAction(nameof(CreateService), await _service.CreateService(serviceDto));
 
         [HttpPut("{id}")]
         public async Task<ActionResult<ServiceDto>> UpdateService(int id, ServiceDto serviceDto)

@@ -2,6 +2,7 @@
 {
     public class ServiceRequestTable : ServiceRequestUserInfoDto
     {
+        public int Id { get; set; }
         public decimal TotalPrice { get; set; }
     }
 }

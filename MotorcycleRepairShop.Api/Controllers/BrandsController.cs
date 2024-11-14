@@ -37,7 +37,7 @@ namespace MotorcycleRepairShop.Api.Controllers
 
         [HttpPost]
         public async Task<ActionResult<int>> CreateBrand([FromBody] BrandDto brandDto)
-            => Ok(await _brandService.CreateBrand(brandDto));
+            => CreatedAtAction(nameof(CreateBrand), await _brandService.CreateBrand(brandDto));
 
         [HttpPut("{id}")]
         public async Task<ActionResult<BrandDto>> UpdateBrand(int id, [FromBody] BrandDto brandDto)

@@ -35,7 +35,7 @@ namespace MotorcycleRepairShop.Api.Controllers
 
         [HttpPost]
         public async Task<ActionResult<int>> CreatePart([FromBody] PartDto partDto)
-            => Ok(await _partService.CreatePart(partDto));
+            => CreatedAtAction(nameof(CreatePart), await _partService.CreatePart(partDto));
 
         [HttpPut("{id}")]
         public async Task<ActionResult<PartDto>> UpdatePart(int id, PartDto partDto) 

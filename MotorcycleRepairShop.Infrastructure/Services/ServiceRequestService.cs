@@ -47,7 +47,6 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task<ServiceRequestDto> GetServiceRequestById(int id)
         {
-            LogStart(id);
             var service = await _unitOfWork.Table<ServiceRequest>()
                 .Include(r => r.Images)
                 .Include(r => r.Videos)
@@ -69,7 +68,6 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 .GetByServiceRequestId(id);
             result.Parts = parts.Select(p => p.Name).ToList();
 
-            LogEnd(id);
             return result;
         }
 
@@ -111,6 +109,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             try
             {
                 await _unitOfWork.BeginTransaction();
+                LogStart(serviceRequestId);
                 if (status == StatusEnum.Completed)
                 {
                     var usedParts = await _unitOfWork.PartRepository
@@ -149,10 +148,12 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 await _unitOfWork.SaveChangeAsync();
                 _logger.Information($"UpdateServiceRequestStatus - Id: {serviceRequestId} - Status: {Enum.GetName(status)}");
                 await _unitOfWork.CommitTransaction();
+                LogEnd(serviceRequestId);
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollBackTransaction();
+                _logger.Information("Error while UpdateServiceRequestStatus: ", ex.Message);
                 throw new ArgumentException("Error while update service request status",ex.Message);
             }
         }
@@ -417,6 +418,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             await _unitOfWork.Table<ServiceRequestProblem>()
                 .AddRangeAsync(problems);
             await _unitOfWork.SaveChangeAsync();
+            LogSuccess(serviceRequestId);
         }
 
         private async Task AddServicesToServiceRequest(int serviceRequestId, IEnumerable<int> serviceIds)
@@ -436,6 +438,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             await _unitOfWork.Table<ServiceRequestItem>()
                 .AddRangeAsync(services);
             await _unitOfWork.SaveChangeAsync();
+            LogSuccess(serviceRequestId);
         }
 
         private async Task CheckExitsServiceRequest(int serviceRequestId)

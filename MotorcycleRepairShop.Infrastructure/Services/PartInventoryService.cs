@@ -20,7 +20,6 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task<IEnumerable<PartInventoryDto>> GetAvailableInventoriesByPartId(int partId)
         {
-            LogStart(partId);
             var part = await _unitOfWork.PartInventoryRepository
                 .GetSigleAsync(p => p.PartId.Equals(partId))
                 ?? throw new NotFoundException(nameof(Part), partId);
@@ -33,14 +32,12 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 .ToList();
 
             var result = _mapper.Map<List<PartInventoryDto>>(inventories);
-            LogEnd(partId);
             return result;
         }
 
         public async Task<int> CreatePartInventory(PartInventoryDto partInventoryDto)
         {
             var partId = partInventoryDto.PartId;
-            LogStart(partId);
             var part = await _unitOfWork.PartRepository
                 .GetSigleAsync(p => p.Id.Equals(partId) && p.IsActive == true)
                 ?? throw new NotFoundException(nameof(Part), partId);
@@ -52,7 +49,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             await _unitOfWork.SaveChangeAsync();
 
             var result = inventory.Id;
-            LogEnd(partId);
+            LogSuccess(partId);
             return result;
         }
 
@@ -63,12 +60,12 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
             var addedInventories = new List<PartInventory>();
             await _unitOfWork.BeginTransaction();
+            LogStart();
             try
             {
                 foreach (var partInventoryDto in partInventoryDtos)
                 {
                     var partId = partInventoryDto.PartId;
-                    LogStart(partId);
 
                     var part = await _unitOfWork.PartRepository
                         .GetSigleAsync(p => p.Id.Equals(partId) && p.IsActive == true)
@@ -79,7 +76,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                     await _unitOfWork.PartInventoryRepository.CreateAsync(inventory);
 
                     addedInventories.Add(inventory);
-                    LogEnd(partId);
+                    LogSuccess(partId);
                 }
 
                 await _unitOfWork.SaveChangeAsync();
@@ -97,6 +94,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             }
 
             var result = addedInventories.Select(i => i.Id).ToList();
+            LogEnd();
             return result;
         }
     }

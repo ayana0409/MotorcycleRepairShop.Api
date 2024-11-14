@@ -11,32 +11,23 @@ using Serilog;
 
 namespace MotorcycleRepairShop.Infrastructure.Services
 {
-    public class ServiceService : IServiceService
+    public class ServiceService : BaseService, IServiceService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
-        public ServiceService(IUnitOfWork unitOfWork, IMapper mapper, ILogger logger)
+        public ServiceService(IUnitOfWork unitOfWork, IMapper mapper, ILogger logger) : base(logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _logger = logger;
         }
 
         public async Task<TableResponse<ServiceTableDto>> GetPagination(TableRequest request)
         {
-            _logger.Information($"START - Get service pagination");
-
             var (result, total) = await _unitOfWork.ServiceRepository
                 .GetPanigationAsync(request.PageIndex, request.PageSize, request.Keyword ?? "");
-            List<ServiceTableDto> datas = [];
+            
+            var datas = _mapper.Map<IEnumerable<ServiceTableDto>>(result);
 
-            foreach (var item in result)
-            {
-                datas.Add(_mapper.Map<ServiceTableDto>(item));
-            }
-
-            _logger.Information($"END - Get service pagination");
             return new TableResponse<ServiceTableDto>
             {
                 PageSize = request.PageSize,
@@ -47,58 +38,50 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task<ServiceDto> GetById(int id)
         {
-            _logger.Information($"START - Get service by id: {id}");
             var service = await _unitOfWork.Table<Service>()
                 .FirstOrDefaultAsync(s => s.Id.Equals(id));
-
             var result = _mapper.Map<ServiceDto>(service);
-            _logger.Information($"END - Get service by id: {id}");
-            
             return result;
         }
 
         public async Task<int> CreateService(ServiceDto serviceDto)
         {
-            _logger.Information($"START - CreateService: {serviceDto.Name}");
             var service = _mapper.Map<Service>(serviceDto);
 
             await _unitOfWork.Table<Service>().AddAsync(service);
             await _unitOfWork.SaveChangeAsync();
-            _logger.Information($"END - CreateService: {serviceDto.Name}");
-
-            return service.Id;
+            
+            var result = service.Id;
+            LogSuccess(result);
+            return result;
         }
 
         public async Task<ServiceDto> UpdateService(int id, ServiceDto serviceDto)
         {
-            _logger.Information($"START - Update service: {id}");
             var service = await _unitOfWork.Table<Service>()
                 .FirstOrDefaultAsync(s => s.Id.Equals(id))
-                ?? throw new NotFoundException("Service", id);
+                ?? throw new NotFoundException(nameof(Service), id);
 
             var updateService = _mapper.Map(serviceDto, service);
             _unitOfWork.Table<Service>().Update(updateService);
             _unitOfWork.SaveChangeAsync().Wait();
 
             var result = _mapper.Map<ServiceDto>(updateService);
-            _logger.Information($"END - Update service: {id}");
+            LogSuccess(id);
 
             return result;
         }
 
         public async Task DeleteService(int id)
         {
-            _logger.Information($"START - delete service: {id}");
-
             var service = await _unitOfWork.Table<Service>()
                 .FirstOrDefaultAsync(s => s.Id.Equals(id))
-                ?? throw new NotFoundException("Service", id);
+                ?? throw new NotFoundException(nameof(Service), id);
 
             service.IsActive = false;
             _unitOfWork.Table<Service>().Update(service);
             _unitOfWork.SaveChangeAsync().Wait();
-
-            _logger.Information($"END - delete service: {id}");
+            LogSuccess(id);
         }
     }
 }

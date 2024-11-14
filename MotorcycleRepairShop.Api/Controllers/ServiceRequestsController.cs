@@ -43,7 +43,8 @@ namespace MotorcycleRepairShop.Api.Controllers
         /// </remarks>
         [HttpPost("deirec")]
         public async Task<ActionResult<int>> CreateDeirecRequestService(CreateServiceRequestDto serviceRequestDto)
-            => Ok(await _serviceRequestService.CreateDeirecServiceRequest(serviceRequestDto));
+            => CreatedAtAction(nameof(CreateDeirecRequestService), 
+                await _serviceRequestService.CreateDeirecServiceRequest(serviceRequestDto));
 
         /// <summary>
         /// Tạo một yêu cầu dịch vụ mới khi khách ở xa.
@@ -55,7 +56,8 @@ namespace MotorcycleRepairShop.Api.Controllers
         /// </remarks>
         [HttpPost("remote")]
         public async Task<ActionResult<int>> CreateRemoteRequestService(CreateServiceRequestDto serviceRequestDto)
-            => Ok(await _serviceRequestService.CreateRemoteServiceRequest(serviceRequestDto));
+            => CreatedAtAction(nameof(CreateRemoteRequestService), 
+                await _serviceRequestService.CreateRemoteServiceRequest(serviceRequestDto));
 
         /// <summary>
         /// Tạo một yêu cầu dịch vụ mới khi yêu cầu cứu hộ.
@@ -67,7 +69,8 @@ namespace MotorcycleRepairShop.Api.Controllers
         /// </remarks>
         [HttpPost("rescue")]
         public async Task<ActionResult<int>> CreateRescueRequestService(CreateServiceRequestDto serviceRequestDto)
-            => Ok(await _serviceRequestService.CreateRescueServiceRequest(serviceRequestDto));
+            => CreatedAtAction(nameof(CreateRescueRequestService), 
+                await _serviceRequestService.CreateRescueServiceRequest(serviceRequestDto));
 
         /// <summary>
         /// Chỉnh sửa thông tin khách hàng của yêu cầu dịch vụ.

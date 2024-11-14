@@ -34,7 +34,7 @@ namespace MotorcycleRepairShop.Api.Controllers
 
         [HttpPost]
         public async Task<ActionResult<int>> CreateVehicle([FromForm] CreateVehicleDto vehicleDto)
-            => Ok(await _vehicleService.CreateVehicle(vehicleDto));
+            => CreatedAtAction(nameof(CreateVehicle), await _vehicleService.CreateVehicle(vehicleDto));
 
         [HttpPut("{id}")]
         public async Task<ActionResult<VehicleDto>> UpdateVehicle(int id, [FromForm] UpdateVehicleDto vehicleDto)

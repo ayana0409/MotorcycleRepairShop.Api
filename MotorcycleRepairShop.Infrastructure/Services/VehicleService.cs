@@ -26,17 +26,10 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         }
         public async Task<TableResponse<VehicleTableDto>> GetVehiclePagination(TableRequest request)
         {
-            LogStart();
             var (result, total) = await _unitOfWork.VehicleRepository
                 .GetPanigationAsync(request.PageIndex, request.PageSize, request.Keyword ?? "");
-            List<VehicleTableDto> datas = [];
-
-            foreach (var item in result)
-            {
-                datas.Add(_mapper.Map<VehicleTableDto>(item));
-            }
-
-            LogEnd();
+            
+            var datas = _mapper.Map<IEnumerable<VehicleTableDto>>(result);
             return new TableResponse<VehicleTableDto>
             {
                 PageSize = request.PageSize,
@@ -46,12 +39,10 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         }
         public async Task<VehicleDto> GetVehicleById(int id)
         {
-            LogStart(id);
             var vehicle = await _unitOfWork.Table<Vehicle>()
                 .Include(v => v.Images)
                 .FirstOrDefaultAsync(x => x.Id.Equals(id))
                 ?? throw new NotFoundException("Vehicle", id);
-            LogEnd(id);
 
             var result = _mapper.Map<VehicleDto>(vehicle);
             return result;
@@ -67,8 +58,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
             var result = vehicle.Id;
             UploadVehicleImage(result, vehicleDto.Images);
-
-            LogEnd(result);
+            LogSuccess(result);
             return result;
         }
 
@@ -102,14 +92,12 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             UploadVehicleImage(vehicleId, insertImage);
 
             var result = _mapper.Map<VehicleDto>(updateVehicle);
-            LogEnd(vehicleId);
-
+            LogSuccess(vehicleId);
             return result;
         }
 
         public async Task DeleteVehicle(int vehicleId)
         {
-            LogStart(vehicleId);
             var vehicle = await _unitOfWork.Table<Vehicle>()
                 .FirstOrDefaultAsync(v => v.Id.Equals(vehicleId))
                 ?? throw new NotFoundException(nameof(Vehicle), vehicleId);
@@ -117,12 +105,11 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             await DeleteVehicleImage(vehicleId);
             vehicle.IsActive = false;
             _unitOfWork.Table<Vehicle>().Update(vehicle);
-            _unitOfWork.SaveChangeAsync().GetAwaiter();
-            LogEnd(vehicleId);
+            await _unitOfWork.SaveChangeAsync();
+            LogSuccess(vehicleId);
         }
         private void UploadVehicleImage(int vehicleId, List<IFormFile> images)
         {
-            LogStart(vehicleId);
             List<Image> addImages = [];
             foreach (var item in images)
             {
@@ -131,12 +118,11 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             }
             _unitOfWork.Table<Image>().AddRange(addImages);
             _unitOfWork.SaveChangeAsync().GetAwaiter();
-            LogEnd(vehicleId);
+            LogSuccess(vehicleId);
         }
 
         private async Task DeleteVehicleImage(int vehicleId)
         {
-            LogStart(vehicleId);
             var images = await _unitOfWork.ImageRepository
                 .GetByVehicleIdAsync(vehicleId);
 
@@ -145,7 +131,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
             _unitOfWork.Table<Image>().RemoveRange(images);
             await _unitOfWork.SaveChangeAsync();
-            LogEnd(vehicleId);
+            LogSuccess(vehicleId);
         }
     }
 }

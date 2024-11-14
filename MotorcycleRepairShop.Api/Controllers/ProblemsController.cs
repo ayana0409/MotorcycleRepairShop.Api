@@ -35,7 +35,7 @@ namespace MotorcycleRepairShop.Api.Controllers
 
         [HttpPost]
         public async Task<ActionResult<int>> CreateProblem(ProblemDto problem)
-            => Ok(await _problemService.CreateProblem(problem));
+            => CreatedAtAction(nameof(CreateProblem), await _problemService.CreateProblem(problem));
 
         [HttpPut("{id}")]
         public async Task<ActionResult<ProblemDto>> UpdateProblem(int id,  ProblemDto problem) 

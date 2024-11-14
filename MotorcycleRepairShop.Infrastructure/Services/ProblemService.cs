@@ -21,17 +21,10 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task<TableResponse<ProblemTableDto>> GetProblemPagination(TableRequest request)
         {
-            LogStart();
             var (result, total) = await _unitOfWork.ProblemRepository
                 .GetPanigationAsync(request.PageIndex, request.PageSize, request.Keyword ?? "");
-            List<ProblemTableDto> datas = [];
-
-            foreach (var item in result)
-            {
-                datas.Add(_mapper.Map<ProblemTableDto>(item));
-            }
-
-            LogEnd();
+            
+            var datas = _mapper.Map<IEnumerable<ProblemTableDto>>(result);
             return new TableResponse<ProblemTableDto>
             {
                 PageSize = request.PageSize,
@@ -41,30 +34,26 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         }
         public async Task<ProblemDto> GetProblemById(int problemId)
         {
-            LogStart(problemId);
             var problem = await _unitOfWork.ProblemRepository
                 .GetSigleAsync(p => p.Id.Equals(problemId))
                 ?? throw new NotFoundException(nameof(Problem), problemId);
             var result = _mapper.Map<ProblemDto>(problem);
-            LogEnd(problemId);
             return result;
         }
 
         public async Task<int> CreateProblem(ProblemDto problemDto)
         {
-            LogStart();
             var createProblem = _mapper.Map<Problem>(problemDto);
             await _unitOfWork.ProblemRepository.CreateAsync(createProblem);
             await _unitOfWork.SaveChangeAsync();
 
             var result = createProblem.Id;
-            LogEnd(result);
+            LogSuccess(result);
             return result;
         }
 
         public async Task<ProblemDto> UpdateProblem(int id, ProblemDto problemDto)
         {
-            LogStart(id);
             var existProblem = await _unitOfWork.ProblemRepository
                 .GetSigleAsync(p => p.Id.Equals(id))
                 ?? throw new NotFoundException(nameof(Problem), id);
@@ -73,20 +62,19 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             await _unitOfWork.SaveChangeAsync();
 
             var result = _mapper.Map<ProblemDto>(updateProblem);
-            LogEnd(id);
+            LogSuccess(id);
             return result;
         }
 
         public async Task DeleteProblem(int id)
         {
-            LogStart(id);
             var existProblem = await _unitOfWork.ProblemRepository
                 .GetSigleAsync(p => p.Id.Equals(id))
                 ?? throw new NotFoundException(nameof(Problem), id);
             existProblem.IsActive = false;
             _unitOfWork.ProblemRepository.Update(existProblem);
             await _unitOfWork.SaveChangeAsync();
-            LogEnd(id);
+            LogSuccess(id);
         }
     }
 }
