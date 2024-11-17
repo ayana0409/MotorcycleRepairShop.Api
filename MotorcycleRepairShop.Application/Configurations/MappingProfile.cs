@@ -117,6 +117,38 @@ namespace MotorcycleRepairShop.Application.Configurations
                     dest => dest.Parts,
                     opt => opt.Ignore());
 
+            CreateMap<ServiceRequest, ServiceRequestInfoDto>()
+                .ForMember(
+                    dest => dest.ServiceType,
+                    opt => opt.MapFrom(src => src.ServiceType.GetDisplayName()))
+                .ForMember(
+                    dest => dest.Status,
+                    opt => opt.MapFrom(src => ((StatusEnum)src.StatusId).GetDisplayName()))
+                .ForMember(
+                    dest => dest.Images,
+                    opt => opt.MapFrom(src => src.Images.Select(i => i.Name).ToList()))
+                .ForMember(
+                    dest => dest.Videos,
+                    opt => opt.MapFrom(src => src.Videos.Select(i => i.Name).ToList()))
+                .ForMember(
+                    dest => dest.Problems,
+                    otp => otp.Ignore())
+                .ForMember(
+                    dest => dest.Services,
+                    opt => opt.Ignore())
+                .ForMember(
+                    dest => dest.Parts,
+                    opt => opt.Ignore())
+                .ForMember(
+                    dest => dest.TotalPrice,
+                    opt => opt.MapFrom(src => src.GetTotalPrice()))
+                .ForMember(
+                    dest => dest.Status,
+                    opt => opt.MapFrom(src => ((StatusEnum)src.StatusId).GetDisplayName()))
+                .ForMember(
+                    dest => dest.Type,
+                    opt => opt.MapFrom(src => src.ServiceType.GetDisplayName()));
+
             CreateMap<CreateServiceRequestDto, ServiceRequest>()
                 .ForMember(
                     dest => dest.Images,
@@ -136,20 +168,37 @@ namespace MotorcycleRepairShop.Application.Configurations
                     dest => dest.TotalPrice,
                     opt => opt.MapFrom(src => src.GetTotalPrice()));
 
+            CreateMap<ServiceRequest, ServiceRequestHomeDto>()
+                .ForMember(
+                    dest => dest.TotalPrice,
+                    opt => opt.MapFrom(src => src.GetTotalPrice()))
+                .ForMember(
+                    dest => dest.Status,
+                    opt => opt.MapFrom(src => ((StatusEnum)src.StatusId).GetDisplayName()))
+                .ForMember(
+                    dest => dest.Type,
+                    opt => opt.MapFrom(src => src.ServiceType.GetDisplayName()));
+
+            CreateMap<ServiceRequestProblem, string>()
+                .ConstructUsing(p => p.Problem.Name ?? "");
+
+            
             #endregion
 
             #region Service Request Item
 
             CreateMap<UpSertServiceRequestItemDto, ServiceRequestItem>();
             CreateMap<ServiceRequestItem, ServiceRequestItemDto>();
-
+            CreateMap<ServiceRequestItem, ServiceRequestItemInfo>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Service.Name));
             #endregion
 
             #region Service Request Part
 
             CreateMap<UpSertServiceRequestPartDto, ServiceRequestPart>();
             CreateMap<ServiceRequestPart, ServiceRequestPartDto>();
-
+            CreateMap<ServiceRequestPart, ServiceRequestPartInfoDto>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Part.Name));
             #endregion
 
             #region Payment

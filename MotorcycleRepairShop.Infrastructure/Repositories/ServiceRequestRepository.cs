@@ -12,6 +12,8 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         {
             _context = applicationDbContext;
         }
+        public IQueryable<ServiceRequest> GetQueryable() 
+            => _context.Set<ServiceRequest>().AsQueryable();
         public async Task<(IEnumerable<ServiceRequest>, int)> GetPanigationAsync(int pageIndex, int pageSize, string keyword)
         {
             var query = _context.Set<ServiceRequest>()
@@ -41,8 +43,9 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
 
         public async Task<ServiceRequest?> GetById(int id)
             => await _context.Set<ServiceRequest>()
-                .Include(sr => sr.Services)
-                .Include(sr => sr.Parts)
+                .Include(sr => sr.Images)
+                .Include(sr => sr.Videos)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(sr => sr.Id.Equals(id));
 
         public async Task<IEnumerable<ServiceRequest>> GetByUsername(string username)
@@ -52,6 +55,13 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
                     && s.Customer.UserName != null
                     && s.Customer.UserName.Equals(username))
                 .ToListAsync();
+
+        public async Task<IEnumerable<ServiceRequest>> GetByMobilePhone(string mobilePhone)
+            => await _context.Set<ServiceRequest>()
+            .Include(s => s.Parts)
+            .Include(s => s.Services)
+            .Where(s => s.MobilePhone.Equals(mobilePhone))
+            .ToListAsync();
 
         public async Task<bool> AnyAsync(int serviceRequestId)
             => await base.GetSigleAsync(r => r.Id.Equals(serviceRequestId)) != null;

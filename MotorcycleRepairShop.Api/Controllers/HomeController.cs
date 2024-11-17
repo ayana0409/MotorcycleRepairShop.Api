@@ -36,5 +36,14 @@ namespace MotorcycleRepairShop.Api.Controllers
         [HttpGet("vehicle-info")]
         public async Task<ActionResult<VehicleHomeDto>> GetVehicleById([FromQuery]int id)
             => Ok(await _homeService.GetVehicleById(id));
+
+        [HttpGet("service-requests-by-mobile-phone")]
+        public async Task<ActionResult<IEnumerable<ServiceRequestHomeDto>>>
+            GetServiceRequestByMobilePhone([FromQuery] string mobilePhone)
+            => Ok(await _homeService.GetServiceRequestsByMobilePhone(mobilePhone));
+        [HttpGet("service-request-info")]
+        public async Task<ActionResult<ServiceRequestInfoDto>> GetServiceRequestInfo([FromQuery]int id)
+            => Ok(await _homeService.GetServiceRequestInfoById(id));
+
     }
 }

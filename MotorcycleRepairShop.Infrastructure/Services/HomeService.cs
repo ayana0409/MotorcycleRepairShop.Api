@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MotorcycleRepairShop.Application.Interfaces;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
@@ -57,6 +58,38 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             var brands = await _unitOfWork.BrandRepository
                 .GetAllAsync(b => b.IsActive == true);
             var result = _mapper.Map<IEnumerable<BrandHomeDto>>(brands);
+            return result;
+        }
+
+        public async Task<IEnumerable<ServiceRequestHomeDto>> GetServiceRequestsByMobilePhone(string mobilePhone)
+        {
+            var serviceRequests = await _unitOfWork.ServiceRequestRepository
+                .GetByMobilePhone(mobilePhone);
+            var result = _mapper.Map<IEnumerable<ServiceRequestHomeDto>>(serviceRequests);
+            return result;
+        }
+
+        public async Task<ServiceRequestInfoDto> GetServiceRequestInfoById(int id)
+        {
+            var serviceRequest = await _unitOfWork.ServiceRequestRepository
+                .GetQueryable()
+                .Include(sr => sr.Services)
+                .ThenInclude(s => s.Service)
+                .Include(sr => sr.Parts)
+                .ThenInclude(p => p.Part)
+                .Include(sr => sr.Problems)
+                .ThenInclude(p => p.Problem)
+                .FirstOrDefaultAsync(sr => sr.Id == id)
+                ?? throw new NotFoundException(nameof(ServiceRequest), id);
+
+            var result = _mapper.Map<ServiceRequestInfoDto>(serviceRequest);
+
+            // Get part info
+            result.Parts = _mapper.Map<List<ServiceRequestPartInfoDto>>(serviceRequest.Parts);
+            // Get problem info
+            result.Problems = _mapper.Map<List<string>>(serviceRequest.Problems);
+            // Get service info
+            result.Services = _mapper.Map<List<ServiceRequestItemInfo>>(serviceRequest.Services);
             return result;
         }
 
