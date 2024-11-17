@@ -3,6 +3,8 @@ using MotorcycleRepairShop.Application.Interfaces;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Service;
+using MotorcycleRepairShop.Domain.Entities;
+using MotorcycleRepairShop.Share.Exceptions;
 using Serilog;
 
 namespace MotorcycleRepairShop.Infrastructure.Services
@@ -32,5 +34,31 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             var result = _mapper.Map<IEnumerable<PartHomeDto>>(parts);
             return result;
         }
+
+        public async Task<VehicleHomeDto> GetVehicleById(int id)
+        {
+            var vehicle = await _unitOfWork.VehicleRepository
+                .GetById(id)
+                ?? throw new NotFoundException(nameof(Vehicle), id);
+            var result = _mapper.Map<VehicleHomeDto>(vehicle);
+            return result;
+        }
+
+        public async Task<IEnumerable<VehicleHomeDto>> GetVehiclesByBrandId(int brandId)
+        {
+            var vehicles = await _unitOfWork.VehicleRepository
+                .GetVehiclesByBrandId(brandId);
+            var result = _mapper.Map<IEnumerable<VehicleHomeDto>>(vehicles);
+            return result;
+        }
+
+        public async Task<IEnumerable<BrandHomeDto>> GetBrandList()
+        {
+            var brands = await _unitOfWork.BrandRepository
+                .GetAllAsync(b => b.IsActive == true);
+            var result = _mapper.Map<IEnumerable<BrandHomeDto>>(brands);
+            return result;
+        }
+
     }
 }

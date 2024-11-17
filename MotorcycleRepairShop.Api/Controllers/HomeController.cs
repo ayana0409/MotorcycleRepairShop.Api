@@ -24,5 +24,17 @@ namespace MotorcycleRepairShop.Api.Controllers
         [HttpGet("part-list")]
         public async Task<ActionResult<IEnumerable<PartHomeDto>>> GetPartList()
             => Ok(await _homeService.GetPartList());
+
+        [HttpGet("brand-list")]
+        public async Task<ActionResult<IEnumerable<BrandHomeDto>>> GetBrandList()
+            => Ok(await _homeService.GetBrandList());
+
+        [HttpGet("vehicle-list-by-brandid")]
+        public async Task<ActionResult<IEnumerable<VehicleHomeDto>>> GetVehicleList([FromQuery]int id)
+            => Ok(await _homeService.GetVehiclesByBrandId(id));
+
+        [HttpGet("vehicle-info")]
+        public async Task<ActionResult<VehicleHomeDto>> GetVehicleById([FromQuery]int id)
+            => Ok(await _homeService.GetVehicleById(id));
     }
 }

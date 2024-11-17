@@ -42,5 +42,30 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
 
             return (data, total);
         }
+
+        public async Task<IEnumerable<Vehicle>> GetVehiclesByBrandId(int brandId)
+        {
+            var query = await _applicationDbContext.Set<Vehicle>()
+                .Include(v => v.Images)
+                .Include(v => v.Brand)
+                .AsSplitQuery()
+                .ToListAsync();
+            var result = query
+                .Where(v => v.IsActive == true && v.BrandId.Equals(brandId))
+                .ToList();
+            return result;
+        }
+
+        public async Task<Vehicle?> GetById(int id)
+        {
+             var query = await _applicationDbContext.Set<Vehicle>()
+                .Include(v => v.Images)
+                .Include(v => v.Brand)
+                .AsSplitQuery()
+                .ToListAsync();
+            var result = query
+                .FirstOrDefault(v => v.IsActive == true && v.Id.Equals(id));
+            return result;
+        }
     }
 }

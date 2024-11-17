@@ -37,6 +37,7 @@ namespace MotorcycleRepairShop.Application.Configurations
 
             CreateMap<BrandDto, Brand>().ReverseMap();
             CreateMap<BrandTableDto, Brand>().ReverseMap();
+            CreateMap<Brand, BrandHomeDto>().ReverseMap();
 
             #endregion
 
@@ -54,6 +55,11 @@ namespace MotorcycleRepairShop.Application.Configurations
             CreateMap<Vehicle, VehicleTableDto>()
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Select(i => i.Name).ToList()))
                 .ForMember(dest => dest.BrandName, opt => opt.MapFrom(src => src.Brand.Name));
+            CreateMap<Vehicle, VehicleHomeDto>()
+                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Select(i => i.Name).ToList()))
+                .ForMember(dest => dest.BrandName, opt => opt.MapFrom(src => src.Brand.Name));
+
+
 
             #endregion
 
