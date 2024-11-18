@@ -112,6 +112,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 LogStart(serviceRequestId);
                 if (status == StatusEnum.Completed)
                 {
+                    // Comsume Inventory
                     var usedParts = await _unitOfWork.PartRepository
                         .GetByServiceRequestId(serviceRequestId);
                     foreach (var part in usedParts)
@@ -146,6 +147,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 _unitOfWork.ServiceRequestRepository
                     .Update(serviceRequest);
                 await _unitOfWork.SaveChangeAsync();
+
                 _logger.Information($"UpdateServiceRequestStatus - Id: {serviceRequestId} - Status: {Enum.GetName(status)}");
                 await _unitOfWork.CommitTransaction();
                 LogEnd(serviceRequestId);

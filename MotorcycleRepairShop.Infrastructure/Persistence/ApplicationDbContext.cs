@@ -78,5 +78,38 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
                 .Property(p => p.PaymentMethod)
                 .HasConversion<string>();
         }
+
+        public override int SaveChanges()
+        {
+            UpdateTotalPrices();
+            return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateTotalPrices();
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateTotalPrices()
+        {
+            var entries = ChangeTracker.Entries<ServiceRequest>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+            foreach (var entry in entries)
+            {
+                var serviceRequest = entry.Entity;
+                serviceRequest.TotalPrice = CalculateTotalPrice(serviceRequest);
+            }
+        }
+
+        private decimal CalculateTotalPrice(ServiceRequest request)
+        {
+            // Tương tự phương thức ở trên
+            var servicePrice = request.Services?.Sum(s => s.Price * s.Quantity) ?? 0;
+            var partPrice = request.Parts?.Sum(p => p.Price * p.Quantity) ?? 0;
+
+            return servicePrice + partPrice;
+        }
     }
 }

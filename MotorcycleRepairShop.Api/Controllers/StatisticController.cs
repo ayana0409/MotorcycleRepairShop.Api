@@ -26,5 +26,10 @@ namespace MotorcycleRepairShop.Api.Controllers
         public async Task<ActionResult<IEnumerable<ServiceRequestStatisticsDto>>> 
             GetServiceRequestStatisticsByDate([Required] DateTime startDate, DateTime? endDate)
             => Ok(await _statisticService.GetServiceRequestStatisticsAsync(startDate, endDate));
+
+        [HttpGet("revenue")]
+        public async Task<ActionResult<decimal>>
+            GetRevenueStatisticsByDate([Required] DateTime startDate, DateTime? endDate)
+            => Ok(await _statisticService.GetRevenueStatisticsAsync(startDate, endDate));
     }
 }

@@ -2,6 +2,7 @@
 using MotorcycleRepairShop.Application.Interfaces.Repositories;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Domain.Entities;
+using MotorcycleRepairShop.Domain.Enums;
 using MotorcycleRepairShop.Infrastructure.Persistence;
 
 namespace MotorcycleRepairShop.Infrastructure.Repositories
@@ -15,7 +16,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<ServiceRequestStatisticsDto>> GetServiceRequestStatisticByDayAsync(DateTime startDay, DateTime endDate)
+        public async Task<IEnumerable<ServiceRequestStatisticsDto>> GetServiceRequestStatisticByDay(DateTime startDay, DateTime endDate)
         {
             var result = await _context.Set<ServiceRequest>()
                 .Where(sr => sr.DateSubmitted >= startDay && sr.DateSubmitted <= endDate)
@@ -39,5 +40,12 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
 
             return groupedByDate;
         }
+
+        public async Task<decimal> GetRevenueStatisticByDay(DateTime startDay, DateTime endDate)
+            => await _context.Set<ServiceRequest>()
+                .Where(sr => sr.DateSubmitted >= startDay 
+                    && sr.DateSubmitted <= endDate 
+                    && sr.StatusId == (int)StatusEnum.Completed)
+                .SumAsync(sr => sr.TotalPrice);
     }
 }

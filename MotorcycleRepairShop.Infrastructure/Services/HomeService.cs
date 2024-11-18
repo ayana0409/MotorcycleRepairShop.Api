@@ -86,6 +86,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 .ThenInclude(p => p.Part)
                 .Include(sr => sr.Problems)
                 .ThenInclude(p => p.Problem)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(sr => sr.Id == id)
                 ?? throw new NotFoundException(nameof(ServiceRequest), id);
 

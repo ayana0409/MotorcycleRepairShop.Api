@@ -45,6 +45,8 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
             => await _context.Set<ServiceRequest>()
                 .Include(sr => sr.Images)
                 .Include(sr => sr.Videos)
+                .Include(sr => sr.Services)
+                .Include(sr => sr.Parts)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(sr => sr.Id.Equals(id));
 

@@ -19,10 +19,19 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         public async Task<IEnumerable<ServiceRequestStatisticsDto>> GetServiceRequestStatisticsAsync(DateTime startDate, DateTime? endDate)
         {
             var statistics = await _unitOfWork.StatisticRepository
-                .GetServiceRequestStatisticByDayAsync(startDate, endDate ?? DateTime.UtcNow);
+                .GetServiceRequestStatisticByDay(startDate, endDate ?? DateTime.UtcNow);
 
             _logger.Information($"GetServiceRequestStatistics from {startDate:dd/MM/yyyy} to {endDate:dd/MM/yyyy}");
             return statistics;
+        }
+
+        public async Task<decimal> GetRevenueStatisticsAsync(DateTime startDate, DateTime? endDate)
+        {
+            var result = await _unitOfWork.StatisticRepository
+                .GetRevenueStatisticByDay(startDate, endDate ?? DateTime.UtcNow);
+
+            _logger.Information($"GetRevenueStatistics from {startDate:dd/MM/yyyy} to {endDate:dd/MM/yyyy}");
+            return result;
         }
     }
 }
