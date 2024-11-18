@@ -26,7 +26,8 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
             var query = _context
                 .Set<Part>()
                 .Include(p => p.Brand)
-                .Where(p => p.IsActive == true);
+                .Where(p => p.IsActive == true)
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(keyword))
             {
@@ -40,10 +41,11 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
                 query = query.Where(p => p.IsActive == true);
             }
 
-            var data = query
+            var data = await query
+                .OrderBy(c => c.Id)
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
 
             int total = query.Count();
 

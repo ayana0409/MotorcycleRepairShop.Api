@@ -16,7 +16,7 @@ namespace MotorcycleRepairShop.Api.Controllers
         }
 
         [HttpGet("available/{partId}")]
-        public async Task<ActionResult<List<PartInventoryDto>>> GetAvailableInventories(int partId)
+        public async Task<ActionResult<List<CreatePartInventoryDto>>> GetAvailableInventories(int partId)
             => Ok(await _partInventoryService.GetAvailableInventoriesByPartId(partId));
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace MotorcycleRepairShop.Api.Controllers
         /// <param name="partInventoryDto">Thông tin nhập hàng</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<int>> CreatePartInventory(PartInventoryDto partInventoryDto)
+        public async Task<ActionResult<int>> CreatePartInventory(CreatePartInventoryDto partInventoryDto)
             => Ok(await _partInventoryService.CreatePartInventory(partInventoryDto));
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace MotorcycleRepairShop.Api.Controllers
         /// <param name="partInventoryDtos">Danh sách các thông tin nhập hàng</param>
         /// <returns></returns>
         [HttpPost("multiple")]
-        public async Task<ActionResult<List<int>>> CreateMultipleInventories(List<PartInventoryDto> partInventoryDtos)
+        public async Task<ActionResult<List<int>>> CreateMultipleInventories(List<CreatePartInventoryDto> partInventoryDtos)
             => Ok(await _partInventoryService.CreatePartInventories(partInventoryDtos));
     }
 }

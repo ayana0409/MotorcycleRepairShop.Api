@@ -85,8 +85,8 @@ namespace MotorcycleRepairShop.Application.Configurations
 
             #region Part Inventory
 
-            CreateMap<PartInventory, PartInventoryDto>().ReverseMap();
-            //CreateMap<List<PartInventory>, List<PartInventoryDto>>();
+            CreateMap<PartInventory, CreatePartInventoryDto>().ReverseMap();
+            CreateMap<PartInventory, PartInventoryDto>();
 
             #endregion
 

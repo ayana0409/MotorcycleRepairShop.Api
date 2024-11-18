@@ -35,7 +35,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             return result;
         }
 
-        public async Task<int> CreatePartInventory(PartInventoryDto partInventoryDto)
+        public async Task<int> CreatePartInventory(CreatePartInventoryDto partInventoryDto)
         {
             var partId = partInventoryDto.PartId;
             var part = await _unitOfWork.PartRepository
@@ -53,7 +53,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             return result;
         }
 
-        public async Task<List<int>> CreatePartInventories(List<PartInventoryDto> partInventoryDtos)
+        public async Task<List<int>> CreatePartInventories(List<CreatePartInventoryDto> partInventoryDtos)
         {
             if (partInventoryDtos == null || partInventoryDtos.Count == 0)
                 throw new ArgumentException("No inventory data provided.");
