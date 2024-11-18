@@ -37,7 +37,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             try
             {
                 var user = _mapper.Map<ApplicationUser>(account);
-                user.UserName = user.Email;
+                user.UserName = user.MobilePhone;
                 
                 var addedAccount = await _userManager.CreateAsync(user, account.Password);
 
