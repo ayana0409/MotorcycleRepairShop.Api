@@ -9,6 +9,7 @@ using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Domain.Enums;
 using MotorcycleRepairShop.Share.Exceptions;
 using MotorcycleRepairShop.Share.Extensions;
+using MySqlX.XDevAPI.Common;
 using Serilog;
 using Image = MotorcycleRepairShop.Domain.Entities.Image;
 
@@ -101,11 +102,11 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 .GetSigleAsync(sr => sr.Id.Equals(serviceRequestId))
                 ?? throw new NotFoundException(nameof(ServiceRequest), serviceRequestId);
 
-            if (serviceRequest.StatusId == (int)StatusEnum.Completed 
+            if (serviceRequest.StatusId == (int)StatusEnum.Completed
                 || serviceRequest.StatusId == (int)StatusEnum.Canceled)
             {
                 throw new UpdateStatusFailedException(
-                    Enum.GetName(typeof(StatusEnum), serviceRequest.StatusId) ?? "Status", 
+                    Enum.GetName(typeof(StatusEnum), serviceRequest.StatusId) ?? "Status",
                     status.GetDisplayName());
             }
             try
@@ -150,6 +151,9 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                     .Update(serviceRequest);
                 await _unitOfWork.SaveChangeAsync();
 
+                if (!string.IsNullOrEmpty(serviceRequest.Email))
+                    await SendEmail(serviceRequestId, serviceRequest.Email, status);
+
                 _logger.Information($"UpdateServiceRequestStatus - Id: {serviceRequestId} - Status: {Enum.GetName(status)}");
                 await _unitOfWork.CommitTransaction();
                 LogEnd(serviceRequestId);
@@ -158,7 +162,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             {
                 await _unitOfWork.RollBackTransaction();
                 _logger.Information("Error while UpdateServiceRequestStatus: ", ex.Message);
-                throw new ArgumentException("Error while update service request status",ex.Message);
+                throw new ArgumentException("Error while update service request status", ex.Message);
             }
         }
 
@@ -324,7 +328,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                     result.Add(mediaItem.Name);
                 }
             }
-            
+
             await _unitOfWork.SaveChangeAsync();
             LogEnd(serviceRequestId);
             return result;
@@ -332,7 +336,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task DeleteMediaInServiceRequest(int serviceRequestId, IEnumerable<string> mediaUrls, MediaType type)
         {
-            
+
             if (type == MediaType.Image)
             {
                 var exitsImages = await _unitOfWork.ImageRepository
@@ -398,7 +402,8 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                     await AddMediaToServiceRequest(result, serviceRequestDto.Images, MediaType.Image);
 
                 if (!string.IsNullOrEmpty(serviceRequestDto.Email))
-                    await _emailService.SendEmailAsync(serviceRequestDto.Email, "Yêu cầu đã được tạo", "<h1>This is a test email</h1>");
+                    await SendEmail(result, serviceRequestDto.Email, StatusEnum.New);
+
                 LogEnd(result, $"CreateServiceRequest {Enum.GetName(type)}");
                 await _unitOfWork.CommitTransaction();
                 return result;
@@ -438,7 +443,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                     ServiceId = serviceid,
                     Quantity = 1,
                     ServiceRequestId = serviceRequestId,
-                    Price = existService.FirstOrDefault(s => s.Id.Equals(serviceid))?.Price 
+                    Price = existService.FirstOrDefault(s => s.Id.Equals(serviceid))?.Price
                                 ?? throw new NotFoundException(nameof(Service), serviceid)
                 });
             await _unitOfWork.Table<ServiceRequestItem>()
@@ -454,6 +459,54 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             if (!serviceRequestExists)
             {
                 throw new NotFoundException(nameof(ServiceRequest), serviceRequestId);
+            }
+        }
+
+        private async Task SendEmail(int serviceRequestId, string email, StatusEnum status)
+        {
+            switch (status)
+            {
+                case StatusEnum.New:
+                    await _emailService.SendEmailAsync(email, "Yêu cầu đã được tạo",
+                        $"<h1>Yêu cầu đã được tạo với mã là: {serviceRequestId}</h1>" +
+                        $"<h3>Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.</h3>" +
+                        $"<p>Bạn có thể kiểm tra chi tiết yêu cầu bằng SỐ ĐIỆN THOẠI của mình hoặc dùng TÀI KHOẢN đã đăng ký" +
+                        $" tại trang web chính thức của Motorcycle Repair Shop.</p>");
+                    break;
+                case StatusEnum.UnderInspection:
+                    await _emailService.SendEmailAsync(email, $"Yêu cầu {serviceRequestId} đang được kiểm tra",
+                        $"<h1>Yêu cầu với mã là {serviceRequestId} của bạn đang được chúng tôi kiểm tra.</h1>" +
+                        $"<p>Bạn có thể kiểm tra chi tiết yêu cầu bằng SỐ ĐIỆN THOẠI của mình hoặc dùng TÀI KHOẢN đã đăng ký" +
+                        $" tại trang web chính thức của Motorcycle Repair Shop.</p>");
+                    break;
+                case StatusEnum.AwaitingPayment:
+                    await _emailService.SendEmailAsync(email, $"Yêu cầu {serviceRequestId} đang chờ thanh toán",
+                        $"<h1>Yêu cầu với mã là {serviceRequestId} của bạn đang chờ bạn thanh toán.</h1>" +
+                        $"<h3>Bạn có thể thanh toán online hoặc đến trực tiếp cửa hàng của chúng tôi.</h3>" +
+                        $"<p>Bạn có thể kiểm tra chi tiết yêu cầu bằng SỐ ĐIỆN THOẠI của mình hoặc dùng TÀI KHOẢN đã đăng ký" +
+                        $" tại trang web chính thức của Motorcycle Repair Shop.</p>");
+                    break;
+                case StatusEnum.Processing:
+                    await _emailService.SendEmailAsync(email, $"Yêu cầu {serviceRequestId} đang được xử lý",
+                        $"<h1>Yêu cầu với mã là {serviceRequestId} của bạn đang được xử lý.</h1>" +
+                        $"<h3>Chúng tôi sẽ liên hệ với bạn ngay sau khi đã hoàn thành.</h3>" +
+                        $"<p>Bạn có thể kiểm tra chi tiết yêu cầu bằng SỐ ĐIỆN THOẠI của mình hoặc dùng TÀI KHOẢN đã đăng ký" +
+                        $" tại trang web chính thức của Motorcycle Repair Shop.</p>");
+                    break;
+                case StatusEnum.Canceled:
+                    await _emailService.SendEmailAsync(email, $"Yêu cầu {serviceRequestId} đã bị từ chối",
+                        $"<h1>Yêu cầu với mã là {serviceRequestId} của đã bị từ chối.</h1>" +
+                        $"<h3>Xin cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</h3>" +
+                        $"<p>Bạn có thể kiểm tra chi tiết yêu cầu bằng SỐ ĐIỆN THOẠI của mình hoặc dùng TÀI KHOẢN đã đăng ký" +
+                        $" tại trang web chính thức của Motorcycle Repair Shop.</p>");
+                    break;
+                case StatusEnum.Completed:
+                    await _emailService.SendEmailAsync(email, $"Yêu cầu {serviceRequestId} đã hoàn thành",
+                        $"<h1>Yêu cầu với mã là {serviceRequestId} của đã hoàn thành.</h1>" +
+                        $"<h3>Hãy nhận phương tiện của bạn. Xin cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</h3>" +
+                        $"<p>Bạn có thể kiểm tra chi tiết yêu cầu bằng SỐ ĐIỆN THOẠI của mình hoặc dùng TÀI KHOẢN đã đăng ký" +
+                        $" tại trang web chính thức của Motorcycle Repair Shop.</p>");
+                    break;
             }
         }
     }

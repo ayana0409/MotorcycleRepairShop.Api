@@ -15,6 +15,8 @@ namespace MotorcycleRepairShop.Domain.Entities
         [Required]
         [MaxLength(500)]
         public string Address { get; set; } = string.Empty;
+        [EmailAddress]
+        public string? Email { get; set; }
         public string IssueDescripton { get; set; } = string.Empty; 
         public DateTime DateSubmitted { get; set; } = DateTime.UtcNow;
         public DateTime CompletionDate { get; set; }
