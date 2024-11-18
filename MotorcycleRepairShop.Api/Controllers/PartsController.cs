@@ -16,7 +16,7 @@ namespace MotorcycleRepairShop.Api.Controllers
             _partService = partService;
         }
         [HttpGet("dropdown")]
-        public async Task<ActionResult<IEnumerable<PartForDropdown>>> GetForDropDownList()
+        public async Task<ActionResult<IEnumerable<PartForDropdownDto>>> GetForDropDownList()
             => Ok(await _partService.GetPartsForDropDownList());
 
         [HttpGet("pagination")]

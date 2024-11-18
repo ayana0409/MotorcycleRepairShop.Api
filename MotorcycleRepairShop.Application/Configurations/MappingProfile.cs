@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Account;
+using MotorcycleRepairShop.Application.Model.Problem;
 using MotorcycleRepairShop.Application.Model.Service;
 using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Domain.Enums;
@@ -68,7 +69,7 @@ namespace MotorcycleRepairShop.Application.Configurations
 
             CreateMap<PartDto, Part>().ReverseMap();
             CreateMap<PartTableDto, Part>();
-            CreateMap<Part, PartForDropdown>();
+            CreateMap<Part, PartForDropdownDto>();
             CreateMap<Part, PartTableDto>()
                 .ForMember(dest => dest.BrandName, 
                 opt => opt.MapFrom(src => src.Brand == null ? string.Empty : src.Brand.Name));
@@ -82,6 +83,7 @@ namespace MotorcycleRepairShop.Application.Configurations
 
             CreateMap<ProblemDto, Problem>().ReverseMap();
             CreateMap<ProblemTableDto, Problem>().ReverseMap();
+            CreateMap<Problem, ProblemForDropdownDto>();
 
             #endregion
 

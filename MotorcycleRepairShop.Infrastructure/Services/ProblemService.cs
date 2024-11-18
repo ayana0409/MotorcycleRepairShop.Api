@@ -2,6 +2,7 @@
 using MotorcycleRepairShop.Application.Interfaces;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
+using MotorcycleRepairShop.Application.Model.Problem;
 using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Share.Exceptions;
 using Serilog;
@@ -17,6 +18,12 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+        }
+        public async Task<IEnumerable<ProblemForDropdownDto>> GetProblemsForDropDownList()
+        {
+            var existList = await _unitOfWork.ProblemRepository.GetAllAsync();
+            var result = _mapper.Map<IEnumerable<ProblemForDropdownDto>>(existList);
+            return result;
         }
 
         public async Task<TableResponse<ProblemTableDto>> GetProblemPagination(TableRequest request)

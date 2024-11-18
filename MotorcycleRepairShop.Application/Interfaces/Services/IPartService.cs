@@ -6,7 +6,7 @@ namespace MotorcycleRepairShop.Application.Interfaces.Services
     {
         Task<int> CreatePart(PartDto partDto);
         Task DeletePart(int id);
-        Task<IEnumerable<PartForDropdown>> GetPartsForDropDownList();
+        Task<IEnumerable<PartForDropdownDto>> GetPartsForDropDownList();
         Task<PartDto> GetPartById(int partId);
         Task<TableResponse<PartTableDto>> GetPartPagination(TableRequest request);
         Task<PartDto> UpdatePart(int id, PartDto partDto);

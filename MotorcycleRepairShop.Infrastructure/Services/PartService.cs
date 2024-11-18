@@ -19,10 +19,10 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<PartForDropdown>> GetPartsForDropDownList()
+        public async Task<IEnumerable<PartForDropdownDto>> GetPartsForDropDownList()
         {
             var existList = await _unitOfWork.PartRepository.GetAllAsync();
-            var result = _mapper.Map<IEnumerable<PartForDropdown>>(existList);
+            var result = _mapper.Map<IEnumerable<PartForDropdownDto>>(existList);
             return result;
         }
         public async Task<TableResponse<PartTableDto>> GetPartPagination(TableRequest request)
