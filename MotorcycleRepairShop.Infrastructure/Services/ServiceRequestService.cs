@@ -343,14 +343,13 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 .GetAllAsync(i => mediaUrls.Contains(i.Name) && i.ServiceRequestId.Equals(serviceRequestId));
                 if (exitsImages.Any())
                 {
-                    LogStart(serviceRequestId, "DeleteImagesInServiceRequest");
                     foreach (var image in exitsImages)
                     {
                         await _cloudinaryService.DeletePhotoAsync(image.Name);
                         _unitOfWork.ImageRepository.Delete(image);
                     }
                     await _unitOfWork.SaveChangeAsync();
-                    LogEnd(serviceRequestId, "DeleteImagesInServiceRequest");
+                    _logger.Information("Deleting image...");
                 }
             }
             else
@@ -359,14 +358,13 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 .GetAllAsync(i => mediaUrls.Contains(i.Name) && i.ServiceRequestId.Equals(serviceRequestId));
                 if (exitsVideos.Any())
                 {
-                    LogStart(serviceRequestId, "DeleteVideosInServiceRequest");
                     foreach (var video in exitsVideos)
                     {
                         await _cloudinaryService.DeleteVideoAsync(video.Name);
                         _unitOfWork.VideoRepository.Delete(video);
                     }
                     await _unitOfWork.SaveChangeAsync();
-                    LogEnd(serviceRequestId, "DeleteVideosInServiceRequest");
+                    _logger.Information("Deleting video...");
                 }
             }
         }
@@ -400,6 +398,10 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 // Add images
                 if (serviceRequestDto.Images.Any())
                     await AddMediaToServiceRequest(result, serviceRequestDto.Images, MediaType.Image);
+
+                // Add videos
+                if (serviceRequestDto.Videos.Any())
+                    await AddMediaToServiceRequest(result, serviceRequestDto.Videos, MediaType.Video);
 
                 if (!string.IsNullOrEmpty(serviceRequestDto.Email))
                     await SendEmail(result, serviceRequestDto.Email, StatusEnum.New);
