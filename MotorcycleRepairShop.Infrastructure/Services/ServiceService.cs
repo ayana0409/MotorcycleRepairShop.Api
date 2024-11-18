@@ -20,7 +20,12 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-
+        public async Task<IEnumerable<ServiceForDropdownDto>> GetServicesForDropDownList()
+        {
+            var existList = await _unitOfWork.ServiceRepository.GetAllAsync();
+            var result = _mapper.Map<IEnumerable<ServiceForDropdownDto>>(existList);
+            return result;
+        }
         public async Task<TableResponse<ServiceTableDto>> GetPagination(TableRequest request)
         {
             var (result, total) = await _unitOfWork.ServiceRepository

@@ -30,6 +30,7 @@ namespace MotorcycleRepairShop.Application.Configurations
             CreateMap<ServiceDto, Service>().ReverseMap();
             CreateMap<ServiceTableDto, Service>().ReverseMap();
             CreateMap<ServiceHomeDto, Service>().ReverseMap();
+            CreateMap<Service, ServiceForDropdownDto>().ReverseMap();
 
             #endregion
 

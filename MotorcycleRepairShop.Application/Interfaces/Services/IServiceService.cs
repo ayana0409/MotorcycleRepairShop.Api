@@ -9,6 +9,7 @@ namespace MotorcycleRepairShop.Application.Interfaces.Services
         Task DeleteService(int id);
         Task<ServiceDto> GetById(int id);
         Task<TableResponse<ServiceTableDto>> GetPagination(TableRequest request);
+        Task<IEnumerable<ServiceForDropdownDto>> GetServicesForDropDownList();
         Task<ServiceDto> UpdateService(int id, ServiceDto serviceDto);
     }
 }

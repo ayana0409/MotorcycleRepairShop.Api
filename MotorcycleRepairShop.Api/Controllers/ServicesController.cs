@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Service;
@@ -13,6 +12,10 @@ namespace MotorcycleRepairShop.Api.Controllers
         private readonly IServiceService _service;
 
         public ServicesController(IServiceService service) => _service = service;
+
+        [HttpGet("dropdown")]
+        public async Task<ActionResult<IEnumerable<ServiceForDropdownDto>>> GetForDropDownList()
+            => Ok(await _service.GetServicesForDropDownList());
 
         [HttpGet("pagination")]
         public async Task<ActionResult<TableResponse<ServiceTableDto>>> GetPagination(
