@@ -2,7 +2,6 @@
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Service;
-using MotorcycleRepairShop.Domain.Entities;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
@@ -16,6 +15,9 @@ namespace MotorcycleRepairShop.Api.Controllers
         {
             _partService = partService;
         }
+        [HttpGet("dropdown")]
+        public async Task<ActionResult<IEnumerable<PartForDropdown>>> GetForDropDownList()
+            => Ok(await _partService.GetPartsForDropDownList());
 
         [HttpGet("pagination")]
         public async Task<ActionResult<TableResponse<ServiceTableDto>>> GetPagination(

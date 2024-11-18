@@ -67,6 +67,7 @@ namespace MotorcycleRepairShop.Application.Configurations
 
             CreateMap<PartDto, Part>().ReverseMap();
             CreateMap<PartTableDto, Part>();
+            CreateMap<Part, PartForDropdown>();
             CreateMap<Part, PartTableDto>()
                 .ForMember(dest => dest.BrandName, 
                 opt => opt.MapFrom(src => src.Brand == null ? string.Empty : src.Brand.Name));
