@@ -10,6 +10,7 @@ namespace MotorcycleRepairShop.Application.Interfaces.Services
         Task<IEnumerable<ServiceHomeDto>> GetServiceList();
         Task<ServiceRequestInfoDto> GetServiceRequestInfoById(int id);
         Task<IEnumerable<ServiceRequestHomeDto>> GetServiceRequestsByMobilePhone(string mobilePhone);
+        Task<IEnumerable<ServiceRequestHomeDto>> GetServiceRequestsByUsername(string username);
         Task<VehicleHomeDto> GetVehicleById(int id);
         Task<IEnumerable<VehicleHomeDto>> GetVehiclesByBrandId(int brandId);
     }

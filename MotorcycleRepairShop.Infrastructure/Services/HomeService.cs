@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using MotorcycleRepairShop.Application.Interfaces;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
-using MotorcycleRepairShop.Application.Model.Service;
 using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Share.Exceptions;
 using Serilog;
@@ -65,6 +64,14 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         {
             var serviceRequests = await _unitOfWork.ServiceRequestRepository
                 .GetByMobilePhone(mobilePhone);
+            var result = _mapper.Map<IEnumerable<ServiceRequestHomeDto>>(serviceRequests);
+            return result;
+        }
+
+        public async Task<IEnumerable<ServiceRequestHomeDto>> GetServiceRequestsByUsername(string username)
+        {
+            var serviceRequests = await _unitOfWork.ServiceRequestRepository
+                .GetByUsername(username);
             var result = _mapper.Map<IEnumerable<ServiceRequestHomeDto>>(serviceRequests);
             return result;
         }

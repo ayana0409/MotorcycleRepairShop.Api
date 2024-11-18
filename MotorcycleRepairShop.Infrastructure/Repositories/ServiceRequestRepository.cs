@@ -50,7 +50,10 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
 
         public async Task<IEnumerable<ServiceRequest>> GetByUsername(string username)
             => await _context.Set<ServiceRequest>()
+                .Include(s => s.Parts)
+                .Include(s => s.Services)
                 .Include(s => s.Customer)
+                .AsSplitQuery()
                 .Where(s => s.Customer != null
                     && s.Customer.UserName != null
                     && s.Customer.UserName.Equals(username))
@@ -60,6 +63,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
             => await _context.Set<ServiceRequest>()
             .Include(s => s.Parts)
             .Include(s => s.Services)
+            .AsSplitQuery()
             .Where(s => s.MobilePhone.Equals(mobilePhone))
             .ToListAsync();
 
