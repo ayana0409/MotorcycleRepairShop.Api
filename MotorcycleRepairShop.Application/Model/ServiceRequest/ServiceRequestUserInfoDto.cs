@@ -10,6 +10,8 @@ namespace MotorcycleRepairShop.Application.Model
         [Required]
         [MaxLength(250)]
         public string FullName { get; set; } = string.Empty;
+        [EmailAddress]
+        public string? Email { get; set; }
         [Required]
         [MaxLength(500)]
         public string Address { get; set; } = string.Empty;

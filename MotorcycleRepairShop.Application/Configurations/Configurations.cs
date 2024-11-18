@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using MotorcycleRepairShop.Application.Configurations.Models;
+using MotorcycleRepairShop.Share.Configuration;
 
 namespace MotorcycleRepairShop.Application.Configurations
 {
@@ -59,5 +60,9 @@ namespace MotorcycleRepairShop.Application.Configurations
             services.Configure<VNPayConfig>(configuration.GetSection("VNPay"));
         }
 
+        public static void AddSmtpConfiguration(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
+        }
     }
 }

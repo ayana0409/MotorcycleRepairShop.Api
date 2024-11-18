@@ -19,11 +19,13 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ICloudinaryService<ServiceRequest> _cloudinaryService;
-        public ServiceRequestService(ILogger logger, IUnitOfWork unitOfWork, IMapper mapper, ICloudinaryService<ServiceRequest> cloudinaryService) : base(logger)
+        private readonly IEmailService _emailService;
+        public ServiceRequestService(ILogger logger, IUnitOfWork unitOfWork, IMapper mapper, ICloudinaryService<ServiceRequest> cloudinaryService, IEmailService emailService) : base(logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _cloudinaryService = cloudinaryService;
+            _emailService = emailService;
         }
 
         public async Task<TableResponse<ServiceRequestTable>> GetServiceRequestPagination(TableRequest request)
@@ -395,6 +397,8 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 if (serviceRequestDto.Images.Any())
                     await AddMediaToServiceRequest(result, serviceRequestDto.Images, MediaType.Image);
 
+                if (!string.IsNullOrEmpty(serviceRequestDto.Email))
+                    await _emailService.SendEmailAsync(serviceRequestDto.Email, "Yêu cầu đã được tạo", "<h1>This is a test email</h1>");
                 LogEnd(result, $"CreateServiceRequest {Enum.GetName(type)}");
                 await _unitOfWork.CommitTransaction();
                 return result;

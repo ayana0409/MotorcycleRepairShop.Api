@@ -25,6 +25,7 @@ try
     builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
     builder.Services.AddVNPayConfiguration(builder.Configuration);
+    builder.Services.AddSmtpConfiguration(builder.Configuration);
 
     builder.Services.AddControllers(options =>
     {

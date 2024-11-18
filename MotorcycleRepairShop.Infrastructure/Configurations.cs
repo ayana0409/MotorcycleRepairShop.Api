@@ -43,6 +43,7 @@ namespace MotorcycleRepairShop.Infrastructure
             services.AddTransient<IPaymentService, PaymentService>();
             services.AddTransient<IHomeService, HomeService>();
             services.AddTransient<IStatisticService, StatisticService>();
+            services.AddTransient<IEmailService, EmailService>();
         }
     }
 }
