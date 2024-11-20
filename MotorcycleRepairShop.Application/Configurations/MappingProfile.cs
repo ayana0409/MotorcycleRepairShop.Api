@@ -215,6 +215,20 @@ namespace MotorcycleRepairShop.Application.Configurations
             CreateMap<Payment, PaymentDto>();
 
             #endregion
+
+            #region Report
+
+            CreateMap<ServiceRequest, ServiceRequestInvoiceDto>()
+                .ForMember(dest => dest.DateSubmitted, 
+                opt => opt.MapFrom(src => src.DateSubmitted.ToString("dd/MM/yyyy")))
+                .ForMember(dest => dest.CompletionDate, 
+                opt => opt.MapFrom(src => src.CompletionDate.ToString("dd/MM/yyyy")))
+                .ForMember(dest => dest.Problems, opt => opt.Ignore())
+                .ForMember(dest => dest.Parts, opt => opt.Ignore())
+                .ForMember(dest => dest.Services, opt => opt.Ignore());
+            
+
+            #endregion
         }
     }
 }
