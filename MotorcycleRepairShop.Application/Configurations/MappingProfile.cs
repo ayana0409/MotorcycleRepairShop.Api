@@ -206,7 +206,9 @@ namespace MotorcycleRepairShop.Application.Configurations
             CreateMap<UpSertServiceRequestPartDto, ServiceRequestPart>();
             CreateMap<ServiceRequestPart, ServiceRequestPartDto>();
             CreateMap<ServiceRequestPart, ServiceRequestPartInfoDto>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Part.Name));
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Part.Name))
+                .ForMember(dest => dest.WarrantyTo, 
+                opt => opt.MapFrom(src => src.WarrantyTo.ToString("dd/MM/yyyy")));
             #endregion
 
             #region Payment
