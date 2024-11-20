@@ -29,18 +29,39 @@ namespace MotorcycleRepairShop.Api.Controllers
                     Keyword = keyword
                 }));
 
+        /// <summary>
+        /// Lấy thông tin dịch vụ bằng Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceDto>> GetServiceById(int id)
             => Ok(await _service.GetById(id));
 
+        /// <summary>
+        /// Tạo dịch vụ
+        /// </summary>
+        /// <param name="serviceDto"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<int>> CreateService(ServiceDto serviceDto)
             => CreatedAtAction(nameof(CreateService), await _service.CreateService(serviceDto));
 
+        /// <summary>
+        /// Cập nhật thông tin dịch vụ
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="serviceDto"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task<ActionResult<ServiceDto>> UpdateService(int id, ServiceDto serviceDto)
             => Ok(await _service.UpdateService(id, serviceDto));
 
+        /// <summary>
+        /// Xóa dịch vụ bằng id
+        /// </summary>
+        /// <param name="id">ID của dịch vụ</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteService(int id){
             await _service.DeleteService(id);
