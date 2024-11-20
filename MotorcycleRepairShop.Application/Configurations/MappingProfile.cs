@@ -71,7 +71,7 @@ namespace MotorcycleRepairShop.Application.Configurations
             CreateMap<PartTableDto, Part>();
             CreateMap<Part, PartForDropdownDto>();
             CreateMap<Part, PartTableDto>()
-                .ForMember(dest => dest.BrandName, 
+                .ForMember(dest => dest.BrandName,
                 opt => opt.MapFrom(src => src.Brand == null ? string.Empty : src.Brand.Name));
             CreateMap<Part, PartHomeDto>()
                 .ForMember(dest => dest.BrandName,
@@ -190,7 +190,7 @@ namespace MotorcycleRepairShop.Application.Configurations
             CreateMap<ServiceRequestProblem, string>()
                 .ConstructUsing(p => p.Problem.Name ?? "");
 
-            
+
             #endregion
 
             #region Service Request Item
@@ -206,9 +206,13 @@ namespace MotorcycleRepairShop.Application.Configurations
             CreateMap<UpSertServiceRequestPartDto, ServiceRequestPart>();
             CreateMap<ServiceRequestPart, ServiceRequestPartDto>();
             CreateMap<ServiceRequestPart, ServiceRequestPartInfoDto>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Part.Name))
-                .ForMember(dest => dest.WarrantyTo, 
-                opt => opt.MapFrom(src => src.WarrantyTo.ToString("dd/MM/yyyy")));
+                .ForMember(dest => dest.Name, opt =>
+                    opt.MapFrom(src => src.Part != null ? src.Part.Name : null))
+                .ForMember(dest => dest.WarrantyTo, opt =>
+                    opt.MapFrom(src => src.WarrantyTo.HasValue
+                        ? src.WarrantyTo.Value.ToString("dd/MM/yyyy")
+                        : null));
+
             #endregion
 
             #region Payment
