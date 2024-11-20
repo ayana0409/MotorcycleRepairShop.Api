@@ -167,7 +167,14 @@ namespace MotorcycleRepairShop.Application.Configurations
             CreateMap<ServiceRequest, ServiceRequestTable>()
                 .ForMember(
                     dest => dest.TotalPrice,
-                    opt => opt.MapFrom(src => src.GetTotalPrice()));
+                    opt => opt.MapFrom(src => src.GetTotalPrice()))
+                .ForMember(
+                    dest => dest.ServiceType,
+                    opt => opt.MapFrom(src => src.ServiceType.GetDisplayName()))
+                .ForMember(
+                    dest => dest.Status,
+                    opt => opt.MapFrom(src => ((StatusEnum)src.StatusId).GetDisplayName()));
+
 
             CreateMap<ServiceRequest, ServiceRequestHomeDto>()
                 .ForMember(

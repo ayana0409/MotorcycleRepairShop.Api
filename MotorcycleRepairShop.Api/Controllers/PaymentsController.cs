@@ -19,13 +19,13 @@ namespace MotorcycleRepairShop.Api.Controllers
         public async Task<ActionResult<IEnumerable<PaymentDto>>> GetByServiceRequestId(int id)
             => Ok(await _paymentService.GetByServiceRequestId(id));
 
-        #region Crash
+        #region Cash
         /// <summary>
         /// Tạo thanh toán bằng tiền mặt
         /// </summary>
         /// <param name="paymentDto">Thông tin cần thanh toán</param>
         /// <returns></returns>
-        [HttpPost("crash")]
+        [HttpPost("cash")]
         public async Task<ActionResult<PaymentDto>> CreateCrashPayment(CreatePaymentDto paymentDto)
             => CreatedAtAction(nameof(CreateCrashPayment), await _paymentService.CreateCrashPayment(paymentDto));
 

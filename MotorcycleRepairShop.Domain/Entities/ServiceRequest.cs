@@ -17,7 +17,7 @@ namespace MotorcycleRepairShop.Domain.Entities
         public string Address { get; set; } = string.Empty;
         [EmailAddress]
         public string? Email { get; set; }
-        public string IssueDescripton { get; set; } = string.Empty; 
+        public string? IssueDescription { get; set; } 
         public DateTime DateSubmitted { get; set; } = DateTime.UtcNow;
         public DateTime CompletionDate { get; set; }
         public decimal TotalPrice { get; set; }

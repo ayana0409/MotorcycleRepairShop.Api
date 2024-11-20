@@ -15,7 +15,7 @@ namespace MotorcycleRepairShop.Application.Model
         [Required]
         [MaxLength(500)]
         public string Address { get; set; } = string.Empty;
-        public string IssueDescripton { get; set; } = string.Empty;
+        public string IssueDescription { get; set; } = string.Empty;
 
     }
 }
