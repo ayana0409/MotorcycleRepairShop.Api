@@ -145,6 +145,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                             await _unitOfWork.SaveChangeAsync();
                         }
                     }
+                    serviceRequest.CompletionDate = DateTime.UtcNow;
                 }
                 serviceRequest.StatusId = (int)status;
                 _unitOfWork.ServiceRequestRepository
