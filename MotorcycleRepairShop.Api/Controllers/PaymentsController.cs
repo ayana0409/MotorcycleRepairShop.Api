@@ -15,7 +15,7 @@ namespace MotorcycleRepairShop.Api.Controllers
             _paymentService = paymentService;
         }
 
-        [HttpGet("ServiceRequest/{id}")]
+        [HttpGet("service-request/{id}")]
         public async Task<ActionResult<IEnumerable<PaymentDto>>> GetByServiceRequestId(int id)
             => Ok(await _paymentService.GetByServiceRequestId(id));
 

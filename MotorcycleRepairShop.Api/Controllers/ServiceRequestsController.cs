@@ -30,7 +30,7 @@ namespace MotorcycleRepairShop.Api.Controllers
             }));
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CreateServiceRequestDto>> GetById(int id)
+        public async Task<ActionResult<ServiceRequestInfoDto>> GetById(int id)
             => Ok(await _serviceRequestService.GetServiceRequestById(id));
 
         /// <summary>

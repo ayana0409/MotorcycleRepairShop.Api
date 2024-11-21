@@ -9,7 +9,7 @@ namespace MotorcycleRepairShop.Application.Interfaces.Services
         Task<int> CreateRescueServiceRequest(CreateServiceRequestDto serviceRequestDto);
         Task<int> CreateDeirecServiceRequest(CreateServiceRequestDto serviceRequestDto);
         Task<int> CreateRemoteServiceRequest(CreateServiceRequestDto serviceRequestDto);
-        Task<ServiceRequestDto> GetServiceRequestById(int id);
+        Task<ServiceRequestInfoDto> GetServiceRequestById(int id);
         Task<ServiceRequestItemDto> UpSertServiceItemToServiceRequest(int serviceRequestId, UpSertServiceRequestItemDto serviceRequestDto);
         Task DeleteServiceItemToServiceRequest(int serviceRequestId, int serviceId);
         Task UpdateServiceRequestUserInfoById(int serviceRequestId, ServiceRequestUserInfoDto serviceRequestUserInfoDto);

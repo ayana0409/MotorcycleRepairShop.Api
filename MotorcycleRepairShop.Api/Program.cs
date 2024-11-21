@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using MotorcycleRepairShop.Application.Configurations;
 using MotorcycleRepairShop.Infrastructure;
 using MotorcycleRepairShop.Infrastructure.Persistence;
@@ -30,6 +31,7 @@ try
     builder.Services.AddControllers(options =>
     {
         options.Filters.Add<ExceptionFilter>();
+        options.Conventions.Add(new RouteTokenTransformerConvention(new LowerCaseParameterTransformer()));
     });
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
@@ -63,8 +65,8 @@ try
 
     app.UseHttpsRedirection();
 
-    app.UseAuthorization();
     app.UseAuthentication();
+    app.UseAuthorization();
 
     app.MapControllers();
 

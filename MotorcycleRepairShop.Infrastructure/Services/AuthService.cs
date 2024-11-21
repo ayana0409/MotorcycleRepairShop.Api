@@ -116,7 +116,6 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
-
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],
@@ -124,7 +123,6 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 expires: DateTime.UtcNow.AddDays(int.Parse(_configuration["JWT:TokenLifetime"])),
                 signingCredentials: credentials
             );
-
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }

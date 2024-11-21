@@ -198,6 +198,7 @@ namespace MotorcycleRepairShop.Application.Configurations
             CreateMap<UpSertServiceRequestItemDto, ServiceRequestItem>();
             CreateMap<ServiceRequestItem, ServiceRequestItemDto>();
             CreateMap<ServiceRequestItem, ServiceRequestItemInfo>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ServiceId))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Service.Name));
             #endregion
 
@@ -206,6 +207,8 @@ namespace MotorcycleRepairShop.Application.Configurations
             CreateMap<UpSertServiceRequestPartDto, ServiceRequestPart>();
             CreateMap<ServiceRequestPart, ServiceRequestPartDto>();
             CreateMap<ServiceRequestPart, ServiceRequestPartInfoDto>()
+                .ForMember(dest => dest.Id,
+                    opt => opt.MapFrom(src => src.PartId))
                 .ForMember(dest => dest.Name, opt =>
                     opt.MapFrom(src => src.Part != null ? src.Part.Name : null))
                 .ForMember(dest => dest.WarrantyTo, opt =>

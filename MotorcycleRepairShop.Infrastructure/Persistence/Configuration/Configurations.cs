@@ -61,6 +61,24 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("JWT:Secret").Value)),
                     ClockSkew = TimeSpan.Zero
                 };
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        Console.WriteLine($"Token validated: {context.SecurityToken}");
+                        return Task.CompletedTask;
+                    },
+                    OnChallenge = context =>
+                    {
+                        Console.WriteLine($"Authentication challenge: {context.AuthenticateFailure?.Message}");
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             services.AddSingleton(s =>

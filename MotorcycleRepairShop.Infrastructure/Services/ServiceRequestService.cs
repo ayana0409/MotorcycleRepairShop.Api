@@ -48,29 +48,28 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             => await _unitOfWork.ServiceRequestRepository
             .GetByUsername(username);
 
-        public async Task<ServiceRequestDto> GetServiceRequestById(int id)
+        public async Task<ServiceRequestInfoDto> GetServiceRequestById(int id)
         {
-            var service = await _unitOfWork.Table<ServiceRequest>()
-                .Include(r => r.Images)
-                .Include(r => r.Videos)
-                .Include(r => r.Status)
+            var serviceRequest = await _unitOfWork.ServiceRequestRepository
+                .GetQueryable()
+                .Include(sr => sr.Services)
+                .ThenInclude(s => s.Service)
+                .Include(sr => sr.Parts)
+                .ThenInclude(p => p.Part)
+                .Include(sr => sr.Problems)
+                .ThenInclude(p => p.Problem)
                 .AsSplitQuery()
-                .FirstOrDefaultAsync(r => r.Id.Equals(id))
+                .FirstOrDefaultAsync(sr => sr.Id == id)
                 ?? throw new NotFoundException(nameof(ServiceRequest), id);
 
-            var result = _mapper.Map<ServiceRequestDto>(service);
-            var problems = await _unitOfWork.ProblemRepository
-                .GetByServideRequestId(id);
-            result.Problems = problems.Select(p => p.Name).ToList();
+            var result = _mapper.Map<ServiceRequestInfoDto>(serviceRequest);
 
-            var services = await _unitOfWork.ServiceRepository
-                .GetByServiceRequestId(id);
-            result.Services = services.Select(p => p.Name).ToList();
-
-            var parts = await _unitOfWork.PartRepository
-                .GetByServiceRequestId(id);
-            result.Parts = parts.Select(p => p.Name).ToList();
-
+            // Get part info
+            result.Parts = _mapper.Map<List<ServiceRequestPartInfoDto>>(serviceRequest.Parts);
+            // Get problem info
+            result.Problems = _mapper.Map<List<string>>(serviceRequest.Problems);
+            // Get service info
+            result.Services = _mapper.Map<List<ServiceRequestItemInfo>>(serviceRequest.Services);
             return result;
         }
 
