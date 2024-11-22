@@ -1,7 +1,9 @@
 ﻿  using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using MotorcycleRepairShop.Application.Interfaces.Services;
+using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Account;
+using MotorcycleRepairShop.Infrastructure.Services;
 using System.Web.Http.Description;
 
 namespace MotorcycleRepairShop.Api.Controllers
@@ -16,6 +18,31 @@ namespace MotorcycleRepairShop.Api.Controllers
         {
             _accountService = accountService;
         }
+
+        [HttpGet("customer/pagination")]
+        public async Task<ActionResult<TableResponse<BrandTableDto>>> GetCustomerAccountPagination(
+            [FromQuery] int pageIndex = 0,
+            [FromQuery] int pageSize = 5,
+            [FromQuery] string keyword = "")
+            => Ok(await _accountService.GetCustomerAccountPagination(new TableRequest
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Keyword = keyword
+            }));
+
+        [HttpGet("admin/pagination")]
+        public async Task<ActionResult<TableResponse<BrandTableDto>>> GetAdminAccountPagination(
+            [FromQuery] int pageIndex = 0,
+            [FromQuery] int pageSize = 5,
+            [FromQuery] string keyword = "")
+            => Ok(await _accountService.GetAdminAccountPagination(new TableRequest
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Keyword = keyword
+            }));
+
         /// <summary>
         /// Lấy thông tin tài khoản bằng username
         /// </summary>
@@ -25,6 +52,19 @@ namespace MotorcycleRepairShop.Api.Controllers
         public async Task<ActionResult<AccountInfoDto>> GetAccountInfoByUsername(string username)
             => Ok(await _accountService.GetAccountByUsername(username));
 
+        /// <summary>
+        /// Lấy danh sách role 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("roles")]
+        public async Task<ActionResult<IEnumerable<string>>> GetRoles()
+            => Ok(await _accountService.GetUserRoles());
+
+        /// <summary>
+        /// Tạo tài khoản
+        /// </summary>
+        /// <param name="account"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<CreateAccountDto>> CreateAccount(CreateAccountDto account)
             => Ok(await _accountService.CreateAccount(account));

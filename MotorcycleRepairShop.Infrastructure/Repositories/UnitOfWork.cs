@@ -23,7 +23,8 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         private IServiceRequestItemRepository _serviceRequestItemRepository;
         private IServiceRequestPartRepository _serviceRequestPartRepository;
         private IStatisticRepository _statisticRepository;
-        
+        private IAccountRepository _accountRepository;
+
         public UnitOfWork(ApplicationDbContext applicationDbContext)
         {
             _applicationDbContext = applicationDbContext;
@@ -44,6 +45,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
         public IServiceRequestItemRepository ServiceRequestItemRepository => _serviceRequestItemRepository ??= new ServiceRequestItemRepository(_applicationDbContext);
         public IServiceRequestPartRepository ServiceRequestPartRepository => _serviceRequestPartRepository ??= new ServiceRequestPartRepository(_applicationDbContext);
         public IStatisticRepository StatisticRepository => _statisticRepository ??= new StatisticRepository(_applicationDbContext);
+        public IAccountRepository AccountRepository => _accountRepository ??= new AccountRepository(_applicationDbContext);
 
         #region Transaction
         public async Task BeginTransaction()

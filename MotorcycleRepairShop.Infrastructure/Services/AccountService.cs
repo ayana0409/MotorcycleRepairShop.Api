@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MotorcycleRepairShop.Application.Interfaces;
 using MotorcycleRepairShop.Application.Interfaces.Services;
+using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Account;
 using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Share.Exceptions;
+using PayPal.Api;
 using Serilog;
 
 namespace MotorcycleRepairShop.Infrastructure.Services
@@ -25,6 +27,42 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<TableResponse<AccountTableDto>> GetCustomerAccountPagination(TableRequest request)
+        {
+            var (result, total) = await _unitOfWork.AccountRepository
+                .GetCustomerAccountPanigationAsync(request.PageIndex, request.PageSize, request.Keyword ?? "");
+
+            var datas = _mapper.Map<IEnumerable<AccountTableDto>>(result);
+            return new TableResponse<AccountTableDto>
+            {
+                PageSize = request.PageSize,
+                Datas = datas,
+                Total = total
+            };
+        }
+
+        public async Task<TableResponse<AccountTableDto>> GetAdminAccountPagination(TableRequest request)
+        {
+            var (result, total) = await _unitOfWork.AccountRepository
+                .GetAdminAccountPanigationAsync(request.PageIndex, request.PageSize, request.Keyword ?? "");
+
+            List<AccountTableDto> datas = [];
+
+            foreach (var item in result)
+            {
+                var account = _mapper.Map<AccountTableDto>(item);
+                account.UserRoles = (await _userManager.GetRolesAsync(item)).ToList();
+                datas.Add(account);
+            }
+
+            return new TableResponse<AccountTableDto>
+            {
+                PageSize = request.PageSize,
+                Datas = datas,
+                Total = total
+            };
+        }
+
         public async Task<AccountInfoDto> GetAccountByUsername(string username)
         {
             var user = await FindAccountByUsername(username);
@@ -34,39 +72,32 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task<CreateAccountDto> CreateAccount(CreateAccountDto account) 
         {
-            try
+            var user = _mapper.Map<ApplicationUser>(account);
+            user.UserName = user.MobilePhone;
+
+            var addedAccount = await _userManager.CreateAsync(user, account.Password);
+
+            if (addedAccount.Succeeded)
             {
-                var user = _mapper.Map<ApplicationUser>(account);
-                user.UserName = user.MobilePhone;
-                
-                var addedAccount = await _userManager.CreateAsync(user, account.Password);
-
-                if (addedAccount.Succeeded)
+                var serviceRequests = await _unitOfWork.ServiceRequestRepository
+                .GetAllAsync(s => s.MobilePhone.Equals(user.MobilePhone));
+                if (serviceRequests.Any())
                 {
-                    var serviceRequests = await _unitOfWork.ServiceRequestRepository
-                    .GetAllAsync(s => s.MobilePhone.Equals(user.MobilePhone));
-                    if (serviceRequests.Any())
-                    {
-                        foreach (var serviceRequest in serviceRequests)
-                            serviceRequest.CustomerId = user.Id;
-                        await _unitOfWork.SaveChangeAsync();
-                    }
+                    foreach (var serviceRequest in serviceRequests)
+                        serviceRequest.CustomerId = user.Id;
+                    await _unitOfWork.SaveChangeAsync();
+                }
 
-                    await _userManager.AddToRolesAsync(user, account.UserRoles);
-                    var result = _mapper.Map<CreateAccountDto>(account);
-                    _logger.Information($"CreateAccount successfuly: {user.UserName}");
-                    return result;
-                }
-                else
-                {
-                    var errorMessage = string.Join(", ", addedAccount.Errors.Select(e => e.Description));
-                    _logger.Information($"CreateAccount failed: {user.UserName}");
-                    throw new ApplicationException($"Error while creating account: {errorMessage}");
-                }
+                await _userManager.AddToRolesAsync(user, account.UserRoles);
+                var result = _mapper.Map<CreateAccountDto>(account);
+                _logger.Information($"CreateAccount successfuly: {user.UserName}");
+                return result;
             }
-            catch (Exception ex)
+            else
             {
-                throw new ArgumentException($"Error while create account: {ex.InnerException?.Message}");
+                var errorMessage = string.Join(", ", addedAccount.Errors.Select(e => e.Description));
+                _logger.Information($"CreateAccount failed: {user.UserName}");
+                throw new ApplicationException($"Error while creating account: {errorMessage}");
             }
         }
 
@@ -121,6 +152,9 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             await _userManager.ResetPasswordAsync(account, resetToken, password);
             LogSuccess(username);
         }
+
+        public async Task<IEnumerable<string?>> GetUserRoles()
+            => await _roleManager.Roles.Select(r => r.Name).ToListAsync();
 
         private async Task<ApplicationUser> FindAccountByUsername(string username)
             => await _userManager.FindByNameAsync(username)

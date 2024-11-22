@@ -25,7 +25,7 @@ namespace MotorcycleRepairShop.Application.Configurations
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
 
             CreateMap<ApplicationUser, AccountInfoDto>();
-
+            CreateMap<ApplicationUser, AccountTableDto>();
             #region Service
 
             CreateMap<ServiceDto, Service>().ReverseMap();
