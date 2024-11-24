@@ -50,16 +50,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         public async Task<ServiceRequestInfoDto> GetServiceRequestById(int id)
         {
-            var serviceRequest = await _unitOfWork.ServiceRequestRepository
-                .GetQueryable()
-                .Include(sr => sr.Services)
-                .ThenInclude(s => s.Service)
-                .Include(sr => sr.Parts)
-                .ThenInclude(p => p.Part)
-                .Include(sr => sr.Problems)
-                .ThenInclude(p => p.Problem)
-                .AsSplitQuery()
-                .FirstOrDefaultAsync(sr => sr.Id == id)
+            var serviceRequest = await _unitOfWork.ServiceRequestRepository.GetById(id)
                 ?? throw new NotFoundException(nameof(ServiceRequest), id);
 
             var result = _mapper.Map<ServiceRequestInfoDto>(serviceRequest);

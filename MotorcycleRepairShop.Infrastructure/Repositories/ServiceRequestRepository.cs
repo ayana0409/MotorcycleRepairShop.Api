@@ -46,9 +46,13 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
                 .Include(sr => sr.Images)
                 .Include(sr => sr.Videos)
                 .Include(sr => sr.Services)
+                .ThenInclude(s => s.Service)
                 .Include(sr => sr.Parts)
+                .ThenInclude(p => p.Part)
+                .Include(sr => sr.Problems)
+                .ThenInclude(p => p.Problem)
                 .AsSplitQuery()
-                .FirstOrDefaultAsync(sr => sr.Id.Equals(id));
+                .FirstOrDefaultAsync(sr => sr.Id == id);
 
         public async Task<IEnumerable<ServiceRequest>> GetByUsername(string username)
             => await _context.Set<ServiceRequest>()
