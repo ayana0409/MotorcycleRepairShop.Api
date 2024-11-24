@@ -218,6 +218,12 @@ namespace MotorcycleRepairShop.Application.Configurations
 
             #endregion
 
+            #region Service Request Problem
+
+            CreateMap<ServiceRequestProblem, ServiceRequestProblemDto>().ReverseMap();
+
+            #endregion
+
             #region Payment
 
             CreateMap<CreatePaymentDto, Payment>();

@@ -173,5 +173,18 @@ namespace MotorcycleRepairShop.Api.Controllers
             return NoContent();
         }
         #endregion
+
+        #region ServiceProblem: Add - Delete
+        [HttpPut("problems/{id}")]
+        public async Task<ActionResult<ServiceRequestProblemDto>> AddServiceRequestProblem(int id, int problemId)
+            => Ok(await _serviceRequestService.AddProblemToServiceRequest(id, problemId));
+
+        [HttpDelete("{serviceRequestId}/problems/{problemId}")]
+        public async Task<ActionResult> DeleteServiceRequestProblem(int serviceRequestId, int problemId)
+        {
+            await _serviceRequestService.DeleteProblemInServiceRequest(serviceRequestId, problemId);
+            return NoContent();
+        }
+        #endregion
     }
 }

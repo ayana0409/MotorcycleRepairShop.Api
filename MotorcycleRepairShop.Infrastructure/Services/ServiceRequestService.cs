@@ -287,6 +287,51 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         }
         #endregion
 
+        #region ServiceRequestProblem: Upsert - Delete
+
+        public async Task<ServiceRequestProblemDto> AddProblemToServiceRequest(int serviceRequestId, int problemId)
+        {
+            await CheckExitsServiceRequest(serviceRequestId);
+
+            var existProblem = await _unitOfWork.ProblemRepository
+                .GetSigleAsync(s => s.Id.Equals(problemId))
+                ?? throw new NotFoundException(nameof(Problem), problemId);
+
+            ServiceRequestProblem? existServicePart = await _unitOfWork.ServiceRequestProblemRepository
+                .GetByServiceRequestIdAndProblemId(serviceRequestId, problemId);
+
+            if (existServicePart == null)
+            {
+                existServicePart = new()
+                {
+                    ServiceRequestId = serviceRequestId,
+                    ProblemId = problemId,
+                    ReportedDate = DateTime.Now,
+                };
+                await _unitOfWork.ServiceRequestProblemRepository.CreateAsync(existServicePart);
+            }
+            await _unitOfWork.SaveChangeAsync();
+            LogSuccess($"- ServiceRequestId: {serviceRequestId} - ProblemId: {problemId}", "Add Problem");
+
+            var result = _mapper.Map<ServiceRequestProblemDto>(existServicePart);
+            result.Name = existProblem.Name;
+            return result;
+        }
+
+        public async Task DeleteProblemInServiceRequest(int serviceRequestId, int problemId)
+        {
+            var deleteProblem = await _unitOfWork.ServiceRequestProblemRepository
+                .GetByServiceRequestIdAndProblemId(serviceRequestId, problemId)
+                ?? throw new NotFoundException($"{nameof(ServiceRequestProblem)}: " +
+                $"{nameof(ServiceRequest)} with ID {serviceRequestId} and {nameof(Problem)}", problemId);
+            _unitOfWork.ServiceRequestProblemRepository.Delete(deleteProblem);
+            await _unitOfWork.SaveChangeAsync();
+
+            LogSuccess($"- ServiceRequestId: {serviceRequestId} - ProblemId: {problemId}", "Add Problem");
+        }
+
+        #endregion
+
         #region Media
 
         public async Task<IEnumerable<string>> AddMediaToServiceRequest(int serviceRequestId, IEnumerable<IFormFile> mediaData, MediaType type)
