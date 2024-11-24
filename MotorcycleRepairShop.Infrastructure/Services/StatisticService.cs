@@ -9,11 +9,9 @@ namespace MotorcycleRepairShop.Infrastructure.Services
     public class StatisticService : BaseService, IStatisticService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        public StatisticService(ILogger logger, IUnitOfWork unitOfWork, IMapper mapper) : base(logger)
+        public StatisticService(ILogger logger, IUnitOfWork unitOfWork) : base(logger)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         public async Task<IEnumerable<ServiceRequestStatisticsDto>> GetServiceRequestStatisticsAsync(DateTime startDate, DateTime? endDate)
@@ -25,13 +23,24 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             return statistics;
         }
 
-        public async Task<decimal> GetRevenueStatisticsAsync(DateTime startDate, DateTime? endDate)
+        public async Task<StatisticDto> GetStatisticsAsync(DateTime startDate, DateTime? endDate)
         {
-            var result = await _unitOfWork.StatisticRepository
+            var revenue = await _unitOfWork.StatisticRepository
                 .GetRevenueStatisticByDay(startDate, endDate ?? DateTime.UtcNow);
 
-            _logger.Information($"GetRevenueStatistics from {startDate:dd/MM/yyyy} to {endDate:dd/MM/yyyy}");
-            return result;
+            var cost = await _unitOfWork.StatisticRepository
+                .GetCostStatisticByDay(startDate, endDate ?? DateTime.UtcNow);
+
+            var taxCost = await _unitOfWork.StatisticRepository
+                .GetTaxCostStatisticByDay(startDate, endDate ?? DateTime.UtcNow);
+
+            _logger.Information($"GetStatistics from {startDate:dd/MM/yyyy} to {endDate:dd/MM/yyyy}");
+            return new()
+            {
+                Revenue = revenue,
+                Cost = cost,
+                TaxCost = taxCost
+            };
         }
     }
 }

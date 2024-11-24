@@ -47,5 +47,17 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
                     && sr.DateSubmitted <= endDate 
                     && sr.StatusId == (int)StatusEnum.Completed)
                 .SumAsync(sr => sr.TotalPrice);
+
+        public async Task<decimal> GetCostStatisticByDay(DateTime startDay, DateTime endDate)
+            => await _context.Set<PartInventory>()
+                .Where(pi => pi.EntryDate >= startDay
+                    && pi.EntryDate <= endDate)
+                .SumAsync(pi => pi.EntryPrice);
+
+        public async Task<decimal> GetTaxCostStatisticByDay(DateTime startDay, DateTime endDate)
+            => await _context.Set<PartInventory>()
+                .Where(pi => pi.EntryDate >= startDay
+                    && pi.EntryDate <= endDate)
+                .SumAsync(pi => pi.EntryPrice * pi.Tax / 100);
     }
 }

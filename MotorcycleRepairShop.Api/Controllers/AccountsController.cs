@@ -1,10 +1,7 @@
-﻿  using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
+﻿using Microsoft.AspNetCore.Mvc;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Account;
-using MotorcycleRepairShop.Infrastructure.Services;
-using System.Web.Http.Description;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
@@ -19,6 +16,13 @@ namespace MotorcycleRepairShop.Api.Controllers
             _accountService = accountService;
         }
 
+        /// <summary>
+        /// Lấy danh sách tài khoản của khách hàng
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="keyword"></param>
+        /// <returns></returns>
         [HttpGet("customer/pagination")]
         public async Task<ActionResult<TableResponse<BrandTableDto>>> GetCustomerAccountPagination(
             [FromQuery] int pageIndex = 0,
@@ -31,6 +35,13 @@ namespace MotorcycleRepairShop.Api.Controllers
                 Keyword = keyword
             }));
 
+        /// <summary>
+        /// Lấy danh sách tài khoản của nhân viên cửa hàng
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="keyword"></param>
+        /// <returns></returns>
         [HttpGet("admin/pagination")]
         public async Task<ActionResult<TableResponse<BrandTableDto>>> GetAdminAccountPagination(
             [FromQuery] int pageIndex = 0,
@@ -53,7 +64,7 @@ namespace MotorcycleRepairShop.Api.Controllers
             => Ok(await _accountService.GetAccountByUsername(username));
 
         /// <summary>
-        /// Lấy danh sách role 
+        /// Lấy danh sách các quyền
         /// </summary>
         /// <returns></returns>
         [HttpGet("roles")]

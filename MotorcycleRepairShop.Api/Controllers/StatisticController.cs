@@ -28,14 +28,14 @@ namespace MotorcycleRepairShop.Api.Controllers
             => Ok(await _statisticService.GetServiceRequestStatisticsAsync(startDate, endDate));
 
         /// <summary>
-        /// Thống kê số lượng bán ra theo khoảng ngày
+        /// Thống kê doanh thu, chi phí nhập vào, tiền thuế phải chịu khi nhập hàng theo khoảng ngày
         /// </summary>
         /// <param name="startDate">Ngày bắt đầu (yyyy-MM-dd)</param>
         /// <param name="endDate">Ngày kết thúc (yyyy-MM-dd) - mặc định hôm nay</param>
         /// <returns></returns>
         [HttpGet("revenue")]
-        public async Task<ActionResult<decimal>>
+        public async Task<ActionResult<StatisticDto>>
             GetRevenueStatisticsByDate([Required] DateTime startDate, DateTime? endDate)
-            => Ok(await _statisticService.GetRevenueStatisticsAsync(startDate, endDate));
+            => Ok(await _statisticService.GetStatisticsAsync(startDate, endDate));
     }
 }
