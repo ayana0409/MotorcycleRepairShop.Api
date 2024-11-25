@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MotorcycleRepairShop.Application.Interfaces;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
+using MotorcycleRepairShop.Application.Model.Account;
 using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Share.Exceptions;
 using Serilog;
@@ -13,10 +15,19 @@ namespace MotorcycleRepairShop.Infrastructure.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public HomeService(ILogger logger, IUnitOfWork unitOfWork, IMapper mapper) : base(logger)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public HomeService(ILogger logger, IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager) : base(logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
+        }
+
+        public async Task<AccountInfoDto> GetAccountInfoByUsername(string username)
+        {
+            var user = await FindAccountByUsername(username);
+            var result = _mapper.Map<AccountInfoDto>(user);
+            return result;
         }
 
         public async Task<IEnumerable<ServiceHomeDto>> GetServiceList()
@@ -100,6 +111,10 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             result.Services = _mapper.Map<List<ServiceRequestItemInfo>>(serviceRequest.Services);
             return result;
         }
+
+        private async Task<ApplicationUser> FindAccountByUsername(string username)
+            => await _userManager.FindByNameAsync(username)
+                ?? throw new NotFoundException(nameof(ApplicationUser), username);
 
     }
 }

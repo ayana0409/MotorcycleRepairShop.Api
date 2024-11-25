@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
+using MotorcycleRepairShop.Application.Model.Account;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
@@ -13,6 +14,15 @@ namespace MotorcycleRepairShop.Api.Controllers
         public HomeController(IHomeService homeService)
         {
             _homeService = homeService;
+        }
+
+        [HttpGet("user-info")]
+        public async Task<ActionResult<AccountInfoDto>> GetUserInfo()
+        {
+            var username = User.Identity?.Name;
+            if (username == null) return Unauthorized();
+
+            return Ok(await _homeService.GetAccountInfoByUsername(username));
         }
 
         [HttpGet("service-list")]

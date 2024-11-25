@@ -70,7 +70,7 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
                     },
                     OnTokenValidated = context =>
                     {
-                        Console.WriteLine($"Token validated: {context.SecurityToken}");
+                        //Console.WriteLine($"Token validated: {context.SecurityToken}");
                         return Task.CompletedTask;
                     },
                     OnChallenge = context =>
