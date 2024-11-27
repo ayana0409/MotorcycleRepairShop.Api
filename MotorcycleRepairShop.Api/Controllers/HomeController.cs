@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Account;
@@ -15,7 +16,7 @@ namespace MotorcycleRepairShop.Api.Controllers
         {
             _homeService = homeService;
         }
-
+        [Authorize]
         [HttpGet("user-info")]
         public async Task<ActionResult<AccountInfoDto>> GetUserInfo()
         {
@@ -50,6 +51,7 @@ namespace MotorcycleRepairShop.Api.Controllers
             GetServiceRequestByMobilePhone([FromQuery] string mobilePhone)
             => Ok(await _homeService.GetServiceRequestsByMobilePhone(mobilePhone));
 
+        [Authorize]
         [HttpGet("service-requests-by-username")]
         public async Task<ActionResult<IEnumerable<ServiceRequestHomeDto>>>
             GetServiceRequestByUsername()

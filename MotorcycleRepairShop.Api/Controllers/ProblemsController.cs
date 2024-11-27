@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Problem;
-using MotorcycleRepairShop.Infrastructure.Services;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
+    [Authorize(Roles = "Admin,Manager")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProblemsController : ControllerBase

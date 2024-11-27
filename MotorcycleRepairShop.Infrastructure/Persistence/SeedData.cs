@@ -57,7 +57,7 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
 
         private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
         {
-            var roles = new List<string> { "Admin", "Employee", "Customer" };
+            var roles = new List<string> { "Admin", "Manager", "Employee" };
 
             foreach (var role in roles)
             {

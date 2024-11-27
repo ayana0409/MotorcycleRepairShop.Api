@@ -5,7 +5,7 @@ using MotorcycleRepairShop.Application.Model;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,Manager")]
     [Route("api/[controller]")]
     [ApiController]
     public class BrandsController : ControllerBase

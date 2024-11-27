@@ -40,13 +40,16 @@ namespace MotorcycleRepairShop.Api.Controllers
         [HttpGet("PayPal/execute-payment")]
         public async Task<ActionResult> ExecutePayment(string token, int serviceRequestId)
             => await _paymentService.CapturePayPalOrder(token, serviceRequestId) 
-            ? Ok("Payment completed successfully.") 
+            ? Ok("Thanh toán thành công, bạn có thể đóng trang này.") 
             : BadRequest("Payment could not be completed.");
 
         [HttpGet("PayPal/cancel-payment")]
         public IActionResult CancelPayment()
             => BadRequest("Payment was canceled by the user.");
 
+        [HttpGet("paypal/check-payment/{token}")]
+        public async Task<IActionResult> CheckPayPalPayment(string token)
+            => await _paymentService.CheckPayPalPayment(token) ? Ok() : BadRequest();
         #endregion
 
         #region VNPay - Not Working

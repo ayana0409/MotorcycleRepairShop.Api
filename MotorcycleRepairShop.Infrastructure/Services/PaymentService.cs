@@ -108,6 +108,13 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
             return false;
         }
+
+        public async Task<bool> CheckPayPalPayment(string token)
+        {
+            var payment = await _unitOfWork.PaymentRepository
+                .GetSigleAsync(p => p.TransactionId != null && p.TransactionId.Equals(token));
+            return payment != null;
+        }
         #endregion
 
         #region Crash

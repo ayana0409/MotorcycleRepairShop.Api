@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Domain.Enums;
-using MotorcycleRepairShop.Infrastructure.Services;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
+    [Authorize(Roles = "Admin,Manager,Employee")]
     [Route("api/[controller]")]
     [ApiController]
     public class ServiceRequestsController : ControllerBase
