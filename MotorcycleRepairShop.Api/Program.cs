@@ -22,8 +22,8 @@ try
         => options.LowercaseQueryStrings = true);
 
     builder.Services.AddConfigureServices(builder.Configuration);
-    builder.Services.AddDependencyInjection();
     builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+    builder.Services.AddDependencyInjection();
 
     builder.Services.AddVNPayConfiguration(builder.Configuration);
     builder.Services.AddSmtpConfiguration(builder.Configuration);
@@ -43,7 +43,7 @@ try
         options.AddPolicy("AllowSpecificOrigin",
             builder =>
             {
-                builder.WithOrigins("http://localhost:5173", "http://26.139.159.129:5000/")
+                builder.WithOrigins("http://localhost:5173", "http://26.139.159.129:5000")
                        .AllowAnyMethod()
                        .AllowAnyHeader()
                        .AllowCredentials();

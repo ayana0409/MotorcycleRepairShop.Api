@@ -8,7 +8,6 @@ using Serilog;
 using System.Security.Claims;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
-using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
 
 namespace MotorcycleRepairShop.Infrastructure.Services
 {
@@ -36,16 +35,11 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             var loginUser = await _userManager.FindByNameAsync(user.UserName)
                 ?? throw new KeyNotFoundException(message: "Invalid username or password.");
 
-            _logger.Information($"START - Authentication: {user.UserName}");
-
             var result = await _signInManager.CheckPasswordSignInAsync(loginUser, user.Password, lockoutOnFailure: false);
             if (!result.Succeeded)
-            {
-                _logger.Information($"END - Authentication: {user.UserName} Unauthorize");
-                throw new KeyNotFoundException(message: "Invalid username or password.");
-            }
+                throw new ArgumentException(message: "Invalid username or password.");
 
-            _logger.Information($"END - Authentication: {user.UserName}");
+            _logger.Information($"Authentication: {user.UserName}");
             return new AuthResponse
             {
                 Token = await GenerateJwtToken(loginUser),
@@ -100,15 +94,15 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
             {
-                new(ClaimTypes.Name, user.UserName),
+                new(JwtRegisteredClaimNames.Sub, user.UserName),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new(ClaimTypes.NameIdentifier, user.Id)
+                new(ClaimTypes.NameIdentifier, user.Id),
+                new(JwtRegisteredClaimNames.Name, user.UserName),
             };
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -116,13 +110,15 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
+
             var token = new JwtSecurityToken(
-                issuer: _configuration["JWT:ValidIssuer"],
-                audience: _configuration["JWT:ValidAudience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddDays(int.Parse(_configuration["JWT:TokenLifetime"])),
+                _configuration["Jwt:ValidIssuer"],
+                _configuration["Jwt:ValidAudience"],
+                claims,
+                expires: DateTime.UtcNow.AddDays(7),
                 signingCredentials: credentials
             );
+
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }

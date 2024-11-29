@@ -20,7 +20,8 @@ namespace MotorcycleRepairShop.Api.Controllers
         [HttpGet("user-info")]
         public async Task<ActionResult<AccountInfoDto>> GetUserInfo()
         {
-            var username = User.Identity?.Name;
+            var username = User.Identity?.Name
+                ?? User.Claims.FirstOrDefault()?.Value;
             if (username == null) return Unauthorized();
 
             return Ok(await _homeService.GetAccountInfoByUsername(username));
@@ -56,7 +57,8 @@ namespace MotorcycleRepairShop.Api.Controllers
         public async Task<ActionResult<IEnumerable<ServiceRequestHomeDto>>>
             GetServiceRequestByUsername()
         {
-            var username = User.Identity?.Name;
+            var username = User.Identity?.Name 
+                ?? User.Claims.FirstOrDefault()?.Value;
             if (string.IsNullOrEmpty(username))
                 return Unauthorized();
             return Ok(await _homeService.GetServiceRequestsByUsername(username));

@@ -6,7 +6,8 @@ using MotorcycleRepairShop.Application.Model.Account;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
-    [Authorize("Admin")]
+    //[Authorize(Roles = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     [Route("api/[controller]")]
     [ApiController]
     public class AccountsController : ControllerBase

@@ -6,7 +6,6 @@ using MotorcycleRepairShop.Domain.Enums;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
-    [Authorize(Roles = "Admin,Manager,Employee")]
     [Route("api/[controller]")]
     [ApiController]
     public class ServiceRequestsController : ControllerBase
@@ -18,6 +17,7 @@ namespace MotorcycleRepairShop.Api.Controllers
             _serviceRequestService = serviceRequestService;
         }
 
+        [Authorize(Roles = "Admin,Manager,Employee")]
         [HttpGet("pagination")]
         public async Task<ActionResult<TableResponse<ServiceRequestTable>>> GetPagination(
             [FromQuery] int pageIndex = 0,
@@ -33,6 +33,7 @@ namespace MotorcycleRepairShop.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceRequestInfoDto>> GetById(int id)
             => Ok(await _serviceRequestService.GetServiceRequestById(id));
+
 
         /// <summary>
         /// Tạo một yêu cầu dịch vụ mới khi khách đến trực tiếp.

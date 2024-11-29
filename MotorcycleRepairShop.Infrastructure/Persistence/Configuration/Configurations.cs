@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using MotorcycleRepairShop.Domain.Entities;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
@@ -18,12 +20,8 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
             var connectionString = configuration.GetConnectionString("DefaultConnectionString")
                     ?? throw new ArgumentNullException("Connection string is not configure.");
 
-            var validIssuers = configuration.GetSection("JWT:ValidIssuers").Get<string[]>();
-            var validAudiences = configuration.GetSection("JWT:ValidAudiences").Get<string[]>();
-            if (validAudiences == null || validAudiences.Length == 0)
-            {
-                throw new Exception("Valid audiences configuration is empty");
-            }
+            var validIssuer = configuration.GetSection("JWT:ValidIssuer");
+            var validAudience = configuration.GetSection("JWT:ValidAudience");
 
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseMySQL(connectionString));
@@ -33,11 +31,11 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
                    .AddSignInManager<SignInManager<ApplicationUser>>()
                    .AddDefaultTokenProviders();
 
-            services.Configure<IdentityOptions>(option =>
+            services.Configure<IdentityOptions>(options =>
             {
-                option.Lockout.AllowedForNewUsers = true;
-                option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
-                option.Lockout.MaxFailedAccessAttempts = 3;
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
+                options.Lockout.MaxFailedAccessAttempts = 3;
             });
 
             services.AddAuthentication(options =>
@@ -55,11 +53,13 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
                 {
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    ValidateLifetime = true,
-                    ValidIssuers = validIssuers,
-                    ValidAudiences = validAudiences,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("JWT:Secret").Value)),
-                    ClockSkew = TimeSpan.Zero
+                    ValidateLifetime = false,
+                    //ValidIssuer = configuration["JWT:ValidIssuer"],
+                    //ValidAudience = configuration["JWT:ValidAudience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
+                    ClockSkew = TimeSpan.Zero,
+                    RoleClaimType = ClaimTypes.Role,
+                    NameClaimType = ClaimTypes.Name,
                 };
                 options.Events = new JwtBearerEvents
                 {
@@ -68,17 +68,33 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
                         Console.WriteLine($"Authentication failed: {context.Exception.Message}");
                         return Task.CompletedTask;
                     },
-                    OnTokenValidated = context =>
-                    {
-                        //Console.WriteLine($"Token validated: {context.SecurityToken}");
-                        return Task.CompletedTask;
-                    },
                     OnChallenge = context =>
                     {
-                        Console.WriteLine($"Authentication challenge: {context.AuthenticateFailure?.Message}");
+                        Console.WriteLine($"Challenge triggered: {context.AuthenticateFailure?.Message}");
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        var token = context.SecurityToken as JwtSecurityToken;
+                        if (token != null)
+                        {
+                            Console.WriteLine("Token Validated:");
+                            Console.WriteLine("Issuer: " + token.Issuer);
+                            Console.WriteLine("Audience: " + token.Audiences.FirstOrDefault());
+                            foreach (var claim in token.Claims)
+                            {
+                                Console.WriteLine($"Claim: {claim.Type} = {claim.Value}");
+                            }
+                        }
+                       
                         return Task.CompletedTask;
                     }
                 };
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
             });
 
             services.AddSingleton(s =>
@@ -89,8 +105,6 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
 
                 return new Cloudinary(new Account(cloudName, apiKey, apiSecret));
             });
-
-            services.AddAuthorization();
 
             services.AddDataProtection()
                 .PersistKeysToFileSystem(new DirectoryInfo(@"/home/app/.aspnet/DataProtection-Keys/"))

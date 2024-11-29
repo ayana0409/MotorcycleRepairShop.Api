@@ -16,17 +16,7 @@ namespace MotorcycleRepairShop.Api.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AuthResponse>> Login([FromBody]LoginDto request)
-        {
-            try
-            {
-                var result = await _authService.AuthenticateAsync(request);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginDto request)
+            => Ok(await _authService.AuthenticateAsync(request));
     }
 }
