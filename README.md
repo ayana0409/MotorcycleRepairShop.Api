@@ -136,8 +136,8 @@ The **Motorcycle Repair Shop API** is a robust web application designed to strea
 ---
 
 #### **Docker**  
-path: MotorcycleRepairShop.Api
-cmd: 
+**path: ** MotorcycleRepairShop.Api
+**cmd: ** 
 ```docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d --remove-orphans --build```
 
 ---
