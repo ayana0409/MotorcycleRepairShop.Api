@@ -153,6 +153,13 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             LogSuccess(username);
         }
 
+        public async Task DeleteAccount(string username)
+        {
+            var account = await FindAccountByUsername(username);
+            account.IsActive = false;
+            await _userManager.UpdateAsync(account);
+        }
+
         public async Task<IEnumerable<string?>> GetUserRoles()
             => await _roleManager.Roles.Select(r => r.Name).ToListAsync();
 

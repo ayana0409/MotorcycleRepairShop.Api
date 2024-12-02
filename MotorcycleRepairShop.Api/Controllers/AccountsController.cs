@@ -6,8 +6,7 @@ using MotorcycleRepairShop.Application.Model.Account;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
-    //[Authorize(Roles = "Admin")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class AccountsController : ControllerBase
@@ -27,7 +26,7 @@ namespace MotorcycleRepairShop.Api.Controllers
         /// <param name="keyword"></param>
         /// <returns></returns>
         [HttpGet("customer/pagination")]
-        public async Task<ActionResult<TableResponse<BrandTableDto>>> GetCustomerAccountPagination(
+        public async Task<ActionResult<TableResponse<AccountTableDto>>> GetCustomerAccountPagination(
             [FromQuery] int pageIndex = 0,
             [FromQuery] int pageSize = 5,
             [FromQuery] string keyword = "")
@@ -46,7 +45,7 @@ namespace MotorcycleRepairShop.Api.Controllers
         /// <param name="keyword"></param>
         /// <returns></returns>
         [HttpGet("admin/pagination")]
-        public async Task<ActionResult<TableResponse<BrandTableDto>>> GetAdminAccountPagination(
+        public async Task<ActionResult<TableResponse<AccountTableDto>>> GetAdminAccountPagination(
             [FromQuery] int pageIndex = 0,
             [FromQuery] int pageSize = 5,
             [FromQuery] string keyword = "")
@@ -115,6 +114,12 @@ namespace MotorcycleRepairShop.Api.Controllers
         public async Task<ActionResult> UpdateAccountPassword(string username, string password)
         {
             await _accountService.UpdateAccountPassword(username, password);
+            return Ok();
+        }
+
+        [HttpDelete("{username}")]
+        public async Task<ActionResult> DeleteAccount(string username) {
+            await _accountService.DeleteAccount(username);
             return Ok();
         }
     }

@@ -62,7 +62,7 @@ namespace MotorcycleRepairShop.Infrastructure.Repositories
                 .AsSplitQuery()
                 .Where(s => s.Customer != null
                     && s.Customer.UserName != null
-                    && s.Customer.UserName.Equals(username))
+                    && s.Customer.UserName.Equals(username) || s.MobilePhone.Equals(username))
                 .ToListAsync();
 
         public async Task<IEnumerable<ServiceRequest>> GetByMobilePhone(string mobilePhone)

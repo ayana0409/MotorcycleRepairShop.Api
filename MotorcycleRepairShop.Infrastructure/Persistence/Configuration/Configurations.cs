@@ -75,26 +75,21 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence.Configuration
                     },
                     OnTokenValidated = context =>
                     {
-                        var token = context.SecurityToken as JwtSecurityToken;
-                        if (token != null)
-                        {
-                            Console.WriteLine("Token Validated:");
-                            Console.WriteLine("Issuer: " + token.Issuer);
-                            Console.WriteLine("Audience: " + token.Audiences.FirstOrDefault());
-                            foreach (var claim in token.Claims)
-                            {
-                                Console.WriteLine($"Claim: {claim.Type} = {claim.Value}");
-                            }
-                        }
+                        //var token = context.SecurityToken as JwtSecurityToken;
+                        //if (token != null)
+                        //{
+                        //    Console.WriteLine("Token Validated:");
+                        //    Console.WriteLine("Issuer: " + token.Issuer);
+                        //    Console.WriteLine("Audience: " + token.Audiences.FirstOrDefault());
+                        //    foreach (var claim in token.Claims)
+                        //    {
+                        //        Console.WriteLine($"Claim: {claim.Type} = {claim.Value}");
+                        //    }
+                        //}
                        
                         return Task.CompletedTask;
                     }
                 };
-            });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
             });
 
             services.AddSingleton(s =>

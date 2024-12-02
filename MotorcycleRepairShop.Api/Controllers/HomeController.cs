@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Account;
+using MotorcycleRepairShop.Application.Model.Problem;
+using MotorcycleRepairShop.Domain.Entities;
+using MotorcycleRepairShop.Infrastructure.Services;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
@@ -11,10 +14,16 @@ namespace MotorcycleRepairShop.Api.Controllers
     public class HomeController : ControllerBase
     {
         private readonly IHomeService _homeService;
+        private readonly IProblemService _problemService;
+        private readonly IPartService _partService;
+        private readonly IServiceService _serviceService;
 
-        public HomeController(IHomeService homeService)
+        public HomeController(IHomeService homeService, IProblemService problemService, IPartService partService, IServiceService serviceService)
         {
             _homeService = homeService;
+            _problemService = problemService;
+            _partService = partService;
+            _serviceService = serviceService;
         }
         [Authorize]
         [HttpGet("user-info")]
@@ -67,6 +76,18 @@ namespace MotorcycleRepairShop.Api.Controllers
         [HttpGet("service-request-info")]
         public async Task<ActionResult<ServiceRequestInfoDto>> GetServiceRequestInfo([FromQuery]int id)
             => Ok(await _homeService.GetServiceRequestInfoById(id));
+
+        [HttpGet("problem-dropdown")]
+        public async Task<ActionResult<IEnumerable<ProblemForDropdownDto>>> GetProblemForDropDownList()
+            => Ok(await _problemService.GetProblemsForDropDownList());
+
+        [HttpGet("parts-dropdown")]
+        public async Task<ActionResult<IEnumerable<PartForDropdownDto>>> GetPartForDropDownList()
+            => Ok(await _partService.GetPartsForDropDownList());
+
+        [HttpGet("service-dropdown")]
+        public async Task<ActionResult<IEnumerable<ServiceForDropdownDto>>> GetServiceForDropDownList()
+            => Ok(await _serviceService.GetServicesForDropDownList());
 
     }
 }
