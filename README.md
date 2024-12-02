@@ -108,45 +108,12 @@ The **Motorcycle Repair Shop API** is a robust web application designed to strea
 
 ---
 
-#### **Future Enhancements**  
-
-- **Automated Notifications:** Notify customers about status updates via email/SMS.  
-- **Mobile App Support:** Extend the system to include mobile applications.  
-- **Payment Integrations:** Enhance support for PayPal and VNPay for seamless transactions.  
-
----
-
-#### **Contributing**  
-
-1. Fork the repository.  
-2. Create a feature branch:  
-   ```bash
-   git checkout -b feature-name
-   ```  
-3. Commit your changes:  
-   ```bash
-   git commit -m "Add new feature"
-   ```  
-4. Push to the branch:  
-   ```bash
-   git push origin feature-name
-   ```  
-5. Create a pull request.  
-
----
-
 #### **Docker**  
 1. Path:  MotorcycleRepairShop.Api
 2. cmd:  
 ```
    docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d --remove-orphans --build
 ```
-
----
-
-#### **License**  
-
-This project is licensed under the MIT License.  
 
 ---
 
