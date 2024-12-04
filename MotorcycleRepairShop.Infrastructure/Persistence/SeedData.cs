@@ -75,6 +75,7 @@ namespace MotorcycleRepairShop.Infrastructure.Persistence
             {
                 IEnumerable<Service> serviceAddList = new List<Service>
                 {
+                    new(){ Name = "Kiểm tra tư vấn", Price = 0 },
                     new(){ Name = "Vá lốp", Price = 5000 },
                     new(){ Name = "Tăng xích", Price = 7000 },
                     new(){ Name = "Thay nhớt", Price = 4000 },
