@@ -88,7 +88,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         public async Task UpdateServiceRequestStatus(int serviceRequestId, StatusEnum status)
         {
             var serviceRequest = await _unitOfWork.ServiceRequestRepository
-                .GetSigleAsync(sr => sr.Id.Equals(serviceRequestId))
+                .GetById(serviceRequestId)
                 ?? throw new NotFoundException(nameof(ServiceRequest), serviceRequestId);
 
             if (serviceRequest.StatusId == (int)StatusEnum.Completed
@@ -431,7 +431,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                     await AddProblemsToServiceRequest(result, serviceRequestDto.Problems);
                 // Add services to service request
                 if (serviceRequestDto.Services.Count != 0)
-                    await AddServicesToServiceRequest(result, serviceRequestDto.Services);
+                    service.TotalPrice = await AddServicesToServiceRequest(result, serviceRequestDto.Services);
                 // Add images
                 if (serviceRequestDto.Images.Any())
                     await AddMediaToServiceRequest(result, serviceRequestDto.Images, MediaType.Image);
@@ -471,7 +471,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             LogSuccess(serviceRequestId);
         }
 
-        private async Task AddServicesToServiceRequest(int serviceRequestId, IEnumerable<int> serviceIds)
+        private async Task<decimal> AddServicesToServiceRequest(int serviceRequestId, IEnumerable<int> serviceIds)
         {
             List<ServiceRequestItem> services = [];
             var existService = await _unitOfWork.ServiceRepository
@@ -489,6 +489,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 .AddRangeAsync(services);
             await _unitOfWork.SaveChangeAsync();
             LogSuccess(serviceRequestId);
+            return services.Sum(sr => sr.Quantity * sr.Price);
         }
 
         private async Task CheckExitsServiceRequest(int serviceRequestId)
