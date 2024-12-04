@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MotorcycleRepairShop.Share.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace MotorcycleRepairShop.Application.Model.Account
 {
@@ -6,6 +7,7 @@ namespace MotorcycleRepairShop.Application.Model.Account
     {
 
         [Required]
+        [PasswordValidation]
         public string Password { get; set; } = string.Empty;
         public List<string> UserRoles { get; set; } = [];
     }
