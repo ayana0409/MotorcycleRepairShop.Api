@@ -4,8 +4,6 @@ using MotorcycleRepairShop.Application.Interfaces.Services;
 using MotorcycleRepairShop.Application.Model;
 using MotorcycleRepairShop.Application.Model.Account;
 using MotorcycleRepairShop.Application.Model.Problem;
-using MotorcycleRepairShop.Domain.Entities;
-using MotorcycleRepairShop.Infrastructure.Services;
 
 namespace MotorcycleRepairShop.Api.Controllers
 {
@@ -17,13 +15,16 @@ namespace MotorcycleRepairShop.Api.Controllers
         private readonly IProblemService _problemService;
         private readonly IPartService _partService;
         private readonly IServiceService _serviceService;
+        private readonly IServiceRequestService _serviceRequestService;
 
-        public HomeController(IHomeService homeService, IProblemService problemService, IPartService partService, IServiceService serviceService)
+        public HomeController(IHomeService homeService, IProblemService problemService, IPartService partService, 
+            IServiceService serviceService, IServiceRequestService serviceRequestService)
         {
             _homeService = homeService;
             _problemService = problemService;
             _partService = partService;
             _serviceService = serviceService;
+            _serviceRequestService = serviceRequestService;
         }
         [Authorize]
         [HttpGet("user-info")]
@@ -34,6 +35,15 @@ namespace MotorcycleRepairShop.Api.Controllers
             if (username == null) return Unauthorized();
 
             return Ok(await _homeService.GetAccountInfoByUsername(username));
+        }
+
+        [HttpPost("service-request-remote")]
+        public async Task<ActionResult<int>> CreateRemoteRequestService(CreateServiceRequestDto serviceRequestDto)
+        {
+            string? username = User.Identity?.Name
+                ?? User.Claims.FirstOrDefault()?.Value;
+            return CreatedAtAction(nameof(CreateRemoteRequestService),
+                await _serviceRequestService.CreateRemoteServiceRequest(serviceRequestDto, username));
         }
 
         [HttpGet("service-list")]
