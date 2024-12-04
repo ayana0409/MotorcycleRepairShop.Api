@@ -6,9 +6,9 @@ namespace MotorcycleRepairShop.Application.Interfaces.Services
 {
     public interface IServiceRequestService
     {
-        Task<int> CreateRescueServiceRequest(CreateServiceRequestDto serviceRequestDto);
-        Task<int> CreateDeirecServiceRequest(CreateServiceRequestDto serviceRequestDto);
-        Task<int> CreateRemoteServiceRequest(CreateServiceRequestDto serviceRequestDto);
+        Task<int> CreateRescueServiceRequest(CreateServiceRequestDto serviceRequestDto, string? username = null);
+        Task<int> CreateDeirecServiceRequest(CreateServiceRequestDto serviceRequestDto, string? username = null);
+        Task<int> CreateRemoteServiceRequest(CreateServiceRequestDto serviceRequestDto, string? username = null);
         Task<ServiceRequestInfoDto> GetServiceRequestById(int id);
         Task<ServiceRequestItemDto> UpSertServiceItemToServiceRequest(int serviceRequestId, UpSertServiceRequestItemDto serviceRequestDto);
         Task DeleteServiceItemToServiceRequest(int serviceRequestId, int serviceId);

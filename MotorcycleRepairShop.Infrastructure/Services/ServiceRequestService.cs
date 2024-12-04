@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MotorcycleRepairShop.Application.Interfaces;
 using MotorcycleRepairShop.Application.Interfaces.Services;
@@ -9,7 +8,6 @@ using MotorcycleRepairShop.Domain.Entities;
 using MotorcycleRepairShop.Domain.Enums;
 using MotorcycleRepairShop.Share.Exceptions;
 using MotorcycleRepairShop.Share.Extensions;
-using MySqlX.XDevAPI.Common;
 using Serilog;
 using Image = MotorcycleRepairShop.Domain.Entities.Image;
 
@@ -21,7 +19,8 @@ namespace MotorcycleRepairShop.Infrastructure.Services
         private readonly IMapper _mapper;
         private readonly ICloudinaryService<ServiceRequest> _cloudinaryService;
         private readonly IEmailService _emailService;
-        public ServiceRequestService(ILogger logger, IUnitOfWork unitOfWork, IMapper mapper, ICloudinaryService<ServiceRequest> cloudinaryService, IEmailService emailService) : base(logger)
+        public ServiceRequestService(ILogger logger, IUnitOfWork unitOfWork, IMapper mapper, 
+            ICloudinaryService<ServiceRequest> cloudinaryService, IEmailService emailService) : base(logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -64,14 +63,14 @@ namespace MotorcycleRepairShop.Infrastructure.Services
             return result;
         }
 
-        public async Task<int> CreateDeirecServiceRequest(CreateServiceRequestDto serviceRequestDto)
-            => await CreateServiceRequest(serviceRequestDto, ServiceType.Direct);
+        public async Task<int> CreateDeirecServiceRequest(CreateServiceRequestDto serviceRequestDto, string? username = null)
+            => await CreateServiceRequest(serviceRequestDto, ServiceType.Direct, username);
 
-        public async Task<int> CreateRemoteServiceRequest(CreateServiceRequestDto serviceRequestDto)
-            => await CreateServiceRequest(serviceRequestDto, ServiceType.Remote);
+        public async Task<int> CreateRemoteServiceRequest(CreateServiceRequestDto serviceRequestDto, string? username = null)
+            => await CreateServiceRequest(serviceRequestDto, ServiceType.Remote, username);
 
-        public async Task<int> CreateRescueServiceRequest(CreateServiceRequestDto serviceRequestDto)
-            => await CreateServiceRequest(serviceRequestDto, ServiceType.Rescue);
+        public async Task<int> CreateRescueServiceRequest(CreateServiceRequestDto serviceRequestDto, string? username = null)
+            => await CreateServiceRequest(serviceRequestDto, ServiceType.Rescue, username);
 
         public async Task UpdateServiceRequestUserInfoById(int serviceRequestId, ServiceRequestUserInfoDto serviceRequestUserInfoDto)
         {
@@ -407,7 +406,7 @@ namespace MotorcycleRepairShop.Infrastructure.Services
 
         #endregion
 
-        private async Task<int> CreateServiceRequest(CreateServiceRequestDto serviceRequestDto, ServiceType type)
+        private async Task<int> CreateServiceRequest(CreateServiceRequestDto serviceRequestDto, ServiceType type, string? username = null)
         {
             try
             {
@@ -416,8 +415,10 @@ namespace MotorcycleRepairShop.Infrastructure.Services
                 var service = _mapper.Map<ServiceRequest>(serviceRequestDto);
                 service.ServiceType = type;
 
-                var user = await _unitOfWork.Table<ApplicationUser>()
-                        .FirstOrDefaultAsync(u => u.MobilePhone.Equals(serviceRequestDto.MobilePhone));
+                var user = username == null 
+                        ? await _unitOfWork.Table<ApplicationUser>()
+                            .FirstOrDefaultAsync(u => u.MobilePhone.Equals(serviceRequestDto.MobilePhone))
+                        : await _unitOfWork.AccountRepository.GetSigleAsync(u => u.UserName != null && u.UserName.Equals(username));
                 if (user != null)
                     service.CustomerId = user.Id;
 
